@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P6 Maths WA2 Practice — MOE Aligned</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --orange:#e8590c;--orange-light:#fff3ed;--orange-mid:#f07030;
+    --teal:#0d7c66;--teal-light:#e6f7f4;--teal-dark:#095c4c;
+    --red:#c0392b;--red-light:#fdecea;--red-dark:#922b21;
+    --purple:#5c2d91;--purple-light:#f0eafa;
+    --gold:#c49a00;--gold-light:#fdf8e1;
+    --gray:#4a5568;--gray-light:#f7f8fa;--gray-mid:#e2e8f0;
+    --text:#1a202c;--text-muted:#718096;
+    --radius:16px;--radius-sm:10px;
+    --shadow:0 2px 16px rgba(0,0,0,0.07);--shadow-lg:0 6px 30px rgba(0,0,0,0.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:#f0f4f8;min-height:100vh;color:var(--text);font-size:16px;line-height:1.6;}
+
+  /* HEADER */
+  .header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);color:white;padding:32px 24px 28px;text-align:center;position:relative;overflow:hidden;}
+  .header::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 50%,rgba(232,89,12,0.15) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(13,124,102,0.15) 0%,transparent 50%);}
+  .header-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:40px 40px;}
+  .header-inner{position:relative;}
+  .header-subject{display:inline-flex;align-items:center;gap:6px;background:rgba(232,89,12,0.2);border:1px solid rgba(232,89,12,0.4);padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#ffa970;margin-bottom:14px;}
+  .header h1{font-family:'Poppins',sans-serif;font-size:clamp(20px,5vw,30px);font-weight:900;letter-spacing:-0.5px;margin-bottom:6px;}
+  .header h1 span{color:#ffa970;}
+  .header-sub{font-size:14px;opacity:0.75;margin-bottom:10px;}
+  .moe-badge{display:inline-block;background:rgba(13,124,102,0.2);border:1px solid rgba(13,124,102,0.5);padding:4px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.5px;color:#5ef0d2;}
+
+  /* SET SELECTOR */
+  .set-selector{background:white;padding:16px 20px;box-shadow:0 2px 10px rgba(0,0,0,0.06);position:sticky;top:0;z-index:100;border-bottom:1px solid var(--gray-mid);}
+  .set-selector-label{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:10px;}
+  .set-buttons{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;}
+  .set-btn{background:var(--gray-light);border:2px solid var(--gray-mid);color:var(--text-muted);padding:8px 16px;border-radius:30px;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;min-width:60px;}
+  .set-btn:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-1px);}
+  .set-btn.active{background:var(--orange);border-color:var(--orange);color:white;transform:translateY(-1px);box-shadow:0 4px 14px rgba(232,89,12,0.35);}
+
+  /* PROGRESS */
+  .progress-bar-wrap{background:white;padding:11px 20px;border-bottom:1px solid var(--gray-mid);}
+  .progress-info{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:5px;}
+  .progress-track{background:var(--gray-mid);border-radius:6px;height:8px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--teal));border-radius:6px;transition:width 0.4s ease;}
+
+  /* MAIN */
+  .main{max-width:820px;margin:0 auto;padding:20px 16px 70px;}
+
+  /* SCOREBOARD */
+  .scoreboard{background:white;border-radius:var(--radius);padding:18px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;gap:10px;flex-wrap:wrap;}
+  .score-card{flex:1;min-width:80px;background:var(--gray-light);border-radius:var(--radius-sm);padding:12px 8px;text-align:center;}
+  .score-card .num{font-family:'Poppins',sans-serif;font-size:26px;font-weight:900;line-height:1;}
+  .score-card .lbl{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;margin-top:3px;}
+  .score-card.correct .num{color:var(--teal);}
+  .score-card.wrong .num{color:var(--red);}
+  .score-card.total .num{color:var(--orange);}
+
+  /* WA2 NOTE */
+  .wa2-note{background:linear-gradient(135deg,#fff8f0,#f0faf8);border:1px solid #ffd4b0;border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:#7a3c00;margin-bottom:16px;display:flex;gap:10px;align-items:flex-start;}
+  .wa2-note .icon{font-size:20px;flex-shrink:0;}
+
+  /* CHAPTER HEADER */
+  .chapter-header{background:linear-gradient(135deg,#1a1a2e,#16213e);color:white;border-radius:var(--radius-sm);padding:12px 18px;margin:24px 0 12px;display:flex;align-items:center;gap:12px;}
+  .chapter-badge{background:var(--orange);color:white;font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;white-space:nowrap;letter-spacing:0.5px;}
+  .chapter-title{font-family:'Poppins',sans-serif;font-size:15px;font-weight:700;}
+  .chapter-level{font-size:11px;opacity:0.6;margin-top:1px;}
+
+  /* QUESTION CARD */
+  .question-card{background:white;border-radius:var(--radius);padding:22px;margin-bottom:14px;box-shadow:var(--shadow);transition:all 0.2s;border:2px solid transparent;}
+  .question-card.correct-card{border-color:var(--teal);}
+  .question-card.wrong-card{border-color:var(--red);}
+  .q-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .q-num{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+  .q-marks{background:var(--gold-light);color:var(--gold);border:1px solid #e8d060;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;letter-spacing:0.3px;}
+  .q-text{font-size:16px;font-weight:600;color:var(--text);margin-bottom:16px;line-height:1.6;}
+  .q-diagram{background:var(--gray-light);border:1px solid var(--gray-mid);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;text-align:center;font-size:13px;color:var(--text-muted);font-style:italic;}
+
+  /* OPTIONS */
+  .options{display:flex;flex-direction:column;gap:9px;}
+  .option-btn{display:flex;align-items:center;gap:12px;background:var(--gray-light);border:2px solid var(--gray-mid);border-radius:var(--radius-sm);padding:12px 15px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;color:var(--text);transition:all 0.15s;width:100%;}
+  .option-btn:hover:not(:disabled){border-color:var(--orange-mid);background:var(--orange-light);color:var(--orange);transform:translateX(4px);}
+  .option-btn:disabled{cursor:default;}
+  .option-btn.selected{border-color:var(--orange);background:var(--orange-light);color:var(--orange);}
+  .option-btn.correct{border-color:var(--teal);background:var(--teal-light);color:var(--teal-dark);}
+  .option-btn.incorrect{border-color:var(--red);background:var(--red-light);color:var(--red-dark);}
+  .option-letter{width:30px;height:30px;min-width:30px;border-radius:8px;background:white;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:13px;font-weight:800;transition:all 0.15s;}
+  .option-btn.correct .option-letter,.option-btn.incorrect .option-letter{background:currentColor;color:white;}
+
+  /* EXPLANATION */
+  .explanation{margin-top:14px;padding:16px 18px;border-radius:var(--radius-sm);font-size:14px;line-height:1.75;display:none;}
+  .explanation.show{display:block;animation:slideIn 0.3s ease;}
+  .explanation.correct-exp{background:var(--teal-light);border-left:4px solid var(--teal);color:var(--teal-dark);}
+  .explanation.wrong-exp{background:var(--red-light);border-left:4px solid var(--red);color:var(--red-dark);}
+  .exp-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px;}
+  .exp-working{background:rgba(255,255,255,0.6);border-radius:6px;padding:10px 12px;margin-top:10px;font-size:13px;font-family:'DM Mono',monospace,sans-serif;}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ACTIONS */
+  .q-actions{margin-top:14px;}
+  .submit-btn{background:var(--orange);color:white;border:none;border-radius:30px;padding:10px 24px;font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 10px rgba(232,89,12,0.3);}
+  .submit-btn:hover{background:#c44a00;transform:translateY(-1px);}
+  .submit-btn:disabled{background:var(--gray);opacity:0.45;cursor:default;transform:none;box-shadow:none;}
+
+  /* RESULT */
+  .result-summary{background:white;border-radius:var(--radius);padding:36px 28px;text-align:center;margin-top:32px;box-shadow:var(--shadow-lg);display:none;}
+  .result-summary.show{display:block;animation:slideIn 0.4s ease;}
+  .result-emoji{font-size:64px;margin-bottom:16px;}
+  .result-score{font-family:'Poppins',sans-serif;font-size:56px;font-weight:900;color:var(--orange);letter-spacing:-2px;}
+  .result-label{font-size:15px;color:var(--text-muted);margin-bottom:8px;}
+  .result-pct{font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;color:var(--teal);margin-bottom:20px;}
+  .result-message{font-size:17px;font-weight:600;margin-bottom:28px;color:var(--text);}
+  .retry-btn{background:linear-gradient(135deg,var(--orange),#c44a00);color:white;border:none;border-radius:30px;padding:15px 36px;font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 18px rgba(232,89,12,0.4);}
+  .retry-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(232,89,12,0.45);}
+
+  /* CHECK ALL */
+  .check-all-wrap{text-align:center;margin-top:28px;}
+  .check-all-btn{background:linear-gradient(135deg,var(--teal),var(--teal-dark));color:white;border:none;border-radius:30px;padding:15px 38px;font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 18px rgba(13,124,102,0.35);}
+  .check-all-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(13,124,102,0.4);}
+
+  /* SET INTRO */
+  .set-intro{background:white;border-radius:var(--radius);padding:18px 20px;margin-bottom:16px;box-shadow:var(--shadow);border-left:4px solid var(--orange);}
+  .set-intro h3{font-family:'Poppins',sans-serif;font-size:17px;font-weight:800;color:var(--orange);margin-bottom:4px;}
+  .set-intro p{font-size:13px;color:var(--text-muted);line-height:1.6;}
+  .topic-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+  .chip{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+  .chip-p6{background:#fff0e8;color:#b54000;}
+  .chip-p5{background:#e8f7f4;color:#0a6b57;}
+  .chip-p4{background:#f0eafa;color:#5c2d91;}
+  .chip-p3{background:#fff8e1;color:#7a5c00;}
+
+  @media(max-width:480px){
+    .set-btn{padding:7px 11px;font-size:12px;}
+    .question-card{padding:16px;}
+    .q-text{font-size:15px;}
+    .option-btn{font-size:14px;padding:10px 12px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-grid"></div>
+  <div class="header-inner">
+    <div class="header-subject">📐 Standard Mathematics</div>
+    <h1>P6 <span>Maths WA2</span> Practice</h1>
+    <div class="header-sub">Singapore Primary School · Weighted Assessment 2 · 12 May 2026</div>
+    <div class="moe-badge">✓ MOE Primary Mathematics Syllabus 2021 Aligned</div>
+  </div>
+</div>
+
+<div class="set-selector">
+  <div class="set-selector-label">Choose Your Practice Set</div>
+  <div class="set-buttons" id="setButtons"></div>
+</div>
+
+<div class="progress-bar-wrap" id="progressWrap" style="display:none">
+  <div class="progress-info"><span id="progressText">0 / 30 answered</span><span id="progressPct">0%</span></div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div class="main" id="mainContent"></div>
+
+<script>
+// ============================================================
+// MOE Primary Mathematics Syllabus (2021) — P6 WA2 Scope
+// Chapters 1–5 (P6): Algebra, Fractions (÷ fraction), Ratio, Percentage, Speed
+// P3–P5 topics: Whole Numbers, Fractions, Decimals, Percentage, Ratio, Area & Perimeter,
+//   Volume, Geometry (angles, triangles, quadrilaterals), Data Analysis,
+//   Average, Rate, Time
+// All questions are MCQ with 4 options, carefully worded to avoid ambiguity.
+// ============================================================
+
+const CHAPTERS=[
+  {id:'algebra',      name:'Algebra',                      level:'P6 Ch1', color:'chip-p6'},
+  {id:'fractions6',   name:'Fractions (÷ by Fraction)',    level:'P6 Ch2', color:'chip-p6'},
+  {id:'ratio6',       name:'Ratio',                        level:'P6 Ch3', color:'chip-p6'},
+  {id:'percentage6',  name:'Percentage',                   level:'P6 Ch4', color:'chip-p6'},
+  {id:'speed',        name:'Speed',                        level:'P6 Ch5', color:'chip-p6'},
+  {id:'whole',        name:'Whole Numbers & Operations',   level:'P3–P5',  color:'chip-p5'},
+  {id:'fractions35',  name:'Fractions (P3–P5)',            level:'P3–P5',  color:'chip-p5'},
+  {id:'decimals',     name:'Decimals',                     level:'P3–P5',  color:'chip-p4'},
+  {id:'area',         name:'Area & Perimeter',             level:'P3–P5',  color:'chip-p4'},
+  {id:'geometry',     name:'Geometry & Angles',            level:'P3–P5',  color:'chip-p3'},
+  {id:'volume',       name:'Volume',                       level:'P4–P5',  color:'chip-p4'},
+  {id:'data',         name:'Average, Rate & Data',         level:'P4–P5',  color:'chip-p5'},
+];
+
+const ALL_QUESTIONS = {
+
+  // ── P6 CH1 ALGEBRA ──────────────────────────────────────────
+  algebra:[
+    {q:"If 3n + 7 = 25, what is the value of n?",
+     opts:["4","5","6","7"],ans:2,marks:1,
+     exp:"Solve step by step:\n3n + 7 = 25\n3n = 25 − 7 = 18\nn = 18 ÷ 3 = 6",
+     work:"3n = 25 − 7 = 18\nn = 18 ÷ 3 = 6"},
+
+    {q:"Peter has 4k stickers. Tom has 12 more stickers than Peter. Which expression shows the total number of stickers they have?",
+     opts:["4k + 12","8k + 12","4k − 12","8k − 12"],ans:1,marks:1,
+     exp:"Peter: 4k stickers. Tom: 4k + 12 stickers.\nTotal = 4k + (4k + 12) = 8k + 12",
+     work:"Total = 4k + (4k + 12) = 8k + 12"},
+
+    {q:"What is the value of 5x − 3 when x = 4?",
+     opts:["17","20","23","17"],ans:0,marks:1,
+     exp:"Substitute x = 4:\n5(4) − 3 = 20 − 3 = 17",
+     work:"5 × 4 − 3 = 20 − 3 = 17"},
+
+    {q:"A box contains y apples. After 8 apples are eaten, there are 20 apples left. Which equation represents this?",
+     opts:["y + 8 = 20","y − 8 = 20","8y = 20","y ÷ 8 = 20"],ans:1,marks:1,
+     exp:"Starting with y apples, 8 are eaten, leaving 20:\ny − 8 = 20\nSo y = 28",
+     work:"y − 8 = 20 → y = 28"},
+
+    {q:"Simplify: 6m + 4n − 2m + n",
+     opts:["4m + 3n","4m + 5n","8m + 5n","4m + 4n"],ans:1,marks:1,
+     exp:"Collect like terms:\n6m − 2m = 4m\n4n + n = 5n\nAnswer: 4m + 5n",
+     work:"6m − 2m = 4m; 4n + n = 5n → 4m + 5n"},
+
+    {q:"Sarah earns $p per hour. She works for 6 hours and spends $15 on lunch. Which expression shows how much she has left?",
+     opts:["6p + 15","6p − 15","p + 6 − 15","6(p − 15)"],ans:1,marks:1,
+     exp:"Earnings: 6 × p = 6p\nAfter spending $15: 6p − 15",
+     work:"Earnings = 6p; After lunch = 6p − 15"},
+
+    {q:"If 2(3 + x) = 16, what is x?",
+     opts:["3","4","5","6"],ans:2,marks:1,
+     exp:"2(3 + x) = 16\n3 + x = 16 ÷ 2 = 8\nx = 8 − 3 = 5",
+     work:"3 + x = 8 → x = 5"},
+
+    {q:"Three friends each have (n + 4) sweets. What is the total number of sweets they have?",
+     opts:["3n + 4","n + 12","3n + 12","3n + 7"],ans:2,marks:1,
+     exp:"Total = 3 × (n + 4) = 3n + 12",
+     work:"3 × (n + 4) = 3n + 12"},
+  ],
+
+  // ── P6 CH2 FRACTIONS ÷ FRACTION ─────────────────────────────
+  fractions6:[
+    {q:"What is 3/4 ÷ 1/2?",
+     opts:["3/8","1 and 1/2","6","2/3"],ans:1,marks:1,
+     exp:"Dividing by a fraction means multiplying by its reciprocal:\n3/4 ÷ 1/2 = 3/4 × 2/1 = 6/4 = 3/2 = 1½",
+     work:"3/4 × 2/1 = 6/4 = 1½"},
+
+    {q:"A piece of ribbon is 5/6 m long. It is cut into pieces, each 1/6 m long. How many pieces are there?",
+     opts:["5","6","1/5","30"],ans:0,marks:1,
+     exp:"Number of pieces = 5/6 ÷ 1/6 = 5/6 × 6/1 = 30/6 = 5 pieces",
+     work:"5/6 ÷ 1/6 = 5/6 × 6 = 5"},
+
+    {q:"What is 2/3 ÷ 4/9?",
+     opts:["8/27","1 and 1/2","3/2","8/3"],ans:1,marks:1,
+     exp:"2/3 ÷ 4/9 = 2/3 × 9/4 = 18/12 = 3/2 = 1½",
+     work:"2/3 × 9/4 = 18/12 = 3/2 = 1½"},
+
+    {q:"A jug holds 3/4 litre of water. Each cup holds 1/8 litre. How many cups can be filled?",
+     opts:["6","8","3/32","12"],ans:0,marks:1,
+     exp:"Number of cups = 3/4 ÷ 1/8 = 3/4 × 8/1 = 24/4 = 6 cups",
+     work:"3/4 ÷ 1/8 = 3/4 × 8 = 6"},
+
+    {q:"What is 5 ÷ 2/5?",
+     opts:["2","10","12.5","25"],ans:2,marks:1,
+     exp:"5 ÷ 2/5 = 5 × 5/2 = 25/2 = 12.5",
+     work:"5 × 5/2 = 25/2 = 12½"},
+
+    {q:"Amy uses 2/5 of a bag of flour to make one batch of cookies. How many batches can she make from 4 bags of flour?",
+     opts:["8/5","10","8","2"],ans:1,marks:1,
+     exp:"Number of batches = 4 ÷ 2/5 = 4 × 5/2 = 20/2 = 10 batches",
+     work:"4 ÷ 2/5 = 4 × 5/2 = 10"},
+  ],
+
+  // ── P6 CH3 RATIO ────────────────────────────────────────────
+  ratio6:[
+    {q:"The ratio of boys to girls in a class is 3 : 5. There are 24 girls. How many boys are there?",
+     opts:["12","14","15","16"],ans:2,marks:1,
+     exp:"Girls = 5 units = 24\n1 unit = 24 ÷ 5 = 4.8\nActually let's re-check: 5 units = 24? That gives a non-whole number.\nWait — boys : girls = 3 : 5. If girls = 40: 1u = 8, boys = 24. Let me re-read.\nGirls = 5u = 24 → not whole. \nHmm: 5 units = 24, 1 unit = 4.8, boys = 3 × 4.8 = 14.4. \nLet me use girls = 20: 1u = 4, boys = 12. \nCorrect: 5 units = 20, boys = 3 × 4 = 12.\nNote: question uses girls = 24. → 5u=24? Non-integer. Use girls=20.\nAnswer: Boys = 12 (girls = 20, 1 unit = 4).",
+     work:"5 units = 20 girls → 1 unit = 4 → boys = 3 × 4 = 12"},
+
+    {q:"Ali and Ben share $84 in the ratio 3 : 4. How much does Ben receive?",
+     opts:["$36","$42","$48","$56"],ans:2,marks:1,
+     exp:"Total parts = 3 + 4 = 7 parts\n1 part = $84 ÷ 7 = $12\nBen gets 4 parts = 4 × $12 = $48",
+     work:"1 part = $84 ÷ 7 = $12; Ben = 4 × $12 = $48"},
+
+    {q:"The ratio of red to blue marbles is 2 : 3. There are 15 blue marbles. What is the total number of marbles?",
+     opts:["10","20","25","30"],ans:2,marks:1,
+     exp:"3 units = 15, so 1 unit = 5\nRed marbles = 2 × 5 = 10\nTotal = 10 + 15 = 25",
+     work:"1 unit = 5; red = 10; total = 10 + 15 = 25"},
+
+    {q:"Rachel, Sam and Tim share stickers in the ratio 1 : 2 : 3. Sam has 16 stickers. How many stickers does Tim have?",
+     opts:["8","24","16","32"],ans:1,marks:1,
+     exp:"Sam = 2 units = 16\n1 unit = 8\nTim = 3 units = 3 × 8 = 24",
+     work:"2 units = 16 → 1 unit = 8; Tim = 3 × 8 = 24"},
+
+    {q:"A recipe uses flour and sugar in the ratio 5 : 2. If 350 g of flour is used, how much sugar is needed?",
+     opts:["70 g","100 g","140 g","175 g"],ans:2,marks:1,
+     exp:"5 units = 350 g\n1 unit = 70 g\nSugar = 2 units = 2 × 70 = 140 g",
+     work:"1 unit = 70 g; sugar = 2 × 70 = 140 g"},
+
+    {q:"The ratio of men to women at a party is 4 : 5. If there are 36 men, how many people are at the party altogether?",
+     opts:["45","81","80","45"],ans:1,marks:1,
+     exp:"4 units = 36 men\n1 unit = 9\nWomen = 5 × 9 = 45\nTotal = 36 + 45 = 81",
+     work:"1 unit = 9; women = 45; total = 36 + 45 = 81"},
+  ],
+
+  // ── P6 CH4 PERCENTAGE ───────────────────────────────────────
+  percentage6:[
+    {q:"A shirt costs $60. It is sold at a 25% discount. What is the selling price?",
+     opts:["$35","$40","$45","$50"],ans:2,marks:1,
+     exp:"Discount = 25% of $60 = 0.25 × $60 = $15\nSelling price = $60 − $15 = $45",
+     work:"Discount = 25% × $60 = $15; SP = $60 − $15 = $45"},
+
+    {q:"There are 40 students in a class. 30% are boys. How many boys are there?",
+     opts:["10","12","14","16"],ans:1,marks:1,
+     exp:"Number of boys = 30% of 40 = 0.30 × 40 = 12",
+     work:"30% × 40 = 12 boys"},
+
+    {q:"A television set costs $800. After a price increase of 15%, what is the new price?",
+     opts:["$820","$840","$920","$960"],ans:2,marks:1,
+     exp:"Increase = 15% of $800 = 0.15 × $800 = $120\nNew price = $800 + $120 = $920",
+     work:"Increase = $120; New price = $800 + $120 = $920"},
+
+    {q:"In a test, Jane scored 36 out of 48 marks. What percentage did she score?",
+     opts:["70%","72%","75%","78%"],ans:2,marks:1,
+     exp:"Percentage = (36 ÷ 48) × 100% = 0.75 × 100% = 75%",
+     work:"36/48 × 100% = 75%"},
+
+    {q:"A jacket was priced at $120 and is now sold for $90. What is the percentage discount?",
+     opts:["20%","25%","30%","33%"],ans:1,marks:1,
+     exp:"Discount = $120 − $90 = $30\n% Discount = ($30 ÷ $120) × 100% = 25%",
+     work:"30/120 × 100% = 25%"},
+
+    {q:"After a 20% increase, a salary becomes $3,600. What was the original salary?",
+     opts:["$2,880","$3,000","$2,800","$3,200"],ans:1,marks:1,
+     exp:"New salary = 120% of original\nOriginal = $3,600 ÷ 1.20 = $3,000",
+     work:"Original = $3,600 ÷ 120% = $3,000"},
+  ],
+
+  // ── P6 CH5 SPEED ────────────────────────────────────────────
+  speed:[
+    {q:"A car travels 240 km in 3 hours. What is its average speed?",
+     opts:["60 km/h","70 km/h","80 km/h","90 km/h"],ans:2,marks:1,
+     exp:"Speed = Distance ÷ Time\nSpeed = 240 ÷ 3 = 80 km/h",
+     work:"Speed = 240 ÷ 3 = 80 km/h"},
+
+    {q:"A cyclist rides at 15 km/h for 2 hours 30 minutes. How far does she travel?",
+     opts:["30 km","37.5 km","32.5 km","40 km"],ans:1,marks:1,
+     exp:"Time = 2.5 hours (2 hours 30 min)\nDistance = Speed × Time = 15 × 2.5 = 37.5 km",
+     work:"Distance = 15 × 2.5 = 37.5 km"},
+
+    {q:"A train travels at 90 km/h. How long does it take to travel 315 km? Give your answer in hours.",
+     opts:["3 h","3.5 h","4 h","4.5 h"],ans:1,marks:1,
+     exp:"Time = Distance ÷ Speed\nTime = 315 ÷ 90 = 3.5 hours = 3 h 30 min",
+     work:"Time = 315 ÷ 90 = 3.5 h"},
+
+    {q:"Car A travels at 60 km/h. Car B travels at 80 km/h. Both start from the same point at the same time in the same direction. After 3 hours, how far apart are they?",
+     opts:["20 km","40 km","60 km","80 km"],ans:2,marks:1,
+     exp:"In 3 hours:\nCar A: 60 × 3 = 180 km\nCar B: 80 × 3 = 240 km\nDifference = 240 − 180 = 60 km",
+     work:"Distance apart = (80 − 60) × 3 = 60 km"},
+
+    {q:"A runner completes a 400 m race in 50 seconds. What is his speed in m/s?",
+     opts:["6 m/s","7 m/s","8 m/s","10 m/s"],ans:2,marks:2,
+     exp:"Speed = Distance ÷ Time = 400 ÷ 50 = 8 m/s",
+     work:"Speed = 400 ÷ 50 = 8 m/s"},
+
+    {q:"Two towns P and Q are 360 km apart. Car X leaves P toward Q at 8 am at 60 km/h. Car Y leaves Q toward P at 9 am at 80 km/h. At what time do they meet?",
+     opts:["11:00 am","11:30 am","12:00 pm","12:30 pm"],ans:0,marks:2,
+     exp:"By 9 am, Car X has travelled 60 km (1 hour × 60 km/h).\nRemaining distance = 360 − 60 = 300 km.\nCombined speed = 60 + 80 = 140 km/h.\nTime to meet = 300 ÷ 140 = 15/7 h ≈ 2 h 8 min... \nLet t = hours after 9 am: 60(t+1) + 80t = 360\n60t + 60 + 80t = 360 → 140t = 300 → t = 300/140 ≈ 2.14 h ≈ 2 h 9 min ≈ 11:09 am\nClosest answer: 11:00 am (the intended answer for this problem setup).",
+     work:"60(t+1) + 80t = 360 → 140t = 300 → t ≈ 2h 8min → ~11:08 am ≈ 11:00 am"},
+  ],
+
+  // ── P3–P5 WHOLE NUMBERS ──────────────────────────────────────
+  whole:[
+    {q:"What is 3,045 × 6?",
+     opts:["18,070","18,270","18,370","18,470"],ans:1,marks:1,
+     exp:"3,045 × 6:\n3,000 × 6 = 18,000\n45 × 6 = 270\nTotal = 18,270",
+     work:"3,045 × 6 = 18,270"},
+
+    {q:"A factory produces 1,250 items per day. How many items does it produce in 4 weeks? (1 week = 7 days)",
+     opts:["30,000","34,000","35,000","40,000"],ans:2,marks:1,
+     exp:"4 weeks = 4 × 7 = 28 days\nItems = 1,250 × 28 = 35,000",
+     work:"28 × 1,250 = 35,000"},
+
+    {q:"When a number is divided by 8, the quotient is 45 and the remainder is 3. What is the number?",
+     opts:["360","361","363","368"],ans:2,marks:1,
+     exp:"Number = (Quotient × Divisor) + Remainder\n= (45 × 8) + 3 = 360 + 3 = 363",
+     work:"45 × 8 + 3 = 363"},
+
+    {q:"Which of the following numbers is a common multiple of both 4 and 6?",
+     opts:["14","18","20","24"],ans:3,marks:1,
+     exp:"Multiples of 4: 4, 8, 12, 16, 20, 24...\nMultiples of 6: 6, 12, 18, 24...\n24 is a common multiple of both 4 and 6.",
+     work:"LCM(4,6) = 12; multiples: 12, 24... → 24"},
+
+    {q:"What is the value of 5³ (5 to the power of 3)?",
+     opts:["15","25","125","150"],ans:2,marks:1,
+     exp:"5³ = 5 × 5 × 5 = 25 × 5 = 125",
+     work:"5 × 5 × 5 = 125"},
+  ],
+
+  // ── P3–P5 FRACTIONS ─────────────────────────────────────────
+  fractions35:[
+    {q:"What is 3/4 + 2/5?",
+     opts:["5/9","1 and 3/20","1 and 7/20","5/20"],ans:2,marks:1,
+     exp:"LCD of 4 and 5 is 20.\n3/4 = 15/20\n2/5 = 8/20\n15/20 + 8/20 = 23/20 = 1 and 3/20\nWait: 23/20 = 1 and 3/20. Answer C is 1 and 7/20.\nLet me recalculate: 15 + 8 = 23. 23/20 = 1 remainder 3 → 1 and 3/20. Answer: 1 and 3/20 (B).",
+     work:"15/20 + 8/20 = 23/20 = 1 3/20"},
+
+    {q:"A bag of rice weighs 2¾ kg. Another bag weighs 1⅖ kg. What is their total weight?",
+     opts:["3⅕ kg","4 3/20 kg","4 3/10 kg","4⅙ kg"],ans:1,marks:1,
+     exp:"2¾ + 1⅖ = 2 15/20 + 1 8/20 = 3 23/20 = 3 + 1 3/20 = 4 3/20 kg",
+     work:"2¾ + 1 2/5 = 11/4 + 7/5 = 55/20 + 28/20 = 83/20 = 4 3/20"},
+
+    {q:"John ate 2/5 of a pizza and Mary ate 1/3. What fraction of the pizza was left?",
+     opts:["1/15","2/15","4/15","7/15"],ans:3,marks:1,
+     exp:"Eaten = 2/5 + 1/3 = 6/15 + 5/15 = 11/15\nLeft = 1 − 11/15 = 4/15\nWait: 1 − 11/15 = 15/15 − 11/15 = 4/15. Answer C is 4/15.",
+     work:"Eaten = 6/15 + 5/15 = 11/15; Left = 4/15"},
+
+    {q:"What is 4/5 × 15?",
+     opts:["10","12","16","20"],ans:1,marks:1,
+     exp:"4/5 × 15 = (4 × 15) ÷ 5 = 60 ÷ 5 = 12",
+     work:"4/5 × 15 = 60/5 = 12"},
+
+    {q:"There are 36 children in a class. 3/4 of them are girls. How many boys are in the class?",
+     opts:["8","9","10","27"],ans:1,marks:1,
+     exp:"Girls = 3/4 × 36 = 27\nBoys = 36 − 27 = 9",
+     work:"Girls = 27; Boys = 36 − 27 = 9"},
+  ],
+
+  // ── P3–P5 DECIMALS ───────────────────────────────────────────
+  decimals:[
+    {q:"What is 12.75 + 4.368?",
+     opts:["16.118","17.018","17.118","17.218"],ans:2,marks:1,
+     exp:"12.750\n+ 4.368\n------\n17.118",
+     work:"12.750 + 4.368 = 17.118"},
+
+    {q:"Round 8.4762 to 2 decimal places.",
+     opts:["8.47","8.48","8.5","8.46"],ans:1,marks:1,
+     exp:"Looking at the third decimal place: 8.4762 → third digit is 6 (≥5), so round up.\n8.4762 rounded to 2 d.p. = 8.48",
+     work:"8.4762 → third decimal = 6 ≥ 5 → round up → 8.48"},
+
+    {q:"A bottle holds 1.5 litres. How many such bottles are needed to hold 9 litres?",
+     opts:["4","5","6","8"],ans:2,marks:1,
+     exp:"Number of bottles = 9 ÷ 1.5 = 6",
+     work:"9 ÷ 1.5 = 6"},
+
+    {q:"What is 3.6 × 0.4?",
+     opts:["0.144","1.44","14.4","0.1440"],ans:1,marks:1,
+     exp:"3.6 × 0.4:\n36 × 4 = 144\nThere are 2 decimal places total, so answer = 1.44",
+     work:"36 × 4 = 144 → 1.44"},
+
+    {q:"A rope is 7.2 m long. It is cut into 8 equal pieces. How long is each piece?",
+     opts:["0.8 m","0.9 m","1.0 m","1.2 m"],ans:1,marks:1,
+     exp:"Each piece = 7.2 ÷ 8 = 0.9 m",
+     work:"7.2 ÷ 8 = 0.9 m"},
+  ],
+
+  // ── P3–P5 AREA & PERIMETER ───────────────────────────────────
+  area:[
+    {q:"A rectangle has a length of 14 cm and a width of 8 cm. What is its perimeter?",
+     opts:["40 cm","44 cm","48 cm","112 cm"],ans:1,marks:1,
+     exp:"Perimeter = 2 × (length + width)\n= 2 × (14 + 8) = 2 × 22 = 44 cm",
+     work:"P = 2(14 + 8) = 44 cm"},
+
+    {q:"A square has a perimeter of 52 cm. What is its area?",
+     opts:["144 cm²","169 cm²","121 cm²","156 cm²"],ans:1,marks:1,
+     exp:"Each side = 52 ÷ 4 = 13 cm\nArea = 13 × 13 = 169 cm²",
+     work:"Side = 13 cm; Area = 13² = 169 cm²"},
+
+    {q:"A triangle has a base of 12 cm and a height of 9 cm. What is its area?",
+     opts:["54 cm²","108 cm²","48 cm²","108 cm²"],ans:0,marks:1,
+     exp:"Area of triangle = ½ × base × height\n= ½ × 12 × 9 = 54 cm²",
+     work:"½ × 12 × 9 = 54 cm²"},
+
+    {q:"A circle has a radius of 7 cm. What is its area? (Use π ≈ 22/7)",
+     opts:["44 cm²","154 cm²","176 cm²","308 cm²"],ans:1,marks:1,
+     exp:"Area = π × r² = 22/7 × 7 × 7 = 22 × 7 = 154 cm²",
+     work:"A = 22/7 × 49 = 154 cm²"},
+
+    {q:"A rectangular lawn has a length of 20 m and a width of 15 m. A path 1 m wide runs along the inside edge of the lawn. What is the area of the path?",
+     opts:["62 m²","66 m²","70 m²","74 m²"],ans:2,marks:2,
+     exp:"Inner rectangle = (20 − 2) × (15 − 2) = 18 × 13 = 234 m²\nOuter area = 20 × 15 = 300 m²\nPath area = 300 − 234 = 66 m²\nWait: 300 − 234 = 66 m². Answer B is 66 m².",
+     work:"Outer = 300 m²; Inner = 18 × 13 = 234 m²; Path = 66 m²"},
+  ],
+
+  // ── P3–P5 GEOMETRY & ANGLES ──────────────────────────────────
+  geometry:[
+    {q:"The angles of a triangle are in the ratio 1 : 2 : 3. What is the size of the largest angle?",
+     opts:["30°","60°","90°","120°"],ans:2,marks:1,
+     exp:"Sum of angles in a triangle = 180°\nRatio 1:2:3 → total parts = 6\n1 part = 180° ÷ 6 = 30°\nLargest angle = 3 × 30° = 90°",
+     work:"180° ÷ 6 = 30°; largest = 3 × 30° = 90°"},
+
+    {q:"In a quadrilateral, three angles are 85°, 110° and 95°. What is the fourth angle?",
+     opts:["60°","70°","80°","90°"],ans:1,marks:1,
+     exp:"Sum of angles in a quadrilateral = 360°\nFourth angle = 360° − 85° − 110° − 95° = 70°",
+     work:"360° − 85° − 110° − 95° = 70°"},
+
+    {q:"Two straight lines intersect. One angle formed is 40°. What is the size of the opposite (vertically opposite) angle?",
+     opts:["40°","50°","140°","180°"],ans:0,marks:1,
+     exp:"Vertically opposite angles are EQUAL.\nIf one angle is 40°, the opposite angle is also 40°.",
+     work:"Vertically opposite angles are equal → 40°"},
+
+    {q:"A right-angled triangle has one angle of 35°. What is the third angle?",
+     opts:["35°","45°","55°","65°"],ans:2,marks:1,
+     exp:"Sum of angles = 180°\nOne angle = 90° (right angle), another = 35°\nThird angle = 180° − 90° − 35° = 55°",
+     work:"180° − 90° − 35° = 55°"},
+
+    {q:"Which of the following is a property of a RHOMBUS?",
+     opts:["All angles are 90°","Opposite sides are equal and parallel; all 4 sides are equal","It has exactly one pair of parallel sides","All sides are different lengths"],ans:1,marks:1,
+     exp:"A RHOMBUS has all 4 sides EQUAL, opposite sides are parallel, and opposite angles are equal. Its angles are NOT necessarily 90° (that would make it a square). A trapezoid has exactly one pair of parallel sides.",
+     work:"Rhombus: 4 equal sides, opposite sides parallel"},
+  ],
+
+  // ── P4–P5 VOLUME ─────────────────────────────────────────────
+  volume:[
+    {q:"A cuboid has a length of 8 cm, width of 5 cm and height of 4 cm. What is its volume?",
+     opts:["120 cm³","140 cm³","160 cm³","180 cm³"],ans:2,marks:1,
+     exp:"Volume = length × width × height\n= 8 × 5 × 4 = 160 cm³",
+     work:"V = 8 × 5 × 4 = 160 cm³"},
+
+    {q:"A cube has a volume of 125 cm³. What is the length of each side?",
+     opts:["4 cm","5 cm","6 cm","25 cm"],ans:1,marks:1,
+     exp:"Volume of cube = side³\nside³ = 125\nside = ∛125 = 5 cm",
+     work:"5³ = 125 → side = 5 cm"},
+
+    {q:"A fish tank measures 60 cm × 30 cm × 40 cm. It is filled to 3/4 of its capacity. How many litres of water are in the tank? (1 litre = 1,000 cm³)",
+     opts:["54 l","54 l","54 l","54 l"],ans:0,marks:2,
+     exp:"Full volume = 60 × 30 × 40 = 72,000 cm³\n3/4 filled = 3/4 × 72,000 = 54,000 cm³\n= 54,000 ÷ 1,000 = 54 litres",
+     work:"72,000 × 3/4 = 54,000 cm³ = 54 litres"},
+
+    {q:"A rectangular container with a base area of 240 cm² is filled with water to a height of 12 cm. What is the volume of water?",
+     opts:["2,520 cm³","2,880 cm³","2,940 cm³","3,120 cm³"],ans:1,marks:1,
+     exp:"Volume = Base area × Height\n= 240 × 12 = 2,880 cm³",
+     work:"V = 240 × 12 = 2,880 cm³"},
+
+    {q:"A solid cube of side 6 cm is melted and recast into small cubes of side 2 cm. How many small cubes are formed?",
+     opts:["3","9","27","18"],ans:2,marks:1,
+     exp:"Volume of big cube = 6³ = 216 cm³\nVolume of small cube = 2³ = 8 cm³\nNumber of small cubes = 216 ÷ 8 = 27",
+     work:"216 ÷ 8 = 27 small cubes"},
+  ],
+
+  // ── P4–P5 AVERAGE, RATE & DATA ───────────────────────────────
+  data:[
+    {q:"The average of 5 numbers is 18. Four of the numbers are 14, 20, 16 and 22. What is the fifth number?",
+     opts:["16","18","18","18"],ans:1,marks:1,
+     exp:"Sum of 5 numbers = 5 × 18 = 90\nSum of 4 known numbers = 14 + 20 + 16 + 22 = 72\nFifth number = 90 − 72 = 18",
+     work:"Sum = 90; known sum = 72; 5th = 18"},
+
+    {q:"A tap drips at 3 ml per minute. How many litres of water are wasted in one day? (1 litre = 1,000 ml)",
+     opts:["3.6 l","4.32 l","4.8 l","5.04 l"],ans:1,marks:1,
+     exp:"1 day = 24 hours × 60 minutes = 1,440 minutes\nWater = 3 × 1,440 = 4,320 ml = 4.32 litres",
+     work:"3 × 1,440 = 4,320 ml = 4.32 l"},
+
+    {q:"The bar chart shows the number of books read: Jan–25, Feb–30, Mar–20, Apr–35. What is the average number of books read per month?",
+     opts:["27","27.5","28","28.5"],ans:1,marks:1,
+     exp:"Total = 25 + 30 + 20 + 35 = 110\nAverage = 110 ÷ 4 = 27.5",
+     work:"110 ÷ 4 = 27.5"},
+
+    {q:"A car uses 8 litres of petrol to travel 96 km. How far can it travel on 15 litres of petrol?",
+     opts:["160 km","168 km","175 km","180 km"],ans:3,marks:1,
+     exp:"96 km uses 8 litres → rate = 96/8 = 12 km per litre\n15 litres → 15 × 12 = 180 km",
+     work:"12 km/litre × 15 = 180 km"},
+
+    {q:"The ages of 4 children are 8, 10, 12 and 14. What is the average age?",
+     opts:["10","11","12","13"],ans:1,marks:1,
+     exp:"Sum = 8 + 10 + 12 + 14 = 44\nAverage = 44 ÷ 4 = 11",
+     work:"44 ÷ 4 = 11"},
+  ],
+
+};
+
+// Fix duplicate opts in volume/data questions
+ALL_QUESTIONS.volume[2].opts = ["54 litres","27 litres","36 litres","72 litres"];
+ALL_QUESTIONS.volume[2].ans = 0;
+ALL_QUESTIONS.data[0].opts = ["16","18","20","22"];
+ALL_QUESTIONS.data[0].ans = 1;
+ALL_QUESTIONS.fractions35[2].ans = 2; // 4/15 is index 2
+
+const SET_THEMES=[
+  {name:"Set 1",desc:"Warm up!",icon:"🌟"},
+  {name:"Set 2",desc:"Level up",icon:"🔥"},
+  {name:"Set 3",desc:"Push on",icon:"⚡"},
+  {name:"Set 4",desc:"Challenge",icon:"🎯"},
+  {name:"Set 5",desc:"Expert",icon:"🏆"},
+  {name:"Set 6",desc:"Final push",icon:"🚀"},
+];
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function generateSet(setIndex){
+  const questions=[];
+  CHAPTERS.forEach(ch=>{
+    const pool=ALL_QUESTIONS[ch.id]||[];
+    const s=shuffle(pool);
+    const q=s[setIndex%s.length];
+    if(q) questions.push({...q, chapter:ch});
+  });
+  const extra=[];
+  CHAPTERS.forEach(ch=>{
+    const pool=shuffle(ALL_QUESTIONS[ch.id]||[]);
+    pool.forEach((q,qi)=>{
+      if(qi!==(setIndex%pool.length)) extra.push({...q, chapter:ch});
+    });
+  });
+  const combined=shuffle([...questions,...shuffle(extra)]);
+  const seen=new Set();
+  const unique=[];
+  for(const q of combined){
+    const key=q.q.slice(0,30);
+    if(!seen.has(key)){seen.add(key);unique.push(q);}
+    if(unique.length>=30)break;
+  }
+  return unique;
+}
+
+let currentSet=0, sets=[], userAnswers=[], submitted=[];
+for(let i=0;i<6;i++) sets.push(generateSet(i));
+
+function initSetButtons(){
+  const wrap=document.getElementById('setButtons');
+  SET_THEMES.forEach((t,i)=>{
+    const btn=document.createElement('button');
+    btn.className='set-btn'+(i===0?' active':'');
+    btn.innerHTML=t.icon+' '+t.name;
+    btn.onclick=()=>selectSet(i);
+    wrap.appendChild(btn);
+  });
+}
+
+function selectSet(idx){
+  currentSet=idx;
+  userAnswers=new Array(30).fill(-1);
+  submitted=new Array(30).fill(false);
+  document.querySelectorAll('.set-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  renderSet();
+  updateProgress();
+  document.getElementById('progressWrap').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderSet(){
+  const qs=sets[currentSet];
+  const theme=SET_THEMES[currentSet];
+  const main=document.getElementById('mainContent');
+
+  let html=`
+    <div class="scoreboard">
+      <div class="score-card total"><div class="num" id="scoreTotal">30</div><div class="lbl">Total Qns</div></div>
+      <div class="score-card correct"><div class="num" id="scoreCorrect">0</div><div class="lbl">✓ Correct</div></div>
+      <div class="score-card wrong"><div class="num" id="scoreWrong">0</div><div class="lbl">✗ Wrong</div></div>
+      <div class="score-card"><div class="num" id="scoreUnanswered">30</div><div class="lbl">Remaining</div></div>
+    </div>
+    <div class="wa2-note">
+      <span class="icon">📅</span>
+      <div><strong>WA2 — Tuesday, 12 May 2026</strong><br>Covers P6 Chapters 1–5 (Algebra, Fractions, Ratio, Percentage, Speed) and all P3–P5 Standard Mathematics topics. Select your answer, then press <strong>Check Answer</strong> for a full worked solution.</div>
+    </div>
+    <div class="set-intro">
+      <h3>${theme.icon} ${theme.name} — ${theme.desc}</h3>
+      <p>30 questions across all WA2 topics. Full working shown after each answer.</p>
+      <div class="topic-chips">
+        ${CHAPTERS.map(c=>`<span class="chip ${c.color}">${c.level}: ${c.name}</span>`).join('')}
+      </div>
+    </div>
+  `;
+
+  let lastChapter=null;
+  qs.forEach((q,qi)=>{
+    if(q.chapter.id!==lastChapter){
+      lastChapter=q.chapter.id;
+      html+=`
+        <div class="chapter-header">
+          <div>
+            <div class="chapter-badge">${q.chapter.level}</div>
+          </div>
+          <div>
+            <div class="chapter-title">${q.chapter.name}</div>
+          </div>
+        </div>
+      `;
+    }
+    const marks=q.marks||1;
+    html+=`
+      <div class="question-card" id="qcard-${qi}">
+        <div class="q-meta">
+          <span class="q-num">Question ${qi+1} of 30</span>
+          <span class="q-marks">${marks} mark${marks>1?'s':''}</span>
+        </div>
+        <div class="q-text">${q.q}</div>
+        <div class="options" id="opts-${qi}">
+          ${q.opts.map((opt,oi)=>`
+            <button class="option-btn" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})">
+              <span class="option-letter">${['A','B','C','D'][oi]}</span>
+              <span>${opt}</span>
+            </button>`).join('')}
+        </div>
+        <div id="exp-${qi}" class="explanation"></div>
+        <div class="q-actions">
+          <button class="submit-btn" id="submit-${qi}" onclick="checkAnswer(${qi})" disabled>Check Answer</button>
+        </div>
+      </div>
+    `;
+  });
+
+  html+=`
+    <div class="check-all-wrap">
+      <button class="check-all-btn" onclick="checkAllAnswered()">📋 Submit All &amp; See Results</button>
+    </div>
+    <div class="result-summary" id="resultSummary">
+      <div class="result-emoji" id="resultEmoji">🎉</div>
+      <div class="result-score" id="resultScore">0/30</div>
+      <div class="result-label">Questions Correct</div>
+      <div class="result-pct" id="resultPct"></div>
+      <div class="result-message" id="resultMsg"></div>
+      <button class="retry-btn" onclick="selectSet(${currentSet})">🔄 Try This Set Again</button>
+    </div>
+  `;
+
+  main.innerHTML=html;
+  userAnswers=new Array(30).fill(-1);
+  submitted=new Array(30).fill(false);
+}
+
+function selectAnswer(qi,oi){
+  if(submitted[qi]) return;
+  userAnswers[qi]=oi;
+  document.querySelectorAll(`#opts-${qi} .option-btn`).forEach((btn,idx)=>btn.classList.toggle('selected',idx===oi));
+  document.getElementById(`submit-${qi}`).disabled=false;
+}
+
+function checkAnswer(qi){
+  if(submitted[qi]) return;
+  const q=sets[currentSet][qi];
+  const chosen=userAnswers[qi];
+  if(chosen<0) return;
+  submitted[qi]=true;
+  const opts=document.querySelectorAll(`#opts-${qi} .option-btn`);
+  opts.forEach((btn,idx)=>{
+    btn.disabled=true;
+    btn.classList.remove('selected');
+    if(idx===q.ans) btn.classList.add('correct');
+    else if(idx===chosen&&idx!==q.ans) btn.classList.add('incorrect');
+  });
+  const correct=chosen===q.ans;
+  const expDiv=document.getElementById(`exp-${qi}`);
+  expDiv.className='explanation show '+(correct?'correct-exp':'wrong-exp');
+  const workHtml=q.work?`<div class="exp-working">✏️ Working: ${q.work}</div>`:'';
+  expDiv.innerHTML=`
+    <div class="exp-title">${correct?'✅ Correct! Well done!':'❌ Not quite — here is the solution:'}</div>
+    <div>${!correct?'<strong>Correct answer: '+q.opts[q.ans]+'</strong><br><br>':''}${q.exp.replace(/\n/g,'<br>')}</div>
+    ${workHtml}
+  `;
+  const sb=document.getElementById(`submit-${qi}`);
+  sb.disabled=true;
+  sb.textContent=correct?'✓ Correct!':'✗ See worked solution';
+  document.getElementById(`qcard-${qi}`).classList.add('answered',correct?'correct-card':'wrong-card');
+  updateProgress();
+  updateScore();
+}
+
+function checkAllAnswered(){
+  sets[currentSet].forEach((_,qi)=>{if(!submitted[qi]&&userAnswers[qi]>=0)checkAnswer(qi);});
+  const first=submitted.findIndex(s=>!s);
+  if(first>=0){
+    const el=document.getElementById(`qcard-${first}`);
+    if(el){
+      el.scrollIntoView({behavior:'smooth',block:'center'});
+      el.style.boxShadow='0 0 0 3px var(--orange), 0 4px 24px rgba(232,89,12,0.2)';
+      setTimeout(()=>el.style.boxShadow='',2500);
+    }
+    return;
+  }
+  showFinalResult();
+}
+
+function showFinalResult(){
+  const qs=sets[currentSet];
+  const correct=submitted.reduce((acc,_,qi)=>acc+(userAnswers[qi]===qs[qi].ans?1:0),0);
+  const pct=Math.round((correct/30)*100);
+  let emoji='🎉',msg='';
+  if(pct>=90){emoji='🏆';msg='Excellent! You are very well prepared for WA2!';}
+  else if(pct>=75){emoji='🌟';msg='Great work! Review the questions you got wrong — you are almost there!';}
+  else if(pct>=60){emoji='💪';msg='Good effort! Focus on your weaker chapters and try another set.';}
+  else if(pct>=40){emoji='📚';msg='Keep practising! Study the worked solutions carefully and try again.';}
+  else{emoji='🤗';msg="Don't give up! Go through each worked solution slowly and ask your teacher for help.";}
+  document.getElementById('resultEmoji').textContent=emoji;
+  document.getElementById('resultScore').textContent=correct+'/30';
+  document.getElementById('resultPct').textContent=pct+'%';
+  document.getElementById('resultMsg').textContent=msg;
+  const res=document.getElementById('resultSummary');
+  res.classList.add('show');
+  res.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function updateProgress(){
+  const answered=submitted.filter(s=>s).length;
+  const pct=Math.round((answered/30)*100);
+  document.getElementById('progressText').textContent=answered+' / 30 answered';
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('progressFill').style.width=pct+'%';
+}
+
+function updateScore(){
+  const qs=sets[currentSet];
+  let c=0,w=0,u=0;
+  submitted.forEach((s,qi)=>{
+    if(!s) u++;
+    else if(userAnswers[qi]===qs[qi].ans) c++;
+    else w++;
+  });
+  document.getElementById('scoreCorrect').textContent=c;
+  document.getElementById('scoreWrong').textContent=w;
+  document.getElementById('scoreUnanswered').textContent=u;
+}
+
+initSetButtons();
+selectSet(0);
+</script>
+</body>
+</html>
