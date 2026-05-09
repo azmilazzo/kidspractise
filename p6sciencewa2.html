@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P6 Science WA2 Practice — MOE Aligned</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--blue:#1a6fbf;--blue-light:#e8f2fc;--blue-mid:#3d8edf;--green:#2a8a4a;--green-light:#e8f6ec;--green-dark:#1e6636;--red:#c0392b;--red-light:#fdecea;--red-dark:#922b21;--purple:#7d3c98;--purple-light:#f5eefb;--gray:#5d6d7e;--gray-light:#f4f6f8;--gray-mid:#eaecee;--text:#1c2833;--text-muted:#5d6d7e;--radius:14px;--radius-sm:8px;--shadow:0 2px 12px rgba(0,0,0,0.08);--shadow-lg:0 4px 24px rgba(0,0,0,0.12);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito Sans',sans-serif;background:linear-gradient(135deg,#e8f2fc 0%,#f0f8f0 50%,#f8f0fc 100%);min-height:100vh;color:var(--text);font-size:16px;line-height:1.6;}
+  .header{background:linear-gradient(135deg,#1a6fbf 0%,#7d3c98 100%);color:white;padding:28px 24px 24px;text-align:center;position:relative;overflow:hidden;}
+  .header::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Ccircle cx='30' cy='30' r='15'/%3E%3C/g%3E%3C/svg%3E");}
+  .header h1{font-family:'Nunito',sans-serif;font-size:clamp(18px,4vw,26px);font-weight:900;position:relative;margin-bottom:6px;}
+  .header p{font-size:14px;opacity:0.88;position:relative;}
+  .moe-badge{display:inline-block;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.4);padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.5px;margin-top:8px;}
+  .set-selector{background:white;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);position:sticky;top:0;z-index:100;}
+  .set-selector h2{font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:10px;}
+  .set-buttons{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+  .set-btn{background:var(--gray-light);border:2px solid var(--gray-mid);color:var(--text-muted);padding:9px 16px;border-radius:30px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;min-width:65px;}
+  .set-btn:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-1px);}
+  .set-btn.active{background:var(--blue);border-color:var(--blue);color:white;transform:translateY(-1px);box-shadow:0 4px 12px rgba(26,111,191,0.3);}
+  .progress-bar-wrap{background:var(--gray-light);padding:12px 20px;border-bottom:1px solid var(--gray-mid);}
+  .progress-info{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:6px;}
+  .progress-track{background:var(--gray-mid);border-radius:6px;height:7px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:6px;transition:width 0.4s ease;}
+  .main{max-width:800px;margin:0 auto;padding:20px 16px 60px;}
+  .scoreboard{background:white;border-radius:var(--radius);padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;gap:10px;flex-wrap:wrap;}
+  .score-card{flex:1;min-width:90px;background:var(--gray-light);border-radius:var(--radius-sm);padding:10px;text-align:center;}
+  .score-card .num{font-family:'Nunito',sans-serif;font-size:24px;font-weight:900;}
+  .score-card .lbl{font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+  .score-card.correct .num{color:var(--green);}
+  .score-card.wrong .num{color:var(--red);}
+  .score-card.total .num{color:var(--blue);}
+  .moe-note{background:#fff8e1;border:1px solid #f9cc4a;border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:#7a5c00;margin-bottom:14px;}
+  .topic-header{background:linear-gradient(135deg,var(--blue-light),var(--purple-light));border-left:4px solid var(--blue);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:10px 14px;margin:22px 0 12px;}
+  .topic-header .topic-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--purple);margin-bottom:2px;}
+  .topic-header .topic-name{font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;color:var(--text);}
+  .question-card{background:white;border-radius:var(--radius);padding:20px;margin-bottom:12px;box-shadow:var(--shadow);transition:box-shadow 0.2s;border:2px solid transparent;}
+  .question-card.answered{border-color:var(--gray-mid);}
+  .question-card.correct-card{border-color:#2a8a4a;}
+  .question-card.wrong-card{border-color:#c0392b;}
+  .q-num{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+  .q-text{font-size:16px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.55;}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .option-btn{display:flex;align-items:center;gap:12px;background:var(--gray-light);border:2px solid var(--gray-mid);border-radius:var(--radius-sm);padding:11px 14px;cursor:pointer;text-align:left;font-family:'Nunito Sans',sans-serif;font-size:15px;font-weight:600;color:var(--text);transition:all 0.15s;width:100%;}
+  .option-btn:hover:not(:disabled){border-color:var(--blue-mid);background:var(--blue-light);color:var(--blue);transform:translateX(3px);}
+  .option-btn:disabled{cursor:default;}
+  .option-btn.selected{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+  .option-btn.correct{border-color:var(--green);background:var(--green-light);color:var(--green-dark);}
+  .option-btn.incorrect{border-color:var(--red);background:var(--red-light);color:var(--red-dark);}
+  .option-letter{width:28px;height:28px;min-width:28px;border-radius:50%;background:white;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;transition:all 0.15s;}
+  .option-btn.correct .option-letter,.option-btn.incorrect .option-letter{background:currentColor;color:white;}
+  .explanation{margin-top:12px;padding:14px 16px;border-radius:var(--radius-sm);font-size:14px;line-height:1.7;display:none;}
+  .explanation.show{display:block;animation:slideIn 0.3s ease;}
+  .explanation.correct-exp{background:var(--green-light);border-left:4px solid var(--green);color:var(--green-dark);}
+  .explanation.wrong-exp{background:var(--red-light);border-left:4px solid var(--red);color:var(--red-dark);}
+  .explanation .exp-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+  .q-actions{margin-top:12px;}
+  .submit-btn{background:var(--blue);color:white;border:none;border-radius:30px;padding:9px 22px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(26,111,191,0.3);}
+  .submit-btn:hover{background:#1557a0;transform:translateY(-1px);}
+  .submit-btn:disabled{background:var(--gray);opacity:0.5;cursor:default;transform:none;box-shadow:none;}
+  .result-summary{background:white;border-radius:var(--radius);padding:32px 24px;text-align:center;margin-top:32px;box-shadow:var(--shadow-lg);display:none;}
+  .result-summary.show{display:block;animation:slideIn 0.4s ease;}
+  .result-emoji{font-size:60px;margin-bottom:16px;}
+  .result-score{font-family:'Nunito',sans-serif;font-size:52px;font-weight:900;color:var(--blue);}
+  .result-label{font-size:16px;color:var(--text-muted);margin-bottom:20px;}
+  .result-message{font-size:17px;font-weight:700;margin-bottom:24px;}
+  .retry-btn{background:linear-gradient(135deg,var(--blue),var(--purple));color:white;border:none;border-radius:30px;padding:14px 32px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(26,111,191,0.35);}
+  .retry-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(26,111,191,0.4);}
+  .check-all-wrap{text-align:center;margin-top:24px;}
+  .check-all-btn{background:linear-gradient(135deg,var(--green),#1a7a3a);color:white;border:none;border-radius:30px;padding:14px 34px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 16px rgba(42,138,74,0.35);}
+  .check-all-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(42,138,74,0.4);}
+  .set-intro{background:white;border-radius:var(--radius);padding:18px 20px;margin-bottom:14px;box-shadow:var(--shadow);border-left:4px solid var(--blue);}
+  .set-intro h3{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;color:var(--blue);margin-bottom:4px;}
+  .set-intro p{font-size:13px;color:var(--text-muted);}
+  .topic-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px;}
+  .chip{background:var(--blue-light);color:var(--blue);font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+  @media(max-width:480px){.set-btn{padding:7px 12px;font-size:13px;min-width:55px;}.question-card{padding:14px;}.q-text{font-size:15px;}.option-btn{font-size:14px;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🔬 P6 Science WA2 Practice</h1>
+  <p>Singapore Primary School — Weighted Assessment 2</p>
+  <div class="moe-badge">✓ Aligned to MOE Primary Science Syllabus 2023</div>
+</div>
+<div class="set-selector">
+  <h2>Choose Your Practice Set</h2>
+  <div class="set-buttons" id="setButtons"></div>
+</div>
+<div class="progress-bar-wrap" id="progressWrap" style="display:none">
+  <div class="progress-info"><span id="progressText">0 / 30 answered</span><span id="progressPct">0%</span></div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+<div class="main" id="mainContent"></div>
+<script>
+// All questions are written strictly within MOE 2023 Primary Science Syllabus scope.
+// Key syllabus notes applied:
+// - Magnets (P3): magnetic/non-magnetic materials, poles, making magnets by stroking, uses
+// - Light (P4): luminous/non-luminous, straight-line travel, transparent/translucent/opaque, reflection, spectrum
+// - Shadows (P4): formation, size changes relative to light source, shape
+// - Reproduction (P5 Std): pollination, fertilisation, seed dispersal, germination; plant parts (anther, stigma, ovary); sperm+egg; cell=basic unit of life
+//   EXCLUDED per syllabus: self/cross-pollination terms, pollen tube, specific fertilisation location, foetal development, vegetative propagation
+// - Respiratory & Circulatory (P5): parts = nose/windpipe/lungs and heart/blood/blood vessels
+//   EXCLUDED per syllabus: alveoli detail, artery/vein/capillary terms
+// - Electrical (P5): complete circuit, conductors/insulators, components and their functions, energy conversion
+// - Series & Parallel (P5): effects on brightness, what happens when bulb removed, series=shared voltage, parallel=full voltage
+// - Energy Conversion (P6): forms of energy, law of conservation, renewable vs non-renewable
+// - Interaction of Forces (P6): frictional force, gravitational force, elastic spring force; balanced/unbalanced forces
+
+const TOPICS=[
+  {id:'magnets1',name:'Properties of Magnets',level:'P3',theme:'Interactions'},
+  {id:'magnets2',name:'Making and Using Magnets',level:'P3',theme:'Interactions'},
+  {id:'light',name:'Light',level:'P4',theme:'Energy'},
+  {id:'shadows',name:'Shadows',level:'P4',theme:'Energy'},
+  {id:'repro',name:'Reproduction in Animals and Plants',level:'P5',theme:'Cycles'},
+  {id:'respiratory',name:'Human Respiratory and Circulatory System',level:'P5',theme:'Systems'},
+  {id:'electrical',name:'Electrical Systems',level:'P5',theme:'Systems'},
+  {id:'circuits',name:'Series and Parallel Electric Circuits',level:'P5',theme:'Systems'},
+  {id:'energy',name:'Energy Conversion',level:'P6',theme:'Energy'},
+  {id:'forces',name:'Interaction of Forces',level:'P6',theme:'Interactions'},
+];
+
+const ALL_QUESTIONS={
+  magnets1:[
+    {q:"Which of the following objects is attracted to a magnet?",opts:["Copper coin","Plastic ruler","Steel paper clip","Glass marble"],ans:2,
+     exp:"Magnets attract MAGNETIC MATERIALS. The main magnetic materials are iron, steel, nickel and cobalt. A STEEL paper clip is made of steel, so it is attracted to a magnet. Copper, plastic and glass are non-magnetic — magnets have no effect on them at all. Remember: not all metals are magnetic! Copper, gold and aluminium are non-magnetic metals."},
+    {q:"Where is the magnetic force of a bar magnet the STRONGEST?",opts:["At the centre of the magnet","Only at the north pole","At both poles (both ends)","Equally throughout the whole magnet"],ans:2,
+     exp:"The magnetic force is STRONGEST at the POLES — both ends of the magnet. If you dip a bar magnet in iron filings, the most filings will cling to both ends (the poles). The centre of the magnet has very little magnetic force. This is why magnets have a north pole AND a south pole at their two ends."},
+    {q:"What happens when the NORTH pole of one magnet is brought close to the NORTH pole of another magnet?",opts:["They attract each other","They repel each other","Nothing happens","One magnet turns around"],ans:1,
+     exp:"LIKE poles REPEL each other. North–North = REPEL. South–South = REPEL. North–South = ATTRACT. The rule is: UNLIKE poles attract, LIKE poles repel. You can feel the pushing force when you try to push two north poles together — they push each other away!"},
+    {q:"A bar magnet is broken into two pieces. What happens to each piece?",opts:["One piece has only a north pole; the other has only a south pole","Both pieces lose all magnetism","Each piece becomes a new magnet with both a north and a south pole","Only the bigger piece keeps its magnetism"],ans:2,
+     exp:"Even if you break a magnet into pieces, EVERY PIECE will still have BOTH a north pole AND a south pole. You can NEVER separate the poles of a magnet — no matter how many times you cut it. This is a special property of magnets. Each smaller piece simply becomes a smaller, complete magnet."},
+    {q:"Which of the following is a MAGNETIC material?",opts:["Aluminium can","Rubber eraser","Nickel coin","Wooden block"],ans:2,
+     exp:"NICKEL is a magnetic material — magnets attract it. The four main magnetic materials are: Iron, Steel, Nickel, and Cobalt. Aluminium, rubber and wood are NON-MAGNETIC. Many everyday metals like aluminium, copper and gold are NOT magnetic, so remember — not all metals are magnetic!"},
+    {q:"Two magnets attract each other when facing each other. Which poles are facing each other?",opts:["North and North","South and South","North and South","It cannot be determined"],ans:2,
+     exp:"Magnets ATTRACT when UNLIKE (different) poles face each other — a NORTH pole facing a SOUTH pole. If they were repelling, it would be like poles (North–North or South–South). Since they are attracting, one must be showing its North pole and the other its South pole."},
+    {q:"A steel paper clip touches a bar magnet. The paper clip then picks up another paper clip. Why can the first paper clip pick up the second one?",opts:["The paper clips naturally attract each other","The first paper clip becomes a temporary magnet when touching the bar magnet","The bar magnet becomes stronger","The second paper clip is also a permanent magnet"],ans:1,
+     exp:"When the first paper clip touches the magnet, it becomes a TEMPORARY MAGNET through a process called MAGNETIC INDUCTION. While it is in contact with (or very near) the bar magnet, it gains enough magnetic force to attract another paper clip. When removed from the bar magnet, the paper clip soon loses its temporary magnetism."},
+    {q:"Which of the following statements about magnets is CORRECT?",opts:["Every magnet has only one pole","A larger magnet always has more poles","Every magnet has a north pole and a south pole","Magnets attract all types of metal"],ans:2,
+     exp:"EVERY magnet, regardless of its size or shape, always has BOTH a north pole and a south pole. Magnets do NOT attract all metals — only magnetic metals (iron, steel, nickel, cobalt). Non-magnetic metals like aluminium, copper and gold are not attracted to magnets."},
+  ],
+  magnets2:[
+    {q:"What is the correct method to make a steel needle into a MAGNET?",opts:["Heat the needle strongly","Stroke the needle with a magnet in ONE direction repeatedly","Bend the needle back and forth","Rub the needle with a copper wire"],ans:1,
+     exp:"STROKING a steel needle with a magnet in ONE DIRECTION repeatedly aligns the tiny magnetic domains inside the steel, making it into a magnet. It must be in ONE direction only — not back and forth! Heating actually DESTROYS magnetism. This stroking method makes a permanent magnet from steel."},
+    {q:"What happens to a permanent magnet when it is heated strongly?",opts:["It becomes a stronger magnet","It gains extra poles","It loses its magnetism","Nothing changes"],ans:2,
+     exp:"When a magnet is HEATED strongly, the heat causes the tiny magnetic domains inside to vibrate and become randomly arranged — they no longer line up in the same direction. When domains point in random directions, the overall magnetic effect is LOST. Similarly, hitting a magnet hard or dropping it repeatedly will also destroy its magnetism."},
+    {q:"Which of the following is an everyday USE of magnets?",opts:["Keeping a refrigerator door tightly closed","Heating food in an oven","Purifying drinking water","Measuring temperature"],ans:0,
+     exp:"REFRIGERATOR DOORS have magnets built into their rubber seals. When the door closes, the magnets in the door seal are attracted to the metal frame of the refrigerator, creating a tight seal. This keeps cold air inside and warm air outside. Other uses of magnets include compasses, MRT brakes, speakers, and electric motors."},
+    {q:"Why must you stroke a needle in ONE DIRECTION ONLY when making a magnet?",opts:["Stroking in one direction is faster","Stroking in one direction lines up the magnetic domains in the same direction; going back and forth would cancel the effect","One direction gives a warmer needle","Stroking back and forth would snap the needle"],ans:1,
+     exp:"Inside magnetic materials, there are tiny magnetic regions called DOMAINS. When you stroke in ONE DIRECTION, all these domains gradually line up in the SAME DIRECTION, creating a strong overall magnetic effect. If you stroke BACK AND FORTH, domains get lined up in opposite directions and cancel each other out — so no magnetism results."},
+    {q:"A compass is useful for finding directions because:",opts:["It is made of gold","Its needle is a small magnet that aligns with Earth's magnetic field to point north","It measures wind speed","It detects rainfall"],ans:1,
+     exp:"A COMPASS NEEDLE is a small MAGNET. The Earth has its own magnetic field (it acts like a giant magnet). The compass needle aligns itself with Earth's magnetic field, pointing toward Earth's magnetic north. This makes the compass a reliable tool for finding the direction of north anywhere in the world."},
+    {q:"A student wants to make a magnet from an iron nail. Which method would work?",opts:["Leaving the iron nail near a window","Stroking the iron nail with a bar magnet in one direction repeatedly","Putting the iron nail in water","Painting the iron nail with a dark colour"],ans:1,
+     exp:"STROKING the iron nail with a bar magnet in ONE DIRECTION repeatedly will make it into a MAGNET. The strokes gradually align the magnetic domains inside the iron nail. Note that iron makes a TEMPORARY magnet (it loses magnetism easily), while steel makes a more permanent magnet."},
+    {q:"Which of the following would DESTROY the magnetism of a magnet?",opts:["Keeping it in a cool, dry place","Storing it carefully with keeper bars at the poles","Dropping it repeatedly on a hard floor","Keeping it away from other magnets"],ans:2,
+     exp:"DROPPING a magnet repeatedly on a hard floor causes vibrations that shake the magnetic domains out of alignment — they point in random directions and the magnetism is LOST. Other ways to destroy magnetism: hammering hard and heating strongly. Keeper bars and cool dry storage PRESERVE magnetism."},
+  ],
+  light:[
+    {q:"Light travels in a:",opts:["Curved path","Zigzag path","Straight line","Circular path"],ans:2,
+     exp:"Light ALWAYS travels in a STRAIGHT LINE. This is one of the most important properties of light. It explains why shadows have sharp edges, why you cannot see around corners, and why light beams look straight. You can see this when sunlight shines through gaps in clouds — the rays always appear as perfectly straight lines."},
+    {q:"Which of the following is a LUMINOUS object?",opts:["Mirror","Moon","A burning candle","White wall"],ans:2,
+     exp:"A LUMINOUS object produces its OWN light. A BURNING CANDLE produces its own light from the chemical reaction of burning. A mirror, the Moon, and a white wall only REFLECT light — they do not make their own light. The Moon appears bright at night because it reflects light from the Sun."},
+    {q:"Which type of object allows you to see through it CLEARLY?",opts:["Opaque","Translucent","Transparent","Luminous"],ans:2,
+     exp:"A TRANSPARENT object allows MOST light to pass through it and you can see clearly through it. Examples: clear glass window, clean water, clear cling wrap. A TRANSLUCENT object lets some light through but you cannot see clearly (e.g. frosted glass, tissue paper). An OPAQUE object blocks all light (e.g. wood, brick, thick curtain)."},
+    {q:"Frosted glass lets some light through, but you cannot see clearly through it. What type of object is frosted glass?",opts:["Luminous","Transparent","Translucent","Opaque"],ans:2,
+     exp:"Frosted glass is TRANSLUCENT — it allows SOME light to pass through, but the image is blurred so you cannot see clearly through it. This is why frosted glass is used in bathroom windows — it lets in daylight but provides privacy. Clear glass is transparent; wood and walls are opaque."},
+    {q:"What happens when light hits a smooth mirror?",opts:["Light is absorbed into the mirror","Light passes straight through the mirror","Light is reflected off the mirror","Light breaks into colours"],ans:2,
+     exp:"A smooth mirror REFLECTS light — the light bounces off the surface. REFLECTION means light bounces off a surface. This is how we see our own reflection — light from our face hits the mirror, reflects back, and enters our eyes. Rough surfaces also reflect light but scatter it in many directions, so we don't see a clear reflection."},
+    {q:"White light can be split into a spectrum of colours. Which list correctly shows the colours of white light?",opts:["Red, Orange, Yellow, Green, Blue, Indigo, Violet","Red, Blue, Yellow, Black, White, Green, Purple","Red, Pink, Yellow, Cyan, Blue, Navy, Violet","Red, Orange, Yellow, Green, Teal, Blue, Purple"],ans:0,
+     exp:"White light is made up of SEVEN colours: Red, Orange, Yellow, Green, Blue, Indigo, and Violet — remember ROY G BIV! When white sunlight passes through a glass prism or water droplets (during rain), it separates into these seven colours, forming a SPECTRUM or RAINBOW. This shows that white light is actually a mixture of all these colours."},
+    {q:"A student shines a torch in a straight line toward a wall. A book is placed in the path of the light. The light beam that reaches the wall will be:",opts:["Curved, bending around the book","Smaller, because the book blocks some of the light","Larger, because the light spreads around the book","Unaffected — the light passes through the book"],ans:1,
+     exp:"Because light travels in STRAIGHT LINES, it CANNOT bend around the book. The book BLOCKS some of the light, so a smaller area of light (and a shadow the shape of the book) appears on the wall. Only the light rays that are not blocked by the book continue to the wall."},
+    {q:"Which of the following objects is OPAQUE?",opts:["Clear glass bottle","Tissue paper","Wooden table","Frosted window"],ans:2,
+     exp:"A WOODEN TABLE is OPAQUE — it blocks ALL light from passing through. You cannot see through it at all. Clear glass is transparent (lets light pass, you can see clearly). Tissue paper is translucent (lets some light through, but you can't see clearly). Frosted glass is also translucent."},
+  ],
+  shadows:[
+    {q:"A shadow is formed when:",opts:["Light passes through a transparent object and bends","An opaque object blocks light","Light is reflected off a mirror","A luminous object glows brightly"],ans:1,
+     exp:"A SHADOW is formed when an OPAQUE OBJECT BLOCKS light. Since light travels in straight lines, it cannot bend around the object. The dark area behind the object — where no light reaches — is the shadow. The shadow always forms on the OPPOSITE side of the object from the light source."},
+    {q:"A boy stands near a lamp post. He walks CLOSER to the lamp. What happens to his shadow?",opts:["His shadow gets shorter (smaller)","His shadow gets longer (bigger)","His shadow stays the same size","His shadow disappears"],ans:1,
+     exp:"When you move CLOSER to a light source, your shadow gets LARGER (bigger). This is because more of the light rays are blocked at a wider angle when you are close. When you move FURTHER AWAY from the light source, your shadow gets SMALLER. Try this at home with a torch in a dark room!"},
+    {q:"At what time of day are shadows SHORTEST?",opts:["Early morning (about 7 am)","Around noon (12 pm), when the Sun is high overhead","Late afternoon (about 5 pm)","At sunset"],ans:1,
+     exp:"Shadows are SHORTEST at NOON because the Sun is almost directly OVERHEAD, shining down at a steep (near-vertical) angle. The shadow falls almost directly below the object and is very short. In the early morning and late afternoon, the Sun is LOW in the sky, shining at a shallow angle, creating LONG shadows."},
+    {q:"A flagpole casts a 1 m shadow at noon. At 5 pm, the shadow of the SAME flagpole will be:",opts:["1 m — same as at noon","Shorter than 1 m","Longer than 1 m","Zero — the flagpole has no shadow"],ans:2,
+     exp:"At NOON, the Sun is high and shadows are shortest (1 m). By 5 PM, the Sun is LOWER in the sky (moving toward the west), shining at a shallower angle. A shallower angle of light creates LONGER shadows. So the 5 pm shadow will be LONGER than the noon shadow. The same flagpole casts different shadow lengths throughout the day!"},
+    {q:"What shape is the shadow of a SPHERE (ball), no matter which direction the light comes from?",opts:["It changes shape with the direction of light","It is always oval","It is always a circle","It depends on the colour of the ball"],ans:2,
+     exp:"A SPHERE always casts a CIRCULAR (round) shadow, regardless of the direction of light. This is because the outline (silhouette) of a sphere looks circular from ANY direction. Ancient scientists noticed that Earth always casts a circular shadow on the Moon during a lunar eclipse — this was early evidence that the Earth is round!"},
+    {q:"A student cuts a STAR shape in a piece of card and shines a torch through it. What shape appears on the wall?",opts:["A circle, because light spreads out","A star shape, because light travels in straight lines","A square, because light bends at the edges of the hole","A random shape"],ans:1,
+     exp:"Since light travels in STRAIGHT LINES, it cannot bend around the solid card. Only the light passing through the STAR-SHAPED HOLE continues forward in straight lines to the wall. The result is a STAR-SHAPED spot of light on the wall. This is direct evidence that light travels in straight lines — if light bent, the star shape would not appear clearly."},
+    {q:"Why does a shadow have roughly the SAME OUTLINE as the object casting it?",opts:["Because the ground is flat","Because light travels in straight lines, so it cannot go around the opaque object","Because shadows are reflections of the object","Because heavy objects press their shape onto the ground"],ans:1,
+     exp:"Light travels in STRAIGHT LINES and CANNOT bend around or pass through an opaque object. The area behind the object receives NO light — only the outline of the object is visible as the boundary of the shadow. So the shadow outline MATCHES the shape (silhouette) of the object blocking the light. If light could bend, shadows would not have clear outlines."},
+  ],
+  repro:[
+    {q:"In a flowering plant, pollen is produced in the:",opts:["Stigma","Anther","Ovary","Petal"],ans:1,
+     exp:"POLLEN is produced in the ANTHER, which is the top part of the STAMEN — the male reproductive part of a flower. The stigma is the sticky top of the female part (carpel) where pollen lands. The ovary contains ovules, which develop into seeds. Petals attract pollinators like insects."},
+    {q:"What is POLLINATION?",opts:["The growth of a seed into a new plant","The transfer of pollen from the anther to the stigma","The development of a fruit from the ovary","The dispersal of seeds by wind or animals"],ans:1,
+     exp:"POLLINATION is the transfer of POLLEN GRAINS from the ANTHER (male part) to the STIGMA (female part) of a flower. This is the first step in sexual reproduction of flowering plants — pollination must happen BEFORE fertilisation can take place. Pollination can be carried out by insects, wind, birds, or water."},
+    {q:"An insect-pollinated flower has which features to attract insects?",opts:["Small, green petals and dry, dusty pollen","Bright, colourful petals, sweet nectar and sweet scent","Very light pollen that floats in the air","No petals at all, just anthers"],ans:1,
+     exp:"Insect-pollinated flowers need to ATTRACT insects, so they have: BRIGHT, COLOURFUL petals (so insects can see them), SWEET NECTAR (a food reward for insects), SWEET SCENT (to attract insects by smell), and STICKY POLLEN (so pollen sticks to the insect's body and gets transferred). Wind-pollinated flowers have the opposite features — small petals and lots of light, smooth pollen."},
+    {q:"After fertilisation in a flowering plant, the OVULE develops into a _______ and the OVARY develops into a _______.",opts:["fruit / seed","seed / fruit","pollen / nectar","flower / leaf"],ans:1,
+     exp:"After FERTILISATION (when a pollen grain fuses with an ovule inside the ovary), the OVULE develops into a SEED, and the OVARY develops into a FRUIT. The fruit protects the seed and often helps with seed dispersal — animals eat the fruit and carry the seeds elsewhere. This is why all fruits contain seeds inside."},
+    {q:"Which of the following is an example of seed dispersal by WIND?",opts:["A coconut floating across the sea to a new island","A monkey eating a mango and dropping the seed","A dandelion seed with a feathery parachute floating away","A rambutan pod bursting open and scattering seeds"],ans:2,
+     exp:"DANDELION seeds have a feathery, parachute-like structure that lets them float and travel far in the WIND — this is WIND dispersal. Coconuts use WATER dispersal. Animals eating fruit and dropping seeds is ANIMAL dispersal. Exploding pods (like the sandbox tree) use SELF-dispersal. Different dispersal methods help seeds reach new locations to grow."},
+    {q:"In humans, fertilisation occurs when:",opts:["An egg is released from the ovary","A sperm cell fuses with an egg cell","Food is digested in the small intestine","A baby is born"],ans:1,
+     exp:"In humans, FERTILISATION occurs when a SPERM cell (produced in the testes) FUSES with an EGG cell (produced in the ovaries). The fertilised egg then develops in the WOMB. This is similar to plant reproduction — in both cases, fertilisation involves a MALE reproductive cell joining with a FEMALE reproductive cell to begin the development of a new life."},
+    {q:"What is GERMINATION?",opts:["A flower producing pollen","A seed sprouting and beginning to grow into a new plant","Pollen being transferred from anther to stigma","The ovary developing into a fruit"],ans:1,
+     exp:"GERMINATION is the process by which a SEED SPROUTS and begins to GROW into a new plant. For germination to occur, seeds usually need: WATER (to soften the seed coat and start chemical reactions), SUITABLE TEMPERATURE, and AIR (oxygen). The seedling uses food stored in the seed to grow its first root and shoot."},
+    {q:"Plants can reproduce using SPORES or SEEDS. Flowering plants reproduce using:",opts:["Spores only","Seeds only, produced after pollination and fertilisation","Both spores and seeds equally","Neither spores nor seeds"],ans:1,
+     exp:"FLOWERING PLANTS reproduce using SEEDS, which are produced through the process of pollination → fertilisation → seed development. NON-FLOWERING plants (like ferns and mosses) reproduce using SPORES instead of seeds. Spores are tiny and do not need fertilisation to grow into new plants. Vegetative propagation (e.g. cuttings) also exists but is not required for the P5 syllabus."},
+  ],
+  respiratory:[
+    {q:"What is the correct path of AIR as it enters the human body when we breathe in?",opts:["Nose → Windpipe → Lungs","Lungs → Windpipe → Nose","Nose → Lungs → Windpipe","Blood → Windpipe → Lungs"],ans:0,
+     exp:"When we BREATHE IN, air travels: NOSE (or mouth) → WINDPIPE (trachea) → LUNGS. The nose filters and warms the air. The windpipe carries air to the lungs. In the lungs, oxygen from the air passes into the blood, and carbon dioxide from the blood passes out. The nose, windpipe and lungs are the three main parts of the respiratory system."},
+    {q:"What is the MAIN function of the LUNGS?",opts:["To pump blood around the body","To digest food","To allow oxygen to pass into the blood and carbon dioxide to pass out of the blood","To filter waste from the blood"],ans:2,
+     exp:"The LUNGS are the main organs of the RESPIRATORY SYSTEM. Their key function is GAS EXCHANGE — OXYGEN from the air we breathe passes into the BLOOD in the lungs, and CARBON DIOXIDE (a waste gas from the body's cells) passes from the blood out into the air we breathe out. This is why we breathe out air that has more carbon dioxide than the air we breathe in."},
+    {q:"When we BREATHE OUT, we breathe out MORE of which gas compared to what we breathed in?",opts:["Oxygen","Nitrogen","Carbon dioxide","Water vapour only"],ans:2,
+     exp:"We breathe IN air that contains about 21% oxygen and very little carbon dioxide (0.04%). We breathe OUT air that contains about 16% oxygen and about 4% carbon dioxide. Our body's cells use oxygen to release energy from food, and produce CARBON DIOXIDE as a waste product. So our bodies produce carbon dioxide, which is why we breathe out much more of it."},
+    {q:"What are the main parts of the human CIRCULATORY SYSTEM?",opts:["Nose, windpipe, and lungs","Mouth, stomach, and intestines","Heart, blood, and blood vessels","Brain, spinal cord, and nerves"],ans:2,
+     exp:"The CIRCULATORY SYSTEM consists of three main parts: (1) the HEART — a muscular pump, (2) BLOOD — a liquid that carries substances, and (3) BLOOD VESSELS — tubes that carry blood throughout the body. The circulatory system works closely with the respiratory system: blood picks up OXYGEN from the lungs and delivers it to all cells in the body."},
+    {q:"What is the function of the HEART?",opts:["To take in oxygen from the air","To produce blood","To pump blood around the whole body","To remove carbon dioxide directly from the body"],ans:2,
+     exp:"The HEART is a powerful MUSCLE that acts as a PUMP. It contracts and relaxes continuously (about 70 times per minute at rest) to pump blood through blood vessels to all parts of the body. The blood carries oxygen, digested food, and other substances to body cells, and carries waste products (like carbon dioxide) away from cells."},
+    {q:"How do the RESPIRATORY and CIRCULATORY systems work TOGETHER?",opts:["The heart breathes in air; the lungs pump blood","The lungs pump blood to the heart; the heart takes in oxygen","Oxygen enters the blood in the lungs; the heart pumps this oxygen-rich blood to all parts of the body","The windpipe connects the heart and lungs to pump blood"],ans:2,
+     exp:"The two systems work as a TEAM: In the LUNGS (respiratory system), oxygen from the air passes into the blood, and carbon dioxide from the blood passes out into the air. The HEART (circulatory system) then pumps this oxygen-rich blood through BLOOD VESSELS to every cell in the body. Carbon dioxide produced by cells is carried back to the lungs in the blood to be breathed out."},
+    {q:"Why do we breathe FASTER when we exercise?",opts:["Exercise cools us down, so we breathe faster to warm up","Our muscles need more oxygen and produce more carbon dioxide, so we breathe faster to meet this demand","We breathe faster to make our muscles grow","Exercise makes us dizzy, causing faster breathing"],ans:1,
+     exp:"When we EXERCISE, our muscles work harder and need MORE OXYGEN to release energy. They also produce MORE CARBON DIOXIDE as waste. The brain detects rising carbon dioxide levels in the blood and signals the lungs to breathe FASTER and DEEPER. This gets more oxygen into the blood and removes more carbon dioxide — which is why you feel 'out of breath' after running hard."},
+    {q:"Air is made up of several gases. Which gas do humans need for the process of RESPIRATION (releasing energy from food)?",opts:["Nitrogen","Carbon dioxide","Oxygen","Water vapour"],ans:2,
+     exp:"OXYGEN is the gas that our body's cells need for RESPIRATION — the process of releasing energy from food. Without oxygen, cells cannot produce energy and will die. Air is mostly NITROGEN (about 78%), but we use OXYGEN (about 21%) for respiration. Carbon dioxide is the WASTE GAS produced during respiration, which we breathe out."},
+  ],
+  electrical:[
+    {q:"For a bulb to light up in an electrical circuit, there must be:",opts:["Only a battery and bulb, no wires needed","A COMPLETE, unbroken path for electricity to flow","Only a switch that is open","Any metal object near the battery"],ans:1,
+     exp:"Electricity can only flow if there is a COMPLETE, UNBROKEN LOOP (circuit). If there is any gap or break — such as an open switch, a loose wire, or a flat battery — electricity CANNOT flow and the bulb will NOT light up. All components must be properly connected in a complete loop for the circuit to work."},
+    {q:"What is the role of a SWITCH in an electrical circuit?",opts:["To provide electrical energy","To make the bulb brighter","To complete or break the circuit, turning devices on or off","To convert electrical energy into chemical energy"],ans:2,
+     exp:"A SWITCH controls the flow of electricity by either completing or breaking the circuit. Switch CLOSED → circuit is complete → electricity flows → device is ON. Switch OPEN → gap in the circuit → no electricity flows → device is OFF. The switch itself does NOT provide energy — the battery does that."},
+    {q:"Which of the following is a good CONDUCTOR of electricity?",opts:["Rubber band","Plastic straw","Iron nail","Wooden chopstick"],ans:2,
+     exp:"An IRON NAIL is a good CONDUCTOR — it allows electricity to flow through it easily. Most metals (iron, copper, steel, aluminium) are good conductors. INSULATORS (rubber, plastic, wood, glass) do NOT allow electricity to flow through them. Electrical wires are made of copper (a conductor) coated with plastic (an insulator) to keep us safe."},
+    {q:"What does a BATTERY do in an electrical circuit?",opts:["It acts as an insulator","It pushes electricity around the circuit by converting chemical energy to electrical energy","It makes the wires glow","It stops electricity from flowing too fast"],ans:1,
+     exp:"A BATTERY converts CHEMICAL ENERGY (stored in the chemicals inside it) into ELECTRICAL ENERGY. It acts like a PUMP that pushes electricity (current) around the circuit. When the chemicals are used up, the battery is flat (dead) and can no longer push electricity. Without a battery or other energy source, the circuit will not work."},
+    {q:"A student builds a circuit with a battery, bulb, switch and wires. The switch is closed but the bulb does not light up. What is the MOST LIKELY reason?",opts:["The battery is too new","There is a gap or loose connection somewhere in the circuit","The wires are too long","The bulb is too big for the battery"],ans:1,
+     exp:"If the switch is closed but the bulb still does not light up, the most likely reason is a GAP or LOOSE CONNECTION somewhere in the circuit — preventing electricity from flowing. Check: Are all wires firmly connected? Is the bulb properly fitted? Is the battery flat? Is there a break in a wire? Every part of the circuit must be properly connected."},
+    {q:"Electrical energy can be converted into which OTHER forms of energy?",opts:["Only heat energy","Only light energy","Light, heat, sound, and kinetic (movement) energy","Only sound energy"],ans:2,
+     exp:"Electrical energy can be converted into MANY other forms: LIGHT (light bulb, LED), HEAT (electric heater, toaster, iron), SOUND (speaker, buzzer, alarm bell), KINETIC/MOVEMENT (electric fan, motor in MRT). This is why electricity is so useful — one energy source can power many different types of devices for many different purposes."},
+    {q:"Which of the following materials is an INSULATOR?",opts:["Copper wire","Steel spoon","Rubber glove","Silver ring"],ans:2,
+     exp:"A RUBBER GLOVE is an INSULATOR — it does NOT allow electricity to flow through it. Electricians wear rubber gloves for SAFETY when working with live electrical cables. Copper, steel and silver are all CONDUCTORS — they allow electricity to flow through them easily. Insulators are used to coat wires and on plug handles to protect people from electric shocks."},
+  ],
+  circuits:[
+    {q:"In a SERIES circuit with two bulbs, if ONE bulb is removed, what happens?",opts:["Only the removed bulb goes out; the other stays on","Both bulbs go out","Both bulbs become brighter","The circuit still works the same way"],ans:1,
+     exp:"In a SERIES circuit, all components share ONE single loop. Removing one bulb creates a GAP in the only loop. Since electricity cannot flow through a gap, NO electricity flows at all — BOTH bulbs go out. This is a major DISADVANTAGE of series circuits: if one component fails, the entire circuit stops working."},
+    {q:"In a PARALLEL circuit with two bulbs, if ONE bulb is removed, what happens to the REMAINING bulb?",opts:["It also goes out","It stays on at the same brightness","It becomes dimmer","The circuit breaks completely"],ans:1,
+     exp:"In a PARALLEL circuit, each bulb has its OWN separate path (branch) back to the battery. Removing one bulb only breaks THAT branch — the other branch is still complete. So the REMAINING BULB STAYS ON. This is the main ADVANTAGE of parallel circuits! Home wiring uses parallel circuits so that if one light fails, all the others stay on."},
+    {q:"In a SERIES circuit, when MORE bulbs are added (with the same battery), each bulb becomes:",opts:["Brighter","The same brightness","Dimmer","The bulbs go out completely"],ans:2,
+     exp:"In a SERIES circuit, all the electrical energy from the battery is SHARED among all the bulbs in the loop. More bulbs → each bulb gets a SMALLER SHARE of the energy → each bulb is DIMMER. With 1 bulb it is bright. With 2 bulbs in series, each one is dimmer. With 3 bulbs, each one is even dimmer still."},
+    {q:"In a PARALLEL circuit, when more bulbs are added (each in their own branch), each bulb is:",opts:["Brighter than before","The same brightness — each bulb gets the full battery voltage","Dimmer than before","Not lit"],ans:1,
+     exp:"In a PARALLEL circuit, each bulb has its OWN direct connection to the FULL battery voltage. Adding more bulbs in parallel does NOT reduce the voltage to existing bulbs — each branch still gets the full battery voltage. So each bulb glows at the SAME BRIGHTNESS. However, the battery drains FASTER because more total current is being drawn."},
+    {q:"A student wants to control TWO fans INDEPENDENTLY — turning one fan on while the other stays off. Which circuit should the student use?",opts:["Series circuit with one switch controlling both fans","Parallel circuit with a separate switch for each fan","Series circuit with no switches","Parallel circuit with no switches at all"],ans:1,
+     exp:"A PARALLEL circuit with a SEPARATE SWITCH for each fan allows INDEPENDENT CONTROL. Switching off one fan only breaks that fan's branch — the other fan's branch remains complete and the other fan keeps running. In a SERIES circuit, one switch controls everything — you cannot switch one fan off without switching both off."},
+    {q:"Why does home wiring use PARALLEL circuits rather than series circuits?",opts:["Parallel circuits are cheaper to set up","Parallel circuits allow each device to get the full voltage and be controlled independently; if one fails, others still work","Series circuits are more dangerous","Parallel circuits use less electricity"],ans:1,
+     exp:"Home wiring uses PARALLEL circuits because: (1) Each device gets the FULL voltage (so appliances work at their correct power). (2) Devices can be switched ON or OFF INDEPENDENTLY. (3) If one device breaks, all the other devices STILL WORK. In a series circuit, if one device fails, everything stops — and all devices would share the voltage, making them too dim or weak."},
+    {q:"A series circuit has a battery and 3 IDENTICAL bulbs sharing the voltage equally. The battery is 6V. How much voltage does EACH bulb receive?",opts:["6V each","3V each","2V each","1V each"],ans:2,
+     exp:"In a SERIES circuit, the battery voltage is SHARED equally among all the identical bulbs. 6V ÷ 3 bulbs = 2V per bulb. This is much less than the full 6V, which is why bulbs in series are dimmer. In a PARALLEL circuit, each bulb would receive the FULL 6V, making each bulb much brighter than in a series circuit."},
+  ],
+  energy:[
+    {q:"A ball is held HIGH above the ground, then released. It has ________ energy when held high, which changes to ________ energy as it falls.",opts:["Kinetic / Potential","Light / Heat","Gravitational potential / Kinetic","Chemical / Electrical"],ans:2,
+     exp:"When the ball is held HIGH, it has GRAVITATIONAL POTENTIAL ENERGY — energy stored due to its HEIGHT and the effect of gravity. When released, the ball falls and this potential energy is converted to KINETIC ENERGY — the energy of MOVEMENT. The higher the ball is held, the more gravitational potential energy it has, and the faster it moves when it reaches the ground."},
+    {q:"A student switches on a battery-powered torch. What is the CORRECT sequence of energy conversions?",opts:["Light → Electrical → Chemical","Chemical → Electrical → Light (and some heat)","Electrical → Chemical → Light","Heat → Electrical → Light"],ans:1,
+     exp:"In a torch, energy converts TWICE: (1) The BATTERY converts CHEMICAL ENERGY (stored in chemicals) into ELECTRICAL ENERGY. (2) The BULB converts ELECTRICAL ENERGY into LIGHT ENERGY (and some wasted HEAT ENERGY). So the sequence is: Chemical Energy → Electrical Energy → Light Energy. Most energy conversions also produce some wasted heat energy."},
+    {q:"The Law of Conservation of Energy states that energy:",opts:["Can be created when we switch on a device","Is destroyed when we use it up","Cannot be created or destroyed — it can only be converted from one form to another","Always disappears as heat"],ans:2,
+     exp:"The LAW OF CONSERVATION OF ENERGY states that energy CANNOT be created or destroyed — it can only be CONVERTED from one form to another. For example, when a torch is switched on, chemical energy is not 'created' or 'destroyed' — it is CONVERTED to electrical energy, then to light and heat. The total amount of energy always remains the same."},
+    {q:"A solar panel on an HDB rooftop converts energy from the sun into electricity. What is this energy conversion?",opts:["Electrical energy → Light energy","Chemical energy → Electrical energy","Light energy → Electrical energy","Kinetic energy → Electrical energy"],ans:2,
+     exp:"A SOLAR PANEL converts LIGHT ENERGY (from the Sun) directly into ELECTRICAL ENERGY. Solar energy is RENEWABLE — it will not run out. Singapore has been installing solar panels on HDB rooftops to reduce dependence on fossil fuels. Solar panels are a clean energy source because they produce electricity without burning fuel or creating pollution."},
+    {q:"A hydroelectric dam generates electricity using water stored behind it. What is the sequence of energy conversions?",opts:["Heat energy → Kinetic energy → Electrical energy","Gravitational potential energy → Kinetic energy → Electrical energy","Chemical energy → Kinetic energy → Electrical energy","Electrical energy → Kinetic energy → Gravitational potential energy"],ans:1,
+     exp:"In a HYDROELECTRIC DAM: Water held HIGH behind the dam has GRAVITATIONAL POTENTIAL ENERGY. When released, the water flows DOWN rapidly — this becomes KINETIC ENERGY. The moving water spins TURBINES, which drive GENERATORS to produce ELECTRICAL ENERGY. Sequence: Gravitational Potential Energy → Kinetic Energy → Electrical Energy. No fuel is burned, so it is a clean energy source."},
+    {q:"A student eats food and then runs a race. Which energy conversion takes place in his body?",opts:["Kinetic energy → Chemical energy","Light energy → Kinetic energy","Chemical energy → Kinetic energy + Heat energy","Electrical energy → Kinetic energy"],ans:2,
+     exp:"Food contains CHEMICAL ENERGY. When the body digests food and the muscles use it to run, the CHEMICAL ENERGY is converted to KINETIC ENERGY (the movement of the body) and HEAT ENERGY (which is why you feel warm when you exercise). Your body is not 100% efficient — not all chemical energy becomes useful kinetic energy; a lot is released as heat."},
+    {q:"Which of the following is a RENEWABLE energy source?",opts:["Coal","Crude oil","Natural gas","Wind energy"],ans:3,
+     exp:"WIND ENERGY is RENEWABLE — it is naturally replenished and will not run out. Wind turbines convert the kinetic energy of wind into electrical energy. COAL, CRUDE OIL, and NATURAL GAS are FOSSIL FUELS — they are NON-RENEWABLE because they took millions of years to form and are being used up much faster than they can be replaced. Using renewable energy is important for our future."},
+    {q:"A burning candle converts energy. Which is the CORRECT energy conversion?",opts:["Chemical energy → Light energy + Heat energy","Electrical energy → Light energy","Kinetic energy → Chemical energy","Heat energy → Chemical energy"],ans:0,
+     exp:"A BURNING CANDLE converts CHEMICAL ENERGY (stored in the wax) into LIGHT ENERGY (the visible flame) and HEAT ENERGY (warmth near the flame). This is a combustion (burning) reaction. Most burning reactions convert chemical energy into both light and heat. This is also why candles are used for lighting — they produce light as they burn."},
+  ],
+  forces:[
+    {q:"What is FRICTION?",opts:["A force that speeds up moving objects","A force between two surfaces in contact that opposes movement","A force that pulls objects toward the centre of the Earth","A force stored in a compressed spring"],ans:1,
+     exp:"FRICTION is a force that acts between two SURFACES IN CONTACT. It OPPOSES (acts against) the direction of movement, tending to SLOW things down or prevent sliding. Friction is useful in many situations (e.g. it lets your shoes grip the floor so you can walk, it allows car tyres to grip the road for braking) but can also cause wear on machine parts."},
+    {q:"What is GRAVITATIONAL FORCE?",opts:["A force that pushes objects upward","A pulling force between objects — the Earth pulls all objects toward its centre","A force only found in outer space","The force you feel when you stretch a rubber band"],ans:1,
+     exp:"GRAVITATIONAL FORCE is a PULLING FORCE of attraction between objects. The EARTH'S gravitational force pulls ALL objects toward the CENTRE of the Earth. This is why objects fall DOWNWARD when dropped and why we have WEIGHT. The Moon orbits the Earth because of the gravitational force between them. The greater an object's mass, the greater the gravitational force on it."},
+    {q:"A book sits STILL on a table. Which statement CORRECTLY describes the forces on the book?",opts:["There are no forces acting on the book","Only gravity acts, pushing the book down","The forces are BALANCED — gravity pulls the book down and the table pushes it up with an equal force","The table pushes the book up with a GREATER force than gravity"],ans:2,
+     exp:"When the book is STATIONARY, all forces on it are BALANCED. GRAVITY pulls the book DOWNWARD. The TABLE pushes the book UPWARD with an EQUAL force. These two forces cancel each other — net force = ZERO. When forces are BALANCED, the object does not change its motion (it stays still). UNBALANCED forces cause objects to start moving, speed up, slow down, or change direction."},
+    {q:"What is ELASTIC SPRING FORCE?",opts:["The force of gravity acting on a spring","The force produced by a stretched or compressed spring that tries to return to its original shape","A force that only acts on rubber bands","The force of friction inside a spring"],ans:1,
+     exp:"ELASTIC SPRING FORCE is the force produced when a spring (or elastic object) is STRETCHED or COMPRESSED — it tries to RETURN TO ITS ORIGINAL SHAPE. For example, when you press down on a spring, it pushes back up with elastic spring force. This force is used in SPRING BALANCES (to measure weight), trampolines, mattress springs, and many other everyday objects."},
+    {q:"A heavy box and a light box are pushed across the same rough floor. Why does the HEAVY box need MORE force to push?",opts:["Because the heavy box is bigger in size","Because the heavy box presses harder on the floor, creating more friction","Because the light box has less mass and more energy","Because friction only affects heavy objects"],ans:1,
+     exp:"The HEAVY BOX presses DOWN on the floor with a GREATER FORCE (because it has more weight due to gravity). This greater downward force means the two surfaces (box bottom and floor) press harder against each other, creating MORE FRICTION. Since friction OPPOSES movement, more friction means you need MORE PUSHING FORCE to slide the heavy box. This explains why heavy furniture is harder to push than light furniture."},
+    {q:"An object is stationary. Unbalanced forces now act on it. What will happen?",opts:["The object stays still","The object changes its motion — it begins to move or changes speed/direction","The object gets heavier","The forces cancel out and nothing happens"],ans:1,
+     exp:"UNBALANCED forces mean there is a NET (overall) force in one direction. When unbalanced forces act on a STATIONARY object, it will START MOVING in the direction of the net force. For example: gravity (an unbalanced downward force) makes a dropped ball fall. A push on a stationary trolley (an unbalanced force) makes it start rolling. Balanced forces = no change in motion. Unbalanced forces = change in motion."},
+    {q:"A spring balance is used to measure the WEIGHT of an object. Which force does a spring balance rely on?",opts:["Frictional force","Gravitational force (weight)","Elastic spring force","Magnetic force"],ans:2,
+     exp:"A SPRING BALANCE works because of ELASTIC SPRING FORCE. When an object is hung from the hook, its WEIGHT (due to gravity) stretches the spring. The spring produces an ELASTIC SPRING FORCE upward. The more the spring stretches, the greater the weight. The scale shows how much the spring has stretched, which corresponds to the weight of the object. The scale reads in Newtons (N)."},
+    {q:"A toy car slides on a ROUGH sandpaper surface and a SMOOTH glass surface. On which surface does friction slow the car down MORE?",opts:["Smooth glass surface","Rough sandpaper surface","Both surfaces slow the car down equally","The car does not slow down on either surface"],ans:1,
+     exp:"The ROUGH SANDPAPER surface has MORE FRICTION than the smooth glass surface. More friction = greater opposing force = car slows down FASTER. On the SMOOTH GLASS surface, there is LESS FRICTION, so the car slows down more slowly and travels further. ROUGHER surfaces always have more friction. This is why ice and polished floors are slippery — they are very smooth and have very little friction."},
+  ],
+};
+
+const SET_THEMES=[
+  {name:"Set 1",desc:"Start here!",icon:"🌟"},
+  {name:"Set 2",desc:"Keep going",icon:"🔥"},
+  {name:"Set 3",desc:"Level up",icon:"⚡"},
+  {name:"Set 4",desc:"Challenge",icon:"🎯"},
+  {name:"Set 5",desc:"Expert",icon:"🏆"},
+  {name:"Set 6",desc:"Final test",icon:"🚀"},
+];
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function generateSet(setIndex){
+  const questions=[];
+  TOPICS.forEach(topic=>{
+    const pool=ALL_QUESTIONS[topic.id]||[];
+    const s=shuffle(pool);
+    const q=s[setIndex%s.length];
+    if(q)questions.push({...q,topic});
+  });
+  const extra=[];
+  TOPICS.forEach(topic=>{
+    const pool=shuffle(ALL_QUESTIONS[topic.id]||[]);
+    const q2=pool[(setIndex+2)%pool.length];
+    const q3=pool[(setIndex+4)%pool.length];
+    if(q2)extra.push({...q2,topic});
+    if(q3)extra.push({...q3,topic});
+  });
+  return shuffle([...questions,...extra.slice(0,20)]).slice(0,30);
+}
+
+let currentSet=0,sets=[],userAnswers=[],submitted=[];
+for(let i=0;i<6;i++)sets.push(generateSet(i));
+
+function initSetButtons(){
+  const wrap=document.getElementById('setButtons');
+  SET_THEMES.forEach((theme,i)=>{
+    const btn=document.createElement('button');
+    btn.className='set-btn'+(i===0?' active':'');
+    btn.innerHTML=theme.icon+' '+theme.name;
+    btn.onclick=()=>selectSet(i);
+    wrap.appendChild(btn);
+  });
+}
+
+function selectSet(idx){
+  currentSet=idx;
+  userAnswers=new Array(30).fill(-1);
+  submitted=new Array(30).fill(false);
+  document.querySelectorAll('.set-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  renderSet();
+  updateProgress();
+  document.getElementById('progressWrap').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderSet(){
+  const qs=sets[currentSet];
+  const theme=SET_THEMES[currentSet];
+  const main=document.getElementById('mainContent');
+  let html=`
+    <div class="scoreboard">
+      <div class="score-card total"><div class="num" id="scoreTotal">30</div><div class="lbl">Total</div></div>
+      <div class="score-card correct"><div class="num" id="scoreCorrect">0</div><div class="lbl">✓ Correct</div></div>
+      <div class="score-card wrong"><div class="num" id="scoreWrong">0</div><div class="lbl">✗ Wrong</div></div>
+      <div class="score-card"><div class="num" id="scoreUnanswered">30</div><div class="lbl">Remaining</div></div>
+    </div>
+    <div class="moe-note"><strong>📋 MOE 2023 Syllabus Aligned</strong> — Questions follow the official MOE Primary Science Teaching &amp; Learning Syllabus (2023 cohort). Concepts are tested at the correct level for each topic.</div>
+    <div class="set-intro">
+      <h3>${theme.icon} ${theme.name} — ${theme.desc}</h3>
+      <p>30 questions across all 10 WA2 topics. Click your answer, then press <strong>Check Answer</strong> to get a full explanation!</p>
+      <div class="topic-chips">${TOPICS.map(t=>`<span class="chip">${t.level}: ${t.name}</span>`).join('')}</div>
+    </div>
+  `;
+  let lastTopic=null;
+  qs.forEach((q,qi)=>{
+    if(q.topic.id!==lastTopic){
+      lastTopic=q.topic.id;
+      html+=`<div class="topic-header"><div class="topic-tag">${q.topic.level} · ${q.topic.theme} Theme</div><div class="topic-name">${q.topic.name}</div></div>`;
+    }
+    html+=`
+      <div class="question-card" id="qcard-${qi}">
+        <div class="q-num">Question ${qi+1} of 30</div>
+        <div class="q-text">${q.q}</div>
+        <div class="options" id="opts-${qi}">
+          ${q.opts.map((opt,oi)=>`<button class="option-btn" id="opt-${qi}-${oi}" onclick="selectAnswer(${qi},${oi})"><span class="option-letter">${['A','B','C','D'][oi]}</span><span>${opt}</span></button>`).join('')}
+        </div>
+        <div id="exp-${qi}" class="explanation"></div>
+        <div class="q-actions"><button class="submit-btn" id="submit-${qi}" onclick="checkAnswer(${qi})" disabled>Check Answer</button></div>
+      </div>
+    `;
+  });
+  html+=`
+    <div class="check-all-wrap"><button class="check-all-btn" onclick="checkAllAnswered()">📋 Submit All &amp; See Results</button></div>
+    <div class="result-summary" id="resultSummary">
+      <div class="result-emoji" id="resultEmoji">🎉</div>
+      <div class="result-score" id="resultScore">0/30</div>
+      <div class="result-label">Questions Correct</div>
+      <div class="result-message" id="resultMsg"></div>
+      <button class="retry-btn" onclick="selectSet(${currentSet})">🔄 Try This Set Again</button>
+    </div>
+  `;
+  main.innerHTML=html;
+  userAnswers=new Array(30).fill(-1);
+  submitted=new Array(30).fill(false);
+}
+
+function selectAnswer(qi,oi){
+  if(submitted[qi])return;
+  userAnswers[qi]=oi;
+  document.querySelectorAll(`#opts-${qi} .option-btn`).forEach((btn,idx)=>btn.classList.toggle('selected',idx===oi));
+  document.getElementById(`submit-${qi}`).disabled=false;
+}
+
+function checkAnswer(qi){
+  if(submitted[qi])return;
+  const q=sets[currentSet][qi];
+  const chosen=userAnswers[qi];
+  if(chosen<0)return;
+  submitted[qi]=true;
+  const opts=document.querySelectorAll(`#opts-${qi} .option-btn`);
+  opts.forEach((btn,idx)=>{
+    btn.disabled=true;btn.classList.remove('selected');
+    if(idx===q.ans)btn.classList.add('correct');
+    else if(idx===chosen&&idx!==q.ans)btn.classList.add('incorrect');
+  });
+  const correct=chosen===q.ans;
+  const expDiv=document.getElementById(`exp-${qi}`);
+  expDiv.className='explanation show '+(correct?'correct-exp':'wrong-exp');
+  expDiv.innerHTML=`<div class="exp-title">${correct?'✅ Correct! Well done!':'❌ Not quite — here is the correct answer:'}</div><div>${!correct?'<strong>Correct answer: '+q.opts[q.ans]+'</strong><br><br>':''}${q.exp}</div>`;
+  const sb=document.getElementById(`submit-${qi}`);
+  sb.disabled=true;sb.textContent=correct?'✓ Correct!':'✗ See explanation above';
+  document.getElementById(`qcard-${qi}`).classList.add('answered',correct?'correct-card':'wrong-card');
+  updateProgress();updateScore();
+}
+
+function checkAllAnswered(){
+  sets[currentSet].forEach((_,qi)=>{if(!submitted[qi]&&userAnswers[qi]>=0)checkAnswer(qi);});
+  const first=submitted.findIndex(s=>!s);
+  if(first>=0){
+    const el=document.getElementById(`qcard-${first}`);
+    if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.boxShadow='0 0 0 3px #d68910,0 4px 24px rgba(0,0,0,0.12)';setTimeout(()=>el.style.boxShadow='',2500);}
+    return;
+  }
+  showFinalResult();
+}
+
+function showFinalResult(){
+  const correct=submitted.reduce((acc,_,qi)=>acc+(userAnswers[qi]===sets[currentSet][qi].ans?1:0),0);
+  const pct=Math.round((correct/30)*100);
+  let emoji='🎉',msg='';
+  if(pct>=90){emoji='🏆';msg='Outstanding! You are very well prepared for WA2!';}
+  else if(pct>=75){emoji='🌟';msg='Great work! Review the ones you got wrong and you will do brilliantly!';}
+  else if(pct>=60){emoji='💪';msg='Good effort! Focus on your weaker topics and try another set!';}
+  else if(pct>=40){emoji='📚';msg='Keep practising! Read each explanation carefully and try again.';}
+  else{emoji='🤗';msg="Don't give up! Go through each explanation slowly and ask your teacher for help.";}
+  document.getElementById('resultEmoji').textContent=emoji;
+  document.getElementById('resultScore').textContent=correct+'/30';
+  document.getElementById('resultMsg').textContent=msg;
+  const res=document.getElementById('resultSummary');
+  res.classList.add('show');
+  res.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function updateProgress(){
+  const answered=submitted.filter(s=>s).length;
+  const pct=Math.round((answered/30)*100);
+  document.getElementById('progressText').textContent=answered+' / 30 answered';
+  document.getElementById('progressPct').textContent=pct+'%';
+  document.getElementById('progressFill').style.width=pct+'%';
+}
+
+function updateScore(){
+  const qs=sets[currentSet];
+  let c=0,w=0,u=0;
+  submitted.forEach((s,qi)=>{if(!s)u++;else if(userAnswers[qi]===qs[qi].ans)c++;else w++;});
+  document.getElementById('scoreCorrect').textContent=c;
+  document.getElementById('scoreWrong').textContent=w;
+  document.getElementById('scoreUnanswered').textContent=u;
+}
+
+initSetButtons();
+selectSet(0);
+</script>
+</body>
+</html>
