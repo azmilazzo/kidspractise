@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PSLE Science Challenge Pack</title>
+<style>
+:root{
+  --bg1:#dbeafe;
+  --bg2:#ede9fe;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{
+  display:inline-block;
+  background:#dbeafe;
+  color:#1d4ed8;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:.9rem;
+}
+.hero{
+  background:linear-gradient(135deg,#1d4ed8,#7c3aed);
+  color:#fff;
+  padding:20px;
+  border-radius:24px;
+  box-shadow:0 14px 34px rgba(29,78,216,.18);
+}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+.stat{
+  background:var(--card);
+  border-radius:18px;
+  padding:12px;
+  text-align:center;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{
+  background:var(--card);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 10px 24px rgba(15,23,42,.08);
+  margin:12px 0;
+}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#93c5fd}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{
+  height:12px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+  margin:10px 0;
+}
+.progress div{
+  height:100%;
+  background:linear-gradient(90deg,#2563eb,#7c3aed);
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+.btn{
+  border:0;
+  border-radius:16px;
+  padding:12px 16px;
+  font-weight:1000;
+  cursor:pointer;
+}
+.primary{
+  background:linear-gradient(135deg,#2563eb,#7c3aed);
+  color:#fff;
+}
+.secondary{
+  background:#e2e8f0;
+  color:#0f172a;
+}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{
+  border:3px solid #bfdbfe;
+  background:#f8fbff;
+  border-radius:18px;
+  padding:14px;
+  font-size:1rem;
+  font-weight:900;
+  text-align:left;
+  cursor:pointer;
+}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{
+  margin-top:14px;
+  padding:14px;
+  border-radius:18px;
+  font-weight:900;
+}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{
+  border:2px solid #e2e8f0;
+  border-radius:18px;
+  padding:12px;
+  margin:10px 0;
+  background:#fbfdff;
+}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{
+  background:#fff1f2;
+  border:2px solid #f43f5e;
+  border-radius:16px;
+  padding:16px;
+  font-weight:700;
+  white-space:pre-wrap;
+  font-family:monospace;
+}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error", function(e){
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = '<div class="container"><div class="error-box">Page error: ' + (e.message || "Unknown error") + '</div></div>';
+  }
+});
+</script>
+
+<script>
+const TOPICS = [
+  {
+    id: "plants-challenge",
+    title: "Plants: Photosynthesis, Transport, Reproduction",
+    emoji: "🌱",
+    blurb: "Higher-difficulty plant science questions.",
+    notes: [
+      "Focus on evidence, explanation and cause-and-effect.",
+      "Photosynthesis, respiration, transport, flowers and adaptations."
+    ],
+    qs: [
+      ["Which part of a plant cell uses sunlight to make food?", ["Chloroplast", "Nucleus", "Cell wall", "Cytoplasm"], "Chloroplasts contain chlorophyll and carry out photosynthesis."],
+      ["A plant is placed in a sealed transparent jar in sunlight. After a few hours, the carbon dioxide in the jar decreases. Which statement best explains this?", ["The plant uses carbon dioxide for photosynthesis faster than it produces it", "The plant gives out more carbon dioxide than it uses", "The plant stops respiring in sunlight", "The jar creates carbon dioxide"], "During photosynthesis, plants use carbon dioxide."],
+      ["A leaf was covered with black paper for two days. It did not turn blue-black in iodine. What can be concluded?", ["Light is needed for the leaf to make starch", "The leaf did not receive water", "The leaf was too cold to absorb iodine", "Black paper makes starch"], "Iodine tests for starch. No light means less photosynthesis."],
+      ["Water enters a plant through the roots and travels to the leaves. Which path is correct?", ["Root -> stem -> leaf", "Leaf -> stem -> root", "Flower -> root -> stem", "Root -> flower -> leaf"], "Water moves upward from roots through the stem."],
+      ["A ring of bark is removed from a stem. Later, the area above the ring swells. What does this show?", ["Food made in leaves is transported downward through the stem", "Water is transported upward through bark", "Air enters through the ring", "The stem makes food at the ring"], "Food transport can be affected when phloem is removed."],
+      ["Under which condition will a plant lose water fastest?", ["Hot, sunny and windy", "Cold, dark and still", "Cool and humid", "Dark and closed"], "Higher temperature, light and wind increase water loss."],
+      ["What is one function of stomata?", ["Allow gases to enter and leave leaves", "Make pollen", "Store seeds", "Absorb sunlight"], "Stomata allow gas exchange."],
+      ["A plant kept in darkness for a week becomes pale and weak. Why?", ["It cannot make enough food without light", "It has too much chlorophyll", "It makes too much glucose", "It does not need water"], "Plants need light to photosynthesise."],
+      ["Which of these is not directly needed for photosynthesis?", ["Oxygen", "Sunlight", "Water", "Carbon dioxide"], "Oxygen is released, not directly needed for photosynthesis."],
+      ["What are the products of photosynthesis?", ["Glucose and oxygen", "Carbon dioxide and water", "Salt and heat", "Starch and carbon dioxide"], "Plants make glucose and release oxygen."],
+      ["Which statement about respiration in plants is correct?", ["Plants respire day and night to release energy from glucose", "Plants respire only at night", "Plants do not respire", "Plants respire only when flowering"], "Respiration happens continuously."],
+      ["Which part of a flower must receive pollen for fertilisation to happen?", ["Stigma", "Petal", "Leaf", "Root hair"], "The stigma receives pollen."],
+      ["After fertilisation, what does the ovule become?", ["Seed", "Petal", "Stem", "Leaf"], "The ovule develops into a seed."],
+      ["After fertilisation, what does the ovary become?", ["Fruit", "Pollen", "Stigma", "Root"], "The ovary develops into fruit."],
+      ["Which feature is most likely found in a wind-pollinated flower?", ["Small dull petals and light pollen", "Large bright petals", "Strong scent", "Lots of nectar"], "Wind-pollinated flowers usually do not need bright petals."],
+      ["Which condition is not always needed for seed germination?", ["Light", "Water", "Air", "Warmth"], "Many seeds germinate without light."],
+      ["A seed has hooks. How is it most likely dispersed?", ["By attaching to animals", "By wind only", "By exploding only", "By melting"], "Hooks help seeds attach to animals."],
+      ["Why do cacti have spines instead of broad leaves?", ["To reduce water loss", "To attract insects", "To make more food", "To absorb more sunlight"], "Spines reduce water loss in dry habitats."],
+      ["Which statement about ferns and mushrooms is correct?", ["Ferns can make their own food but mushrooms cannot", "Mushrooms can make their own food but ferns cannot", "Both are flowering plants", "Both make seeds"], "Ferns are plants; mushrooms are fungi."],
+      ["A plant grows best with 10 g fertiliser, but worse with 20 g. Which conclusion is correct?", ["More fertiliser is not always better for growth", "Fertiliser has no effect", "20 g is always best", "The plant needs no fertiliser"], "Too much fertiliser can harm growth."]
+    ]
+  },
+  {
+    id: "animals-humans-challenge",
+    title: "Animals, Humans and Interactions",
+    emoji: "🦁",
+    blurb: "Food webs, adaptations, body systems and reasoning.",
+    notes: [
+      "Food chains show energy transfer.",
+      "Body systems transport, exchange and release substances.",
+      "Adaptations improve survival."
+    ],
+    qs: [
+      ["An animal has moist skin, lays eggs in water, and can live both in water and on land. It is most likely:", ["An amphibian", "A mammal", "A bird", "A fish only"], "Amphibians often live both in water and on land."],
+      ["Which food chain is correct?", ["Grass -> grasshopper -> frog -> snake", "Grasshopper -> grass -> snake -> frog", "Snake -> frog -> grasshopper -> grass", "Grass -> frog -> grasshopper -> snake"], "Food chains start with producers."],
+      ["Arrows in a food chain show:", ["The transfer of energy", "The direction of wind", "Water flow", "The largest animal"], "Arrows show energy moving to the eater."],
+      ["There are usually fewer eagles than grasshoppers in a food chain because:", ["Energy decreases as it passes along the chain", "Eagles do not need food", "Grasshoppers eat eagles", "Eagles make their own food"], "Energy is lost at each level."],
+      ["In a food web, W is a plant, X eats W, Y eats X. If Y increases suddenly, what is most likely?", ["X decreases and W increases", "X increases and W decreases", "W and X both decrease", "Y becomes a producer"], "More Y means more X eaten."],
+      ["What do decomposers do?", ["Break down dead matter and return nutrients to soil", "Make food from sunlight", "Hunt animals", "Absorb oxygen only"], "Decomposers recycle nutrients."],
+      ["Which statement is correct?", ["A population is a group of organisms of the same species in an area", "A population includes all non-living things", "A habitat is a group of animals", "A community is only one species"], "Population means same species in one area."],
+      ["A farmer introduces frogs to eat pests. What may happen first?", ["The pest population may decrease", "The pests will become frogs", "The frogs will become pests immediately", "The crops will stop growing"], "Predators can reduce prey numbers."],
+      ["How does camouflage help an animal survive?", ["It makes the animal harder to see", "It makes the animal stronger", "It gives the animal more teeth", "It stops the animal from eating"], "Camouflage helps animals hide."],
+      ["Why is the small intestine suited for absorption?", ["It has a large surface area", "It is the shortest organ", "It has no blood supply", "It stores undigested food"], "Large surface area improves absorption."],
+      ["Where does gaseous exchange occur in humans?", ["Alveoli in the lungs", "Stomach", "Small intestine", "Brain"], "Alveoli exchange oxygen and carbon dioxide."],
+      ["What is the difference between breathing and respiration?", ["Breathing moves air in and out; respiration releases energy from glucose", "They are exactly the same", "Respiration inhales air only", "Breathing makes glucose"], "Breathing is physical; respiration releases energy."],
+      ["During exercise, heart rate increases mainly to:", ["Deliver more oxygen and glucose to muscles", "Reduce blood flow", "Cool the bones", "Stop breathing"], "Muscles need more oxygen and glucose."],
+      ["Which blood vessels carry blood back to the heart?", ["Veins", "Arteries", "Bronchi", "Oesophagus"], "Veins return blood to the heart."],
+      ["Which part of blood carries oxygen?", ["Red blood cells", "White blood cells only", "Platelets only", "Plasma only"], "Red blood cells carry oxygen."],
+      ["In humans, where does a fertilised egg develop into a baby?", ["Uterus", "Ovary only", "Stomach", "Lungs"], "The baby develops in the uterus."],
+      ["A child has a similar chin shape to his father. This is best explained by:", ["Inherited traits", "Eating the same food", "Living in the same house", "Wearing similar clothes"], "Traits can be inherited."],
+      ["Why do polar bears have thick fur and blubber?", ["To reduce heat loss in cold environments", "To attract fish", "To help them swim faster only", "To store water"], "Thick fur and blubber insulate."],
+      ["Deforestation can cause:", ["Loss of habitats and more carbon dioxide in the air", "More trees", "Less sunlight for animals only", "No effect on the environment"], "Fewer trees means fewer habitats and less carbon dioxide absorption."],
+      ["To test whether woodlice prefer dark places, what should be changed?", ["Light condition only", "Type of woodlouse", "Number of observers", "Size of room"], "Only the variable being tested should change."]
+    ]
+  },
+  {
+    id: "matter-materials-challenge",
+    title: "Matter, Materials and Water Cycle",
+    emoji: "💧",
+    blurb: "States of matter, heat, materials, evaporation and condensation.",
+    notes: [
+      "Matter has mass and occupies space.",
+      "Heat causes expansion and changes of state.",
+      "Materials are chosen for their properties."
+    ],
+    qs: [
+      ["A balloon balance tips down when an inflated balloon is placed on one side. What does this show?", ["Air has mass", "Air is light only", "Balloons are magnetic", "Rubber is heavier than air always"], "Air is matter and has mass."],
+      ["Which statement describes gas?", ["It has no fixed shape and no fixed volume", "It has fixed shape and volume", "It has fixed volume only", "It cannot be compressed"], "Gas spreads out and can be compressed."],
+      ["Droplets form on the outside of a cold glass. Why?", ["Water vapour in air condenses on the cold surface", "Water leaks through glass", "The glass melts", "Ice forms inside the glass"], "Condensation forms on cold surfaces."],
+      ["Which condition makes evaporation fastest?", ["Hot, windy and large surface area", "Cold, dark and covered", "High humidity and no wind", "Small surface area and cold"], "Heat, wind and large surface area speed evaporation."],
+      ["What provides energy for the water cycle?", ["The Sun", "The Moon", "Rocks", "Wind only"], "The Sun heats water."],
+      ["Which is the correct water cycle order?", ["Evaporation -> condensation -> precipitation -> collection", "Condensation -> evaporation -> collection -> precipitation", "Collection -> precipitation -> evaporation -> condensation", "Precipitation -> collection -> condensation -> evaporation"], "This is the water cycle sequence."],
+      ["Clouds form when:", ["Water vapour cools and condenses into tiny droplets", "Smoke collects in the sky", "Dust melts", "Rain evaporates"], "Clouds form by condensation."],
+      ["What is infiltration?", ["Water soaking into the ground", "Water boiling", "Water evaporating", "Clouds forming"], "Infiltration moves water underground."],
+      ["Which material is best for a raincoat?", ["Waterproof plastic", "Cotton towel", "Paper", "Sponge"], "Waterproof material keeps water out."],
+      ["Why is the handle of a cooking pot often made of plastic or wood?", ["They are poor conductors of heat", "They conduct heat well", "They are magnetic", "They are transparent"], "Insulators keep hands safer."],
+      ["A metal ball passes through a ring at room temperature but not after heating. Why?", ["The ball expanded when heated", "The ball became lighter", "The ring shrank dramatically", "The ball melted"], "Metals expand when heated."],
+      ["Two stacked glasses are stuck. Which method uses expansion and contraction safely?", ["Warm the outer glass or cool the inner glass", "Boil both glasses", "Freeze both glasses", "Shake them hard"], "Expansion and contraction can separate them."],
+      ["A syringe filled with air can be pushed in, but one filled with water cannot. Why?", ["Air can be compressed but water cannot be compressed easily", "Water is lighter than air", "Air is a liquid", "Water disappears"], "Gas is compressible."],
+      ["To measure volume by water displacement, the object should:", ["Sink and not absorb water", "Float and absorb water", "Dissolve in water", "Be waterproof only"], "Sinking gives a clear water level change."],
+      ["An object floats in water. This suggests it is:", ["Less dense than water", "More dense than water", "Heavier than water always", "Magnetic"], "Floating suggests lower density."],
+      ["How would you separate iron filings from sand?", ["Use a magnet", "Use a light", "Add sugar", "Use a compass"], "Magnets attract iron filings."],
+      ["Why does painting an iron gate prevent rust?", ["It keeps air and water away from iron", "It makes iron stronger", "It attracts oxygen", "It makes iron waterproof only"], "Rust needs air and water."],
+      ["Burning paper is a chemical change because:", ["New substances are formed with heat and light", "It only changes shape", "It remains paper", "It becomes colder"], "Burning forms new substances."],
+      ["Ice melts into water in a covered cup. What happens to its mass?", ["It stays the same if no water is lost", "It becomes much heavier", "It disappears", "It doubles"], "Mass is conserved during state change."],
+      ["Which row matches heat transfer? Sun to Earth; spoon in hot soup; hot air rising", ["Radiation, conduction, convection", "Conduction, radiation, convection", "Convection, conduction, radiation", "Radiation, convection, conduction"], "Sun uses radiation; spoon uses conduction; hot air uses convection."]
+    ]
+  },
+  {
+    id: "energy-electricity-challenge",
+    title: "Energy, Heat, Light, Sound and Electricity",
+    emoji: "⚡",
+    blurb: "Energy conversion, circuits, light, sound and heat transfer.",
+    notes: [
+      "Energy can be converted but not created.",
+      "Parallel circuits allow components to work independently.",
+      "Light travels in straight lines."
+    ],
+    qs: [
+      ["What is energy?", ["The ability to do work or cause change", "Only electricity", "A type of force", "A type of matter"], "Energy allows work to be done."],
+      ["A ball dropped from a height bounces to a lower height. Why?", ["Some kinetic energy was converted to heat and sound", "Energy was created", "Gravity stopped working", "The ball gained height energy"], "Some energy is lost to surroundings."],
+      ["In a battery torch, energy conversion is:", ["Chemical -> electrical -> light and heat", "Light -> chemical -> sound", "Heat -> electrical -> chemical", "Sound -> kinetic -> electrical"], "Batteries store chemical energy."],
+      ["A solar panel converts:", ["Light energy to electrical energy", "Chemical energy to light", "Sound to electrical", "Kinetic to chemical"], "Solar panels use light."],
+      ["The energy stored in food is:", ["Chemical energy", "Kinetic energy", "Sound energy", "Elastic energy"], "Food stores chemical energy."],
+      ["Most wasted energy in appliances becomes:", ["Heat", "Light only", "Chemical energy", "Gravity"], "Wasted energy often becomes heat."],
+      ["In a series circuit, if one bulb breaks:", ["All bulbs usually go off", "Other bulbs stay lit", "The battery explodes", "Current increases"], "Series circuits have one path."],
+      ["Why are house lights connected in parallel?", ["Each light can work independently", "All lights must fail together", "Parallel uses more wires only", "Parallel is dangerous"], "Parallel circuits are independent."],
+      ["Using identical bulbs and batteries, which bulbs are brightest?", ["Bulbs in a circuit with more batteries and fewer bulbs in one loop", "Bulbs in a circuit with fewer batteries and more bulbs", "All circuits have same brightness", "Bulbs with no battery"], "More electrical energy can make bulbs brighter."],
+      ["Which is a conductor of electricity?", ["Copper", "Rubber", "Plastic", "Dry wood"], "Copper conducts electricity."],
+      ["When a switch is open:", ["The circuit is broken and current does not flow", "The circuit is complete", "The bulb becomes brighter", "The battery charges"], "Open switches break circuits."],
+      ["Which is a safe practice with electricity?", ["Keep hands dry and avoid sockets with wet hands", "Touch sockets with wet hands", "Insert metal objects into sockets", "Pull cords roughly"], "Water increases electrical danger."],
+      ["Shadows form because:", ["Light travels in straight lines and is blocked by opaque objects", "Light bends around every object", "Objects absorb shadows", "Darkness is emitted"], "Opaque objects block light."],
+      ["An object is moved closer to a light source. Its shadow usually:", ["Becomes larger", "Becomes smaller", "Disappears", "Changes colour"], "Closer objects make larger shadows."],
+      ["Which correctly matches material and light?", ["Clear glass: transparent; frosted glass: translucent; wood: opaque", "Clear glass: opaque; wood: transparent; frosted glass: translucent", "Wood: transparent; clear glass: translucent; frosted glass: opaque", "Frosted glass: transparent; clear glass: opaque; wood: translucent"], "Transparent lets most light through; translucent lets some; opaque blocks."],
+      ["Which surface reflects light best?", ["A smooth shiny mirror", "Black cloth", "Rough paper", "Clear water only"], "Smooth shiny surfaces reflect well."],
+      ["Sound is produced by:", ["Vibrations", "Light", "Gravity only", "Electricity only"], "Vibrations make sound."],
+      ["Why can astronauts not hear sound in space?", ["There is no medium for sound to travel", "Space is too bright", "Sound travels too fast", "Light stops sound"], "Sound needs a medium."],
+      ["Dark clothes feel warmer in sunlight because they:", ["Absorb more light and heat", "Reflect more light", "Produce electricity", "Repel heat"], "Dark surfaces absorb more heat."],
+      ["Sweating helps cool the body because:", ["Evaporation of sweat removes heat from skin", "Sweat is cold forever", "Sweat blocks pores", "Sweat adds heat"], "Evaporation causes cooling."]
+    ]
+  },
+  {
+    id: "forces-reasoning-challenge",
+    title: "Forces, Magnets and Scientific Reasoning",
+    emoji: "🧲",
+    blurb: "PSLE-style reasoning, forces, magnets and fair tests.",
+    notes: [
+      "Only one variable should be changed in a fair test.",
+      "Forces can change motion or shape.",
+      "Magnets attract magnetic materials."
+    ],
+    qs: [
+      ["Which is an effect of a force?", ["It can change an object's shape, speed or direction", "It can change colour only", "It can change smell only", "It can change temperature only"], "Forces affect motion and shape."],
+      ["Friction is a force that:", ["Opposes motion between surfaces", "Increases speed always", "Acts only in water", "Changes colour"], "Friction opposes motion."],
+      ["A box is harder to push when books are added. Why?", ["The greater weight increases friction with the floor", "The floor becomes smoother", "Gravity disappears", "Friction becomes zero"], "Greater weight can increase friction."],
+      ["Gravity is the force that:", ["Pulls objects towards Earth", "Pushes objects away from Earth", "Makes objects glow", "Stops magnets"], "Gravity pulls objects down."],
+      ["Which statement about mass and weight is correct?", ["Mass is amount of matter; weight is force of gravity on it", "Mass and weight are exactly the same", "Weight is amount of matter", "Mass changes with colour"], "Mass and weight are different."],
+      ["A spring stretches more when more weight is added. What does this show?", ["Greater force causes greater extension", "Springs have no force", "Weight decreases extension", "Springs repel weights"], "More force stretches springs more."],
+      ["Two identical springs, X and Y, are hung with same load. X extends less than Y. Which spring is stronger?", ["Spring X", "Spring Y", "Both same", "Neither"], "A stronger spring extends less for the same load."],
+      ["Which material will a magnet attract?", ["Iron", "Aluminium foil", "Plastic", "Wood"], "Iron is magnetic."],
+      ["What happens when two north poles of magnets are brought near?", ["They repel", "They attract", "They melt", "They attract and repel randomly"], "Like poles repel."],
+      ["Where is a magnet's magnetic force strongest?", ["At its poles", "Only in the middle", "Outside the magnet only", "At the south pole only"], "Poles are strongest."],
+      ["A magnet can attract a paper clip through thin paper. This shows magnetic force can:", ["Act through some materials", "Only act in water", "Only act by touching", "Only work at night"], "Magnetic force can pass through thin materials."],
+      ["Why should magnets be kept away from compasses?", ["Magnets can affect the compass needle", "Magnets make compasses melt", "Compasses need magnets to work", "Compasses are magnetic only"], "Compass needles are magnetic."],
+      ["In a fair test, how many variables should be changed at once?", ["One", "Two", "Three", "As many as possible"], "Only one variable should be changed."],
+      ["In an experiment to find how ramp height affects toy car distance, what is the changed variable?", ["Ramp height", "Type of car", "Floor surface", "Distance travelled"], "The changed variable is ramp height."],
+      ["In the same experiment, what is the measured variable?", ["Distance travelled by the car", "Ramp height", "Car colour", "Time of day"], "The measured variable is distance."],
+      ["What is the main problem with doing only one trial?", ["The result may not be reliable", "The experiment becomes too easy", "The data becomes too accurate", "The variables disappear"], "Repeating trials improves reliability."],
+      ["Which is an observation?", ["The water level rose by 5 mL", "The object is heavy because it is metal", "The plant grew because it was happy", "The magnet liked the nail"], "Observations are direct measurements."],
+      ["Why should experiments be repeated?", ["To improve reliability", "To waste time", "To change variables", "To make results secret"], "Repetition makes results more reliable."],
+      ["Why is a flexible measuring tape used to measure around the body?", ["It can bend along curved surfaces", "It is transparent", "It is magnetic", "It conducts electricity"], "Flexible tapes measure curves."],
+      ["Two stuck glasses can be separated by warming the outer glass and cooling the inner glass because:", ["The outer glass expands and the inner glass contracts", "Both glasses shrink", "Glass becomes liquid", "Air disappears"], "Expansion and contraction can separate them."]
+    ]
+  }
+];
+
+const QUESTIONS = [];
+TOPICS.forEach(topic => {
+  topic.qs.forEach((item, index) => {
+    QUESTIONS.push({
+      id: topic.id + "-" + (index + 1),
+      topic: topic.id,
+      q: item[0],
+      options: item[1],
+      exp: item[2]
+    });
+  });
+});
+
+const STORAGE_KEY = "psleScienceChallengePack";
+const app = document.getElementById("app");
+
+let progress = loadProgress();
+let state = {
+  questions: [],
+  index: 0,
+  correct: 0,
+  answered: false,
+  title: "",
+  misses: []
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: {}, correct: {}, wrong: [] };
+
+    const data = JSON.parse(raw);
+    return {
+      attempts: data.attempts || {},
+      correct: data.correct || {},
+      wrong: data.wrong || []
+    };
+  } catch (error) {
+    return { attempts: {}, correct: {}, wrong: [] };
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (error) {}
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, char => {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
+  });
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function prepareQuestions(list) {
+  return list.map(q => {
+    const optionObjects = q.options.map((text, index) => ({
+      text,
+      correct: index === 0
+    }));
+
+    const shuffled = shuffle(optionObjects);
+
+    return {
+      ...q,
+      options: shuffled.map(option => option.text),
+      answer: shuffled.findIndex(option => option.correct)
+    };
+  });
+}
+
+function getTopic(id) {
+  return TOPICS.find(topic => topic.id === id);
+}
+
+function getQuestionsByTopic(id) {
+  return QUESTIONS.filter(q => q.topic === id);
+}
+
+function getStats() {
+  const attempted = Object.keys(progress.attempts).length;
+  let totalAttempts = 0;
+  let totalCorrect = 0;
+
+  for (const id in progress.attempts) {
+    totalAttempts += progress.attempts[id];
+  }
+
+  for (const id in progress.correct) {
+    totalCorrect += progress.correct[id];
+  }
+
+  const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+
+  return {
+    attempted,
+    accuracy,
+    wrong: progress.wrong.length
+  };
+}
+
+function renderHome() {
+  const stats = getStats();
+
+  const topicCards = TOPICS.map(topic => {
+    const total = topic.qs.length;
+    const mastered = QUESTIONS.filter(q => q.topic === topic.id && progress.correct[q.id] > 0).length;
+    const percent = total ? Math.round((mastered / total) * 100) : 0;
+
+    return `
+      <div class="card topic-card" onclick="openTopic('${topic.id}')">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">PSLE</div>
+        </div>
+
+        <div class="topic-title">${esc(topic.title)}</div>
+        <div class="small">${esc(topic.blurb)}</div>
+
+        <div class="progress">
+          <div style="width:${percent}%"></div>
+        </div>
+
+        <div class="small">${mastered}/${total} questions correct at least once</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">📘 PSLE Science Challenge Pack</div>
+        <div class="chip">100 challenging MCQs</div>
+      </div>
+
+      <div class="hero">
+        <h1>PSLE-Style Science Practice</h1>
+        <p>
+          Original high-difficulty MCQs with no diagrams. Focus on reasoning,
+          evidence, fair tests, conclusions and explanations.
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+          <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+          <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+          <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="value">${stats.attempted}</div>
+          <div class="label">Questions practiced</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.accuracy}%</div>
+          <div class="label">Accuracy</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.wrong}</div>
+          <div class="label">Wrong questions</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${TOPICS.length}</div>
+          <div class="label">Challenge areas</div>
+        </div>
+      </div>
+
+      ${topicCards}
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTopic(id) {
+  const topic = getTopic(id);
+
+  const notesHtml = topic.notes.map(note => `<li>${esc(note)}</li>`).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">⬅ Home</button>
+        <div class="chip">PSLE Topic</div>
+      </div>
+
+      <div class="card">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">PSLE</div>
+        </div>
+
+        <h2>${esc(topic.title)}</h2>
+        <p style="font-weight:800;">${esc(topic.blurb)}</p>
+
+        <h3>Focus</h3>
+        <ul class="notes">${notesHtml}</ul>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 20 Questions</button>
+          <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startAllChallenge() {
+  const questions = shuffle(QUESTIONS).slice(0, 20);
+  startQuiz(questions, "Random 20 Challenge");
+}
+
+function startRandomTen() {
+  const questions = shuffle(QUESTIONS).slice(0, 10);
+  startQuiz(questions, "Random 10");
+}
+
+function startWrongAll() {
+  const questions = QUESTIONS.filter(q => progress.wrong.includes(q.id));
+
+  if (!questions.length) {
+    alert("No wrong questions saved yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay");
+}
+
+function startTopic(id) {
+  const topic = getTopic(id);
+  const questions = getQuestionsByTopic(id);
+  startQuiz(questions, topic.title);
+}
+
+function startTopicWrong(id) {
+  const topic = getTopic(id);
+
+  const questions = QUESTIONS.filter(q => {
+    return q.topic === id && progress.wrong.includes(q.id);
+  });
+
+  if (!questions.length) {
+    alert("No wrong questions in this topic yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay: " + topic.title);
+}
+
+function startQuiz(list, title) {
+  if (!list.length) {
+    alert("No questions available.");
+    return;
+  }
+
+  state = {
+    questions: prepareQuestions(list),
+    index: 0,
+    correct: 0,
+    answered: false,
+    title,
+    misses: []
+  };
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  const topic = getTopic(q.topic);
+  const progressPercent = (state.index / state.questions.length) * 100;
+
+  const optionsHtml = q.options.map((option, index) => {
+    return `
+      <button class="option" onclick="answer(${index})">
+        ${String.fromCharCode(65 + index)}. ${esc(option)}
+      </button>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">${esc(state.title)}</div>
+      </div>
+
+      <div class="card">
+        <div class="progress">
+          <div style="width:${progressPercent}%"></div>
+        </div>
+
+        <div class="small">
+          Question ${state.index + 1} of ${state.questions.length} • Score ${state.correct}
+        </div>
+
+        <div class="chip" style="margin:10px 0;">
+          ${topic.emoji} ${esc(topic.title)}
+        </div>
+
+        <h2>${esc(q.q)}</h2>
+
+        <div class="options">
+          ${optionsHtml}
+        </div>
+
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function answer(selected) {
+  if (state.answered) return;
+
+  state.answered = true;
+
+  const q = state.questions[state.index];
+  const buttons = Array.from(document.querySelectorAll(".option"));
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  buttons[q.answer].classList.add("correct");
+
+  const isCorrect = selected === q.answer;
+
+  if (isCorrect) {
+    state.correct++;
+    buttons[selected].classList.add("correct");
+  } else {
+    buttons[selected].classList.add("wrong");
+    state.misses.push({
+      id: q.id,
+      selected
+    });
+  }
+
+  updateProgress(q.id, isCorrect);
+
+  const feedback = document.getElementById("feedback");
+  feedback.className = "feedback " + (isCorrect ? "good" : "bad");
+
+  feedback.innerHTML = `
+    <div>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</div>
+    <div class="exp">
+      ${esc(q.exp)}
+      ${!isCorrect ? " Correct answer: " + esc(q.options[q.answer]) + "." : ""}
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="nextQuestion()">
+        ${state.index === state.questions.length - 1 ? "Finish 🏁" : "Next ➜"}
+      </button>
+    </div>
+  `;
+}
+
+function updateProgress(id, isCorrect) {
+  progress.attempts[id] = (progress.attempts[id] || 0) + 1;
+
+  if (isCorrect) {
+    progress.correct[id] = (progress.correct[id] || 0) + 1;
+    progress.wrong = progress.wrong.filter(wrongId => wrongId !== id);
+  } else {
+    if (!progress.wrong.includes(id)) {
+      progress.wrong.push(id);
+    }
+  }
+
+  saveProgress();
+}
+
+function nextQuestion() {
+  if (!state.answered) return;
+
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    state.answered = false;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = state.questions.length;
+  const percent = Math.round((state.correct / total) * 100);
+
+  let stars = "💪";
+  let message = "Keep practising! Read the explanations carefully.";
+
+  if (percent >= 90) {
+    stars = "🌟🌟🌟";
+    message = "Excellent PSLE-level reasoning!";
+  } else if (percent >= 75) {
+    stars = "🌟🌟";
+    message = "Strong work. Review the tricky explanations.";
+  } else if (percent >= 50) {
+    stars = "🌟";
+    message = "Good effort. Focus on evidence and explanation.";
+  }
+
+  const seen = new Set();
+  const uniqueMisses = state.misses.filter(miss => {
+    if (seen.has(miss.id)) return false;
+    seen.add(miss.id);
+    return true;
+  });
+
+  const reviewHtml = uniqueMisses.map(miss => {
+    const q = state.questions.find(item => item.id === miss.id);
+    const topic = getTopic(q.topic);
+
+    return `
+      <div class="review-item">
+        <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+        <div class="review-q">${esc(q.q)}</div>
+
+        <div class="user-answer">
+          Your answer: ${esc(q.options[miss.selected])}
+        </div>
+
+        <div class="correct-answer">
+          Correct answer: ${esc(q.options[q.answer])}
+        </div>
+
+        <div>${esc(q.exp)}</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">Result</div>
+      </div>
+
+      <div class="card">
+        <h2>${esc(state.title)} Complete!</h2>
+
+        <div class="result-stars">${stars}</div>
+
+        <p style="font-weight:900;">
+          You scored ${state.correct}/${total} (${percent}%). ${message}
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+          ${
+            uniqueMisses.length
+              ? '<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>'
+              : ""
+          }
+        </div>
+
+        <h3>Review</h3>
+
+        ${
+          uniqueMisses.length
+            ? reviewHtml
+            : "<p>🎉 Perfect! No wrong questions this round.</p>"
+        }
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function retryWrong() {
+  const ids = [...new Set(state.misses.map(miss => miss.id))];
+  const questions = QUESTIONS.filter(q => ids.includes(q.id));
+  startQuiz(questions, "Retry Wrong");
+}
+
+function resetProgress() {
+  if (confirm("Reset all PSLE Challenge Pack progress?")) {
+    progress = { attempts: {}, correct: {}, wrong: [] };
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
