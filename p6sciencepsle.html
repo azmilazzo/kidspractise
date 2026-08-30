@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>P6 Science Full Pack</title>
+<style>
+:root{
+  --bg1:#fee2e2;
+  --bg2:#ede9fe;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{
+  display:inline-block;
+  background:#fee2e2;
+  color:#b91c1c;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:.9rem;
+}
+.hero{
+  background:linear-gradient(135deg,#ef4444,#8b5cf6);
+  color:#fff;
+  padding:20px;
+  border-radius:24px;
+  box-shadow:0 14px 34px rgba(239,68,68,.18);
+}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+.stat{
+  background:var(--card);
+  border-radius:18px;
+  padding:12px;
+  text-align:center;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{
+  background:var(--card);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 10px 24px rgba(15,23,42,.08);
+  margin:12px 0;
+}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#fca5a5}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{
+  height:12px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+  margin:10px 0;
+}
+.progress div{
+  height:100%;
+  background:linear-gradient(90deg,#ef4444,#8b5cf6);
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+.btn{
+  border:0;
+  border-radius:16px;
+  padding:12px 16px;
+  font-weight:1000;
+  cursor:pointer;
+}
+.primary{
+  background:linear-gradient(135deg,#ef4444,#8b5cf6);
+  color:#fff;
+}
+.secondary{
+  background:#e2e8f0;
+  color:#0f172a;
+}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{
+  border:3px solid #fecaca;
+  background:#fffafa;
+  border-radius:18px;
+  padding:14px;
+  font-size:1rem;
+  font-weight:900;
+  text-align:left;
+  cursor:pointer;
+}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{
+  margin-top:14px;
+  padding:14px;
+  border-radius:18px;
+  font-weight:900;
+}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{
+  border:2px solid #e2e8f0;
+  border-radius:18px;
+  padding:12px;
+  margin:10px 0;
+  background:#fbfdff;
+}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{
+  background:#fff1f2;
+  border:2px solid #f43f5e;
+  border-radius:16px;
+  padding:16px;
+  font-weight:700;
+  white-space:pre-wrap;
+  font-family:monospace;
+}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error", function(e){
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = '<div class="container"><div class="error-box">Page error: ' + (e.message || "Unknown error") + '</div></div>';
+  }
+});
+</script>
+
+<script>
+const TOPICS = [
+  {
+    id: "photosynthesis",
+    title: "Photosynthesis",
+    emoji: "☀️",
+    blurb: "How plants make food, what they need, and why it matters.",
+    notes: [
+      "Photosynthesis happens mainly in the leaves.",
+      "Plants need sunlight, water and carbon dioxide.",
+      "Chlorophyll absorbs light energy.",
+      "Photosynthesis produces glucose and oxygen."
+    ],
+    qs: [
+      ["What is photosynthesis?", ["The process by which plants make food using light, water and carbon dioxide", "The process by which plants absorb rocks", "The process by which animals breathe", "The process by which soil melts"], "Photosynthesis is how plants make their own food."],
+      ["What is chlorophyll?", ["The green pigment in leaves that absorbs light", "The water stored in roots", "The gas released by animals", "The sugar made by fruits"], "Chlorophyll absorbs light energy."],
+      ["Where does photosynthesis mainly happen?", ["Leaves", "Roots only", "Flowers only", "Soil"], "Leaves are the main site of photosynthesis."],
+      ["Which gas do plants take in for photosynthesis?", ["Carbon dioxide", "Oxygen", "Helium", "Nitrogen only"], "Plants take in carbon dioxide from the air."],
+      ["Which gas do plants release during photosynthesis?", ["Oxygen", "Carbon dioxide", "Smoke", "Steam only"], "Plants release oxygen."],
+      ["Which liquid is needed for photosynthesis?", ["Water", "Oil", "Milk", "Juice"], "Water is needed for photosynthesis."],
+      ["What is the energy source for photosynthesis?", ["Sunlight", "Darkness", "Wind", "Moonlight only"], "Sunlight provides the energy."],
+      ["What food is made during photosynthesis?", ["Glucose", "Salt", "Plastic", "Sand"], "Plants make glucose."],
+      ["What can plants store extra glucose as?", ["Starch", "Metal", "Glass", "Rubber"], "Extra glucose can be stored as starch."],
+      ["What are stomata?", ["Tiny openings on leaves", "Tiny roots underground", "Tiny seeds inside fruits", "Tiny insects on flowers"], "Stomata allow gases to enter and leave leaves."],
+      ["How do roots help photosynthesis?", ["They absorb water from the soil", "They make oxygen directly", "They absorb sunlight", "They make flowers"], "Roots absorb water for photosynthesis."],
+      ["How does the stem help photosynthesis?", ["It transports water to the leaves", "It absorbs sunlight", "It makes pollen", "It stores only air"], "The stem carries water to the leaves."],
+      ["Which word equation is correct?", ["Carbon dioxide + water -> glucose + oxygen in light", "Oxygen + water -> carbon dioxide + glucose in dark", "Glucose + oxygen -> soil + water in light", "Water + soil -> rocks + oxygen in dark"], "Photosynthesis uses carbon dioxide and water to make glucose and oxygen."],
+      ["What happens if a plant is kept in darkness for a long time?", ["Photosynthesis slows down or stops", "Photosynthesis increases", "The plant makes more soil", "The plant becomes a rock"], "Plants need light for photosynthesis."],
+      ["What happens if a plant does not get enough carbon dioxide?", ["Photosynthesis slows down or stops", "Photosynthesis increases", "The plant makes more rocks", "The plant no longer needs water"], "Carbon dioxide is needed."],
+      ["What happens if a plant does not get enough water?", ["Photosynthesis is affected", "Photosynthesis is not affected", "The plant makes more light", "The plant stops needing air"], "Water is needed for photosynthesis."],
+      ["Why are many leaves green?", ["They contain chlorophyll", "They are wet", "They are soft", "They are cold"], "Chlorophyll makes leaves green."],
+      ["Why is photosynthesis important to animals?", ["It provides oxygen and food", "It removes sunlight", "It makes soil disappear", "It stops the water cycle"], "Animals depend on plants."],
+      ["What is a producer?", ["An organism that makes its own food", "An organism that eats animals only", "An organism that breaks down dead matter", "An organism that hunts"], "Producers make their own food."],
+      ["Which organism is a producer?", ["Green plant", "Tiger", "Mushroom", "Stone"], "Green plants are producers."],
+      ["Which is not needed for photosynthesis?", ["Darkness", "Light", "Water", "Carbon dioxide"], "Photosynthesis needs light, not darkness."],
+      ["Which set of conditions is best for photosynthesis?", ["Sunlight, water and carbon dioxide", "Darkness, smoke and sand", "Ice, wind and rocks", "Heat only, no water"], "These are needed for photosynthesis."],
+      ["Which solution is often used to test for starch?", ["Iodine solution", "Water", "Oxygen", "Sugar water"], "Iodine can test for starch."],
+      ["Why might a leaf kept in darkness not test positive for starch?", ["It could not make glucose in the dark", "It made too much oxygen", "It absorbed more soil", "It became magnetic"], "No light means no photosynthesis."],
+      ["How do plants help reduce carbon dioxide in the air?", ["They take in carbon dioxide for photosynthesis", "They release carbon dioxide only", "They turn carbon dioxide into rocks", "They do not affect carbon dioxide"], "Plants use carbon dioxide."]
+    ]
+  },
+  {
+    id: "energyforms",
+    title: "Forms and Uses of Energy",
+    emoji: "⚡",
+    blurb: "Kinetic, potential, chemical, heat, light, sound and electrical energy.",
+    notes: [
+      "Energy is the ability to do work.",
+      "Moving objects have kinetic energy.",
+      "Stored energy is potential energy.",
+      "Energy can exist in different forms."
+    ],
+    qs: [
+      ["What is energy?", ["The ability to do work or cause change", "Only heat from fire", "Only light from the Sun", "A type of machine"], "Energy allows work to be done."],
+      ["What is kinetic energy?", ["Energy of moving objects", "Energy stored in food only", "Energy from magnets only", "Energy that cannot be seen"], "Kinetic energy is energy of motion."],
+      ["What is potential energy?", ["Stored energy", "Energy of movement only", "Energy that disappears", "Energy only in machines"], "Potential energy is stored energy."],
+      ["What is gravitational potential energy?", ["Stored energy due to height", "Energy of sound", "Energy of colour", "Energy of taste"], "Higher objects have gravitational potential energy."],
+      ["What is elastic potential energy?", ["Stored energy in stretched or compressed objects", "Energy from food", "Energy from the Sun only", "Energy from magnets only"], "Stretched or compressed objects store elastic potential energy."],
+      ["What is chemical energy?", ["Energy stored in food, batteries and fuels", "Energy of moving water only", "Energy from sound only", "Energy of light only"], "Chemical energy is stored energy."],
+      ["What is heat energy?", ["Energy that makes objects warmer", "Energy that makes objects colder", "Energy that only makes sound", "Energy that only makes light"], "Heat warms objects."],
+      ["What is light energy?", ["Energy that allows us to see", "Energy that allows us to hear", "Energy that makes magnets", "Energy that makes gravity"], "Light lets us see."],
+      ["What is sound energy?", ["Energy produced by vibrations", "Energy stored in food", "Energy from height only", "Energy from batteries only"], "Sound comes from vibrations."],
+      ["What is electrical energy?", ["Energy carried by electric current", "Energy stored in stretched springs", "Energy from height only", "Energy from food only"], "Electrical energy flows in circuits."],
+      ["A moving bicycle has which form of energy?", ["Kinetic energy", "Gravitational potential energy only", "Chemical energy only", "Light energy only"], "Moving objects have kinetic energy."],
+      ["A ball placed on a high shelf has mainly which form of energy?", ["Gravitational potential energy", "Sound energy", "Light energy", "Elastic potential energy only"], "Height gives gravitational potential energy."],
+      ["A stretched rubber band has which form of energy?", ["Elastic potential energy", "Chemical energy", "Light energy", "Electrical energy"], "Stretched objects store elastic potential energy."],
+      ["Food stores which form of energy?", ["Chemical energy", "Kinetic energy", "Sound energy", "Light energy only"], "Food stores chemical energy."],
+      ["A battery stores which form of energy?", ["Chemical energy", "Sound energy", "Light energy only", "Kinetic energy only"], "Batteries store chemical energy."],
+      ["The Sun gives us mainly which forms of energy?", ["Light and heat energy", "Sound and chemical energy only", "Electrical and magnetic energy only", "Kinetic and elastic energy only"], "The Sun provides light and heat."],
+      ["A ringing bell produces which form of energy?", ["Sound energy", "Chemical energy", "Gravitational potential energy", "Electrical energy only"], "A bell makes sound."],
+      ["A switched-on lamp gives out mainly which forms of energy?", ["Light and heat energy", "Sound energy only", "Chemical energy only", "Kinetic energy only"], "Lamps give light and heat."],
+      ["Boiling water gives out which form of energy?", ["Heat energy", "Light energy only", "Magnetic energy", "Chemical energy only"], "Boiling water gives heat."],
+      ["Which form of energy is needed by plants for photosynthesis?", ["Light energy", "Sound energy", "Electrical energy only", "Chemical energy only"], "Plants need light."],
+      ["Which form of energy is carried by wires?", ["Electrical energy", "Sound energy", "Chemical energy only", "Elastic potential energy"], "Wires carry electrical energy."],
+      ["Sound energy is produced by what?", ["Vibrations", "Light", "Gravity", "Starch"], "Vibrations produce sound."],
+      ["Which statement about energy is true?", ["Energy can be transferred and converted", "Energy can be destroyed", "Energy can be created from nothing", "Energy only exists in machines"], "Energy can change form."],
+      ["Which object has kinetic energy?", ["A flying bird", "A stationary book", "A parked car", "A closed box"], "A flying bird is moving."],
+      ["Which object has elastic potential energy?", ["A compressed spring", "A stationary stone", "A dark room", "A cold spoon"], "Compressed springs store elastic potential energy."]
+    ]
+  },
+  {
+    id: "energyconversion",
+    title: "Energy Conversion",
+    emoji: "🔋",
+    blurb: "How energy changes from one form to another.",
+    notes: [
+      "Energy can be converted from one form to another.",
+      "Some energy is often wasted as heat or sound.",
+      "Trace energy changes step by step."
+    ],
+    qs: [
+      ["What is energy conversion?", ["The change of energy from one form to another", "The disappearance of energy", "The creation of energy from nothing", "The use of energy only by machines"], "Energy conversion means energy changes form."],
+      ["In a battery torch, chemical energy changes to electrical energy and then mainly to what?", ["Light and heat energy", "Sound energy only", "Chemical energy only", "Kinetic energy only"], "A torch gives light and heat."],
+      ["A television converts electrical energy mainly to what?", ["Light and sound energy", "Heat energy only", "Chemical energy only", "Kinetic energy only"], "A television gives light and sound."],
+      ["A radio converts electrical energy mainly to what?", ["Sound energy", "Light energy only", "Chemical energy only", "Kinetic energy only"], "A radio gives sound."],
+      ["An electric fan converts electrical energy mainly to what?", ["Kinetic energy", "Chemical energy only", "Light energy only", "Gravitational potential energy only"], "A fan moves."],
+      ["An electric iron converts electrical energy mainly to what?", ["Heat energy", "Sound energy only", "Light energy only", "Chemical energy only"], "An iron gets hot."],
+      ["A doorbell converts electrical energy mainly to what?", ["Sound energy", "Light energy only", "Chemical energy only", "Kinetic energy only"], "A doorbell rings."],
+      ["A solar panel converts light energy into what?", ["Electrical energy", "Sound energy", "Chemical energy only", "Elastic energy"], "Solar panels produce electricity."],
+      ["A falling stone converts gravitational potential energy into what?", ["Kinetic energy", "Chemical energy", "Electrical energy", "Sound energy only"], "A falling stone moves."],
+      ["A released stretched rubber band converts elastic potential energy into what?", ["Kinetic energy", "Chemical energy", "Electrical energy", "Light energy only"], "A released rubber band moves."],
+      ["When you rub your hands together, kinetic energy is mainly converted into what?", ["Heat energy", "Light energy only", "Chemical energy", "Electrical energy"], "Rubbing hands makes them warm."],
+      ["When you clap your hands, kinetic energy is mainly converted into what?", ["Sound energy", "Heat energy only", "Chemical energy", "Electrical energy"], "Clapping makes sound."],
+      ["A burning candle converts chemical energy into what?", ["Light and heat energy", "Sound energy only", "Electrical energy only", "Kinetic energy only"], "A candle gives light and heat."],
+      ["Lighting a match converts chemical energy into what?", ["Heat and light energy", "Sound energy only", "Electrical energy only", "Chemical energy only"], "A match gives heat and light."],
+      ["Your body converts chemical energy from food into what?", ["Kinetic energy and heat energy", "Light energy only", "Electrical energy only", "Sound energy only"], "Food helps us move and stay warm."],
+      ["When a battery is being charged, electrical energy is converted into what?", ["Chemical energy", "Sound energy", "Light energy only", "Kinetic energy only"], "Charging stores chemical energy."],
+      ["A bicycle dynamo turns to light a lamp. What is the main energy conversion?", ["Kinetic to electrical to light energy", "Chemical to sound to heat energy", "Light to chemical to sound energy", "Heat to kinetic to chemical energy"], "The dynamo powers the lamp."],
+      ["During energy conversion, some energy is often wasted as what?", ["Heat and sound energy", "Only useful light", "Only chemical energy", "Only gravitational energy"], "Wasted energy is often heat and sound."],
+      ["Which statement about energy conversion is correct?", ["Energy can be converted from one form to another", "Energy can be destroyed", "Energy can be created from nothing", "Energy never changes form"], "Energy changes form."],
+      ["Which appliance converts electrical energy to kinetic energy?", ["A blender", "A spoon", "A book", "A table"], "A blender has moving parts."],
+      ["Which appliance converts electrical energy to light energy?", ["A lamp", "A chair", "A shoe", "A wall"], "A lamp gives light."],
+      ["Which appliance converts electrical energy to heat energy?", ["A toaster", "A mirror", "A pillow", "A window"], "A toaster gives heat."],
+      ["A speaker converts electrical energy mainly to what?", ["Sound energy", "Chemical energy only", "Gravitational energy only", "Elastic energy only"], "A speaker produces sound."],
+      ["A microphone converts sound energy mainly to what?", ["Electrical energy", "Chemical energy only", "Heat energy only", "Elastic energy only"], "A microphone converts sound to electrical energy."],
+      ["Which sentence is correct?", ["Energy can be converted but not created or destroyed", "Energy can be destroyed", "Energy can be created from nothing", "Energy only exists in batteries"], "Energy is conserved."]
+    ]
+  },
+  {
+    id: "forces",
+    title: "Forces",
+    emoji: "🚀",
+    blurb: "Pushes and pulls, friction, gravity and elastic spring force.",
+    notes: [
+      "A force is a push or a pull.",
+      "Friction opposes motion.",
+      "Gravity pulls objects towards Earth.",
+      "Elastic spring force comes from stretched or compressed objects."
+    ],
+    qs: [
+      ["What is a force?", ["A push or a pull", "Only a pull", "Only a pull by magnets", "A type of light"], "A force is a push or pull."],
+      ["Which effect can a force have on an object?", ["It can change speed, direction or shape", "It can change colour only", "It can change smell only", "It can change taste only"], "Forces can change motion or shape."],
+      ["What is friction?", ["A force that opposes motion between surfaces", "A force that creates light", "A force that makes objects grow", "A force that changes colour"], "Friction opposes motion."],
+      ["Where does friction act?", ["Between surfaces in contact", "Only in water", "Only in air", "Only in magnets"], "Friction acts where surfaces touch."],
+      ["What is gravity?", ["The force of attraction between masses", "A type of sound", "A type of heat", "A type of light"], "Gravity attracts masses."],
+      ["Which force pulls dropped objects towards the ground?", ["Gravity", "Light", "Sound", "Heat"], "Gravity pulls objects down."],
+      ["What is elastic spring force?", ["The force exerted by a stretched or compressed elastic object", "The force of light", "The force of smell", "The force of colour"], "Elastic objects exert spring force."],
+      ["What happens when you pull on a spring?", ["It stretches", "It disappears", "It turns into liquid", "It becomes magnetic"], "Springs stretch when pulled."],
+      ["What happens when you release a stretched rubber band?", ["It returns to its original shape", "It breaks into gas", "It becomes heavier", "It turns into food"], "Elastic objects return to shape."],
+      ["Which force helps your shoes grip the floor?", ["Friction", "Light", "Sound", "Chemical energy"], "Friction helps grip."],
+      ["Which type of surface usually gives more friction?", ["A rough surface", "A smooth surface", "A wet oily surface", "A frozen surface only"], "Rough surfaces give more friction."],
+      ["Which type of surface usually gives less friction?", ["A smooth surface", "A rough surface", "A sandy surface", "A bumpy surface"], "Smooth surfaces give less friction."],
+      ["Which method can reduce friction?", ["Using oil or lubricant", "Using rough sand", "Using more weight", "Using glue"], "Oil reduces friction."],
+      ["Which method can increase friction?", ["Using a rough surface", "Using oil", "Using smooth glass", "Using ice"], "Rough surfaces increase friction."],
+      ["Why do car tyres have grooves?", ["To increase grip and friction", "To make tyres lighter", "To reduce gravity", "To make tyres magnetic"], "Grooves improve grip."],
+      ["Why does a ball fall when dropped?", ["Gravity pulls it downwards", "Light pushes it", "Sound pulls it", "Heat pulls it"], "Gravity causes falling."],
+      ["In which direction does gravity pull objects near the Earth?", ["Towards the centre of the Earth", "Away from Earth", "Sideways only", "Upwards only"], "Gravity pulls downwards."],
+      ["In which direction does friction act on a moving object?", ["Opposite to the motion", "Same direction as motion", "Towards the sky", "Towards the Sun"], "Friction opposes motion."],
+      ["What is weight?", ["The force of gravity acting on an object", "The amount of matter only", "The colour of an object", "The temperature of an object"], "Weight is due to gravity."],
+      ["What is mass?", ["The amount of matter in an object", "The force of gravity only", "The speed of an object", "The brightness of an object"], "Mass is the amount of matter."],
+      ["If an object has more mass, what usually happens to its weight on Earth?", ["Its weight usually increases", "Its weight decreases", "Its mass disappears", "Its colour changes"], "More mass usually means more weight."],
+      ["Which instrument can be used to measure force?", ["A spring balance", "A thermometer", "A ruler only", "A measuring cup"], "A spring balance measures force."],
+      ["Which object exerts elastic spring force?", ["A stretched spring", "A stationary stone", "A dark room", "A glass of water"], "A stretched spring exerts force."],
+      ["Which of these can a force change?", ["The shape of an object", "The name of an object", "The colour of an object", "The smell of an object"], "Force can change shape."],
+      ["Which force can act without touching the object?", ["Gravity", "Friction", "Elastic spring force only", "Contact force only"], "Gravity can act at a distance."]
+    ]
+  },
+  {
+    id: "environment",
+    title: "Interactions within the Environment",
+    emoji: "🦜",
+    blurb: "Food chains, food webs, adaptations and relationships.",
+    notes: [
+      "Food chains show feeding relationships.",
+      "Food webs are made of many connected food chains.",
+      "Adaptations help organisms survive.",
+      "Living things depend on one another."
+    ],
+    qs: [
+      ["What is the environment?", ["The surroundings where living things live", "Only water", "Only air", "A type of rock"], "The environment is where organisms live."],
+      ["What is a habitat?", ["The place where an organism lives", "A type of food", "A type of force", "A type of energy"], "A habitat is an organism's home."],
+      ["What is an adaptation?", ["A feature or behaviour that helps an organism survive", "A type of soil", "A type of weather", "A type of rock"], "Adaptations help survival."],
+      ["What is a structural adaptation?", ["An adaptation in a body part", "An action an animal does", "A type of food chain", "A type of weather"], "Structural adaptations are body features."],
+      ["What is a behavioural adaptation?", ["An action an organism does to survive", "A body part only", "A type of plant", "A type of rock"], "Behavioural adaptations are actions."],
+      ["What is a food chain?", ["A sequence showing what eats what", "A type of plant", "A type of rock", "A type of weather"], "Food chains show feeding."],
+      ["What is a food web?", ["Many connected food chains", "One food chain only", "A type of habitat", "A type of adaptation"], "Food webs connect chains."],
+      ["What is a producer?", ["An organism that makes its own food", "An organism that eats animals only", "An organism that breaks down dead matter", "An organism that hunts"], "Producers make food."],
+      ["What is a consumer?", ["An organism that eats other organisms", "An organism that makes its own food", "A rock", "A type of water"], "Consumers eat other organisms."],
+      ["What is a herbivore?", ["An animal that eats plants only", "An animal that eats meat only", "An animal that eats plants and meat", "An animal that eats soil only"], "Herbivores eat plants."],
+      ["What is a carnivore?", ["An animal that eats other animals", "An animal that eats plants only", "An animal that makes food", "An animal that breaks down dead matter"], "Carnivores eat animals."],
+      ["What is an omnivore?", ["An animal that eats both plants and animals", "An animal that eats plants only", "An animal that eats meat only", "An animal that makes its own food"], "Omnivores eat both."],
+      ["What is a decomposer?", ["An organism that breaks down dead matter", "An organism that makes food", "An organism that hunts", "An organism that flies"], "Decomposers break down dead matter."],
+      ["What is a predator?", ["An animal that hunts and eats other animals", "An animal that is hunted", "A plant that makes food", "A rock that breaks"], "Predators hunt."],
+      ["What is prey?", ["An animal that is hunted and eaten", "An animal that hunts", "A producer", "A decomposer"], "Prey is hunted."],
+      ["What is a population?", ["A group of organisms of the same type living in an area", "All the water in a lake", "All the rocks in a forest", "All the light in a room"], "Population means a group of the same organism."],
+      ["What does interdependence mean?", ["Living things depend on one another", "Living things do not need each other", "Only plants need sunlight", "Only animals need water"], "Organisms depend on each other."],
+      ["In the food chain grass -> deer -> tiger, what is the deer?", ["A herbivore and consumer", "A producer", "A carnivore", "A decomposer"], "The deer eats grass."],
+      ["If the deer population decreases, what may happen to tigers?", ["They may have less food", "They will become plants", "They will need less water", "They will start making food"], "Fewer deer means less food."],
+      ["If grass becomes more plentiful, what may happen to deer?", ["They may increase", "They will disappear", "They will become carnivores", "They will stop drinking water"], "More food can help deer increase."],
+      ["A polar bear has thick fur. What kind of adaptation is this?", ["A structural adaptation for cold environments", "A behavioural adaptation only", "A type of food chain", "A type of decomposition"], "Thick fur is a body feature."],
+      ["A camel stores fat in its hump. What is this an example of?", ["An adaptation for desert survival", "A type of sound energy", "A type of force", "A type of water cycle"], "The hump helps survival in deserts."],
+      ["Birds migrating to warmer places is what kind of adaptation?", ["A behavioural adaptation", "A structural adaptation only", "A type of photosynthesis", "A type of decomposer"], "Migration is a behaviour."],
+      ["Some animals hibernate in winter. What is this?", ["A behavioural adaptation to save energy in cold weather", "A structural adaptation only", "A type of producer", "A type of food web"], "Hibernation is a behaviour."],
+      ["What does camouflage help an animal do?", ["Hide from predators or catch prey", "Make food faster", "Produce oxygen", "Absorb water"], "Camouflage helps hiding."]
+    ]
+  }
+];
+
+const QUESTIONS = [];
+TOPICS.forEach(topic => {
+  topic.qs.forEach((item, index) => {
+    QUESTIONS.push({
+      id: topic.id + "-" + (index + 1),
+      topic: topic.id,
+      q: item[0],
+      options: item[1],
+      exp: item[2]
+    });
+  });
+});
+
+const STORAGE_KEY = "p6ScienceFullPack";
+const app = document.getElementById("app");
+
+let progress = loadProgress();
+let state = {
+  questions: [],
+  index: 0,
+  correct: 0,
+  answered: false,
+  title: "",
+  misses: []
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: {}, correct: {}, wrong: [] };
+
+    const data = JSON.parse(raw);
+    return {
+      attempts: data.attempts || {},
+      correct: data.correct || {},
+      wrong: data.wrong || []
+    };
+  } catch (error) {
+    return { attempts: {}, correct: {}, wrong: [] };
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (error) {}
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, char => {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
+  });
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function prepareQuestions(list) {
+  return list.map(q => {
+    const optionObjects = q.options.map((text, index) => ({
+      text,
+      correct: index === 0
+    }));
+
+    const shuffled = shuffle(optionObjects);
+
+    return {
+      ...q,
+      options: shuffled.map(option => option.text),
+      answer: shuffled.findIndex(option => option.correct)
+    };
+  });
+}
+
+function getTopic(id) {
+  return TOPICS.find(topic => topic.id === id);
+}
+
+function getQuestionsByTopic(id) {
+  return QUESTIONS.filter(q => q.topic === id);
+}
+
+function getStats() {
+  const attempted = Object.keys(progress.attempts).length;
+  let totalAttempts = 0;
+  let totalCorrect = 0;
+
+  for (const id in progress.attempts) {
+    totalAttempts += progress.attempts[id];
+  }
+
+  for (const id in progress.correct) {
+    totalCorrect += progress.correct[id];
+  }
+
+  const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+
+  return {
+    attempted,
+    accuracy,
+    wrong: progress.wrong.length
+  };
+}
+
+function renderHome() {
+  const stats = getStats();
+
+  const topicCards = TOPICS.map(topic => {
+    const total = topic.qs.length;
+    const mastered = QUESTIONS.filter(q => q.topic === topic.id && progress.correct[q.id] > 0).length;
+    const percent = total ? Math.round((mastered / total) * 100) : 0;
+
+    return `
+      <div class="card topic-card" onclick="openTopic('${topic.id}')">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P6</div>
+        </div>
+
+        <div class="topic-title">${esc(topic.title)}</div>
+        <div class="small">${esc(topic.blurb)}</div>
+
+        <div class="progress">
+          <div style="width:${percent}%"></div>
+        </div>
+
+        <div class="small">${mastered}/${total} questions correct at least once</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">🚀 P6 Science Full Pack</div>
+        <div class="chip">125 MCQs</div>
+      </div>
+
+      <div class="hero">
+        <h1>Primary 6 Science Practice</h1>
+        <p>
+          5 topics × 25 questions. Definitions, concepts and explanations included.
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+          <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+          <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+          <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="value">${stats.attempted}</div>
+          <div class="label">Questions practiced</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.accuracy}%</div>
+          <div class="label">Accuracy</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.wrong}</div>
+          <div class="label">Wrong questions</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${TOPICS.length}</div>
+          <div class="label">Topics</div>
+        </div>
+      </div>
+
+      ${topicCards}
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTopic(id) {
+  const topic = getTopic(id);
+
+  const notesHtml = topic.notes.map(note => `<li>${esc(note)}</li>`).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">⬅ Home</button>
+        <div class="chip">P6 Topic</div>
+      </div>
+
+      <div class="card">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P6</div>
+        </div>
+
+        <h2>${esc(topic.title)}</h2>
+        <p style="font-weight:800;">${esc(topic.blurb)}</p>
+
+        <h3>Key ideas</h3>
+        <ul class="notes">${notesHtml}</ul>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 25 Questions</button>
+          <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startAllChallenge() {
+  const questions = shuffle(QUESTIONS).slice(0, 20);
+  startQuiz(questions, "Random 20 Challenge");
+}
+
+function startRandomTen() {
+  const questions = shuffle(QUESTIONS).slice(0, 10);
+  startQuiz(questions, "Random 10");
+}
+
+function startWrongAll() {
+  const questions = QUESTIONS.filter(q => progress.wrong.includes(q.id));
+
+  if (!questions.length) {
+    alert("No wrong questions saved yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay");
+}
+
+function startTopic(id) {
+  const topic = getTopic(id);
+  const questions = getQuestionsByTopic(id);
+  startQuiz(questions, topic.title);
+}
+
+function startTopicWrong(id) {
+  const topic = getTopic(id);
+
+  const questions = QUESTIONS.filter(q => {
+    return q.topic === id && progress.wrong.includes(q.id);
+  });
+
+  if (!questions.length) {
+    alert("No wrong questions in this topic yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay: " + topic.title);
+}
+
+function startQuiz(list, title) {
+  if (!list.length) {
+    alert("No questions available.");
+    return;
+  }
+
+  state = {
+    questions: prepareQuestions(list),
+    index: 0,
+    correct: 0,
+    answered: false,
+    title,
+    misses: []
+  };
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  const topic = getTopic(q.topic);
+  const progressPercent = (state.index / state.questions.length) * 100;
+
+  const optionsHtml = q.options.map((option, index) => {
+    return `
+      <button class="option" onclick="answer(${index})">
+        ${String.fromCharCode(65 + index)}. ${esc(option)}
+      </button>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">${esc(state.title)}</div>
+      </div>
+
+      <div class="card">
+        <div class="progress">
+          <div style="width:${progressPercent}%"></div>
+        </div>
+
+        <div class="small">
+          Question ${state.index + 1} of ${state.questions.length} • Score ${state.correct}
+        </div>
+
+        <div class="chip" style="margin:10px 0;">
+          ${topic.emoji} ${esc(topic.title)}
+        </div>
+
+        <h2>${esc(q.q)}</h2>
+
+        <div class="options">
+          ${optionsHtml}
+        </div>
+
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function answer(selected) {
+  if (state.answered) return;
+
+  state.answered = true;
+
+  const q = state.questions[state.index];
+  const buttons = Array.from(document.querySelectorAll(".option"));
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  buttons[q.answer].classList.add("correct");
+
+  const isCorrect = selected === q.answer;
+
+  if (isCorrect) {
+    state.correct++;
+    buttons[selected].classList.add("correct");
+  } else {
+    buttons[selected].classList.add("wrong");
+    state.misses.push({
+      id: q.id,
+      selected
+    });
+  }
+
+  updateProgress(q.id, isCorrect);
+
+  const feedback = document.getElementById("feedback");
+  feedback.className = "feedback " + (isCorrect ? "good" : "bad");
+
+  feedback.innerHTML = `
+    <div>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</div>
+    <div class="exp">
+      ${esc(q.exp)}
+      ${!isCorrect ? " Correct answer: " + esc(q.options[q.answer]) + "." : ""}
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="nextQuestion()">
+        ${state.index === state.questions.length - 1 ? "Finish 🏁" : "Next ➜"}
+      </button>
+    </div>
+  `;
+}
+
+function updateProgress(id, isCorrect) {
+  progress.attempts[id] = (progress.attempts[id] || 0) + 1;
+
+  if (isCorrect) {
+    progress.correct[id] = (progress.correct[id] || 0) + 1;
+    progress.wrong = progress.wrong.filter(wrongId => wrongId !== id);
+  } else {
+    if (!progress.wrong.includes(id)) {
+      progress.wrong.push(id);
+    }
+  }
+
+  saveProgress();
+}
+
+function nextQuestion() {
+  if (!state.answered) return;
+
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    state.answered = false;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = state.questions.length;
+  const percent = Math.round((state.correct / total) * 100);
+
+  let stars = "💪";
+  let message = "Keep practising! Read the explanations and try again.";
+
+  if (percent >= 90) {
+    stars = "🌟🌟🌟";
+    message = "Excellent! You are showing strong understanding.";
+  } else if (percent >= 75) {
+    stars = "🌟🌟";
+    message = "Great job! Review the missed questions to become even stronger.";
+  } else if (percent >= 50) {
+    stars = "🌟";
+    message = "Good effort! Focus on the explanations and retry the wrong questions.";
+  }
+
+  const seen = new Set();
+  const uniqueMisses = state.misses.filter(miss => {
+    if (seen.has(miss.id)) return false;
+    seen.add(miss.id);
+    return true;
+  });
+
+  const reviewHtml = uniqueMisses.map(miss => {
+    const q = state.questions.find(item => item.id === miss.id);
+    const topic = getTopic(q.topic);
+
+    return `
+      <div class="review-item">
+        <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+        <div class="review-q">${esc(q.q)}</div>
+
+        <div class="user-answer">
+          Your answer: ${esc(q.options[miss.selected])}
+        </div>
+
+        <div class="correct-answer">
+          Correct answer: ${esc(q.options[q.answer])}
+        </div>
+
+        <div>${esc(q.exp)}</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">Result</div>
+      </div>
+
+      <div class="card">
+        <h2>${esc(state.title)} Complete!</h2>
+
+        <div class="result-stars">${stars}</div>
+
+        <p style="font-weight:900;">
+          You scored ${state.correct}/${total} (${percent}%). ${message}
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+          ${
+            uniqueMisses.length
+              ? '<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>'
+              : ""
+          }
+        </div>
+
+        <h3>Review</h3>
+
+        ${
+          uniqueMisses.length
+            ? reviewHtml
+            : "<p>🎉 Perfect! No wrong questions this round.</p>"
+        }
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function retryWrong() {
+  const ids = [...new Set(state.misses.map(miss => miss.id))];
+  const questions = QUESTIONS.filter(q => ids.includes(q.id));
+  startQuiz(questions, "Retry Wrong");
+}
+
+function resetProgress() {
+  if (confirm("Reset all P6 progress?")) {
+    progress = { attempts: {}, correct: {}, wrong: [] };
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
