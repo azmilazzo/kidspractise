@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>P5 Science Full Pack</title>
+<style>
+:root{
+  --bg1:#fef9c3;
+  --bg2:#e0f2fe;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{
+  display:inline-block;
+  background:#fef9c3;
+  color:#a16207;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:.9rem;
+}
+.hero{
+  background:linear-gradient(135deg,#f59e0b,#0ea5e9);
+  color:#fff;
+  padding:20px;
+  border-radius:24px;
+  box-shadow:0 14px 34px rgba(245,158,11,.18);
+}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+.stat{
+  background:var(--card);
+  border-radius:18px;
+  padding:12px;
+  text-align:center;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{
+  background:var(--card);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 10px 24px rgba(15,23,42,.08);
+  margin:12px 0;
+}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#fcd34d}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{
+  height:12px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+  margin:10px 0;
+}
+.progress div{
+  height:100%;
+  background:linear-gradient(90deg,#f59e0b,#0ea5e9);
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+.btn{
+  border:0;
+  border-radius:16px;
+  padding:12px 16px;
+  font-weight:1000;
+  cursor:pointer;
+}
+.primary{
+  background:linear-gradient(135deg,#f59e0b,#0ea5e9);
+  color:#fff;
+}
+.secondary{
+  background:#e2e8f0;
+  color:#0f172a;
+}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{
+  border:3px solid #fde68a;
+  background:#fffdf5;
+  border-radius:18px;
+  padding:14px;
+  font-size:1rem;
+  font-weight:900;
+  text-align:left;
+  cursor:pointer;
+}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{
+  margin-top:14px;
+  padding:14px;
+  border-radius:18px;
+  font-weight:900;
+}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{
+  border:2px solid #e2e8f0;
+  border-radius:18px;
+  padding:12px;
+  margin:10px 0;
+  background:#fbfdff;
+}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{
+  background:#fff1f2;
+  border:2px solid #f43f5e;
+  border-radius:16px;
+  padding:16px;
+  font-weight:700;
+  white-space:pre-wrap;
+  font-family:monospace;
+}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error", function(e){
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = '<div class="container"><div class="error-box">Page error: ' + (e.message || "Unknown error") + '</div></div>';
+  }
+});
+</script>
+
+<script>
+const TOPICS = [
+  {
+    id: "reproduction",
+    title: "Reproduction",
+    emoji: "🌸",
+    blurb: "Plant reproduction, pollination, fertilisation, seeds and basic human reproduction.",
+    notes: [
+      "Reproduction helps living things produce new living things.",
+      "Flowers help plants reproduce.",
+      "Pollination is the transfer of pollen to the stigma.",
+      "Fertilisation joins male and female reproductive cells.",
+      "Seeds can grow into new plants."
+    ],
+    qs: [
+      ["What is reproduction?", ["The process of producing new living things", "The process of making electricity", "The process of melting ice", "The process of filtering water"], "Reproduction produces new living things."],
+      ["Why is reproduction important?", ["It helps living things continue their species", "It makes rocks grow", "It stops plants from needing water", "It turns light into sound"], "Reproduction helps species continue."],
+      ["Which part of a flowering plant is mainly involved in reproduction?", ["Flower", "Root only", "Stem only", "Bark only"], "Flowers are reproductive structures."],
+      ["What are reproductive cells?", ["Cells needed to make a new living thing", "Cells that make light", "Cells that only store water", "Cells that make soil"], "Reproductive cells help make new organisms."],
+      ["What is pollen?", ["Tiny grains containing male reproductive cells", "Tiny drops of water", "Tiny pieces of soil", "Tiny seeds already grown"], "Pollen carries male reproductive cells."],
+      ["What is an ovule?", ["A part of a flower containing female reproductive cells", "A type of insect", "A type of leaf", "A part of a root"], "Ovules contain female reproductive cells."],
+      ["What is pollination?", ["Transfer of pollen from anther to stigma", "Transfer of water from roots to leaves", "Transfer of heat from Sun to Earth", "Transfer of food from leaf to root"], "Pollination transfers pollen."],
+      ["What is an anther?", ["The part of a flower that produces pollen", "The part that absorbs water", "The part that makes fruit only", "The part that protects roots"], "The anther produces pollen."],
+      ["What is a stigma?", ["The sticky part of a flower that receives pollen", "The part that makes roots", "The part that stores soil", "The part that blocks sunlight"], "The stigma receives pollen."],
+      ["What is fertilisation?", ["The joining of male and female reproductive cells", "The cooling of water vapour", "The breaking of rocks", "The charging of a battery"], "Fertilisation joins reproductive cells."],
+      ["After fertilisation, what does the ovule become?", ["A seed", "A leaf", "A stem", "A root"], "The ovule becomes a seed."],
+      ["After fertilisation, what does the ovary become?", ["A fruit", "A flower petal", "A root hair", "A pollen grain"], "The ovary becomes a fruit."],
+      ["What is a seed?", ["A structure that can grow into a new plant", "A type of soil", "A type of insect", "A type of mineral"], "A seed can grow into a new plant."],
+      ["What is germination?", ["When a seed begins to grow", "When a leaf falls", "When a flower closes", "When a fruit ripens only"], "Germination is when a seed starts growing."],
+      ["What does a seed need to germinate?", ["Water, air and warmth", "Darkness only", "Metal", "Plastic"], "Seeds need water, air and warmth."],
+      ["What is seed dispersal?", ["The spreading of seeds away from the parent plant", "The making of pollen", "The absorption of sunlight", "The cooling of leaves"], "Seed dispersal spreads seeds."],
+      ["Why is seed dispersal important?", ["It reduces competition for light, water and space", "It stops plants from growing", "It makes all seeds fall together", "It prevents germination"], "Dispersal helps seeds grow in new places."],
+      ["Which is an agent of seed dispersal?", ["Wind", "Gravity only", "Darkness", "Temperature only"], "Wind can carry seeds."],
+      ["Which seed is adapted for wind dispersal?", ["Dandelion seed with parachute-like hairs", "A heavy coconut only", "A seed with hooks only", "A fleshy berry only"], "Light parachute-like seeds are carried by wind."],
+      ["Which seed is likely dispersed by animals?", ["A fleshy berry", "A dry winged seed only", "A seed with a parachute only", "A seed that floats only"], "Animals may eat fruits and disperse seeds."],
+      ["In humans, what is the male reproductive cell?", ["Sperm", "Egg", "Blood cell", "Skin cell"], "The sperm is the male reproductive cell."],
+      ["In humans, what is the female reproductive cell?", ["Egg", "Sperm", "Muscle cell", "Bone cell"], "The egg is the female reproductive cell."],
+      ["In humans, where does a baby develop?", ["Uterus", "Stomach", "Lungs", "Heart"], "A baby develops in the uterus."],
+      ["What happens when a sperm joins an egg?", ["Fertilisation occurs", "Evaporation occurs", "Condensation occurs", "Pollination occurs"], "Joining of sperm and egg is fertilisation."],
+      ["What is the fertilised egg called?", ["Zygote", "Seed", "Pollen", "Stomata"], "A fertilised egg is called a zygote."]
+    ]
+  },
+  {
+    id: "watercycle",
+    title: "Water Cycle",
+    emoji: "💧",
+    blurb: "Evaporation, condensation, precipitation, collection and water conservation.",
+    notes: [
+      "The Sun provides energy for the water cycle.",
+      "Evaporation changes liquid water into water vapour.",
+      "Condensation changes water vapour into tiny droplets.",
+      "Precipitation is water falling from clouds."
+    ],
+    qs: [
+      ["What is the water cycle?", ["The continuous movement of water on Earth", "The process of making new planets", "The way rocks are formed", "The charging of batteries"], "The water cycle recycles water."],
+      ["Why is the water cycle important?", ["It supplies water to living things", "It creates plastic", "It stops sunlight", "It makes magnets"], "Living things need water."],
+      ["What is the main energy source for the water cycle?", ["Sun", "Moon", "Wind only", "Soil"], "The Sun heats water."],
+      ["What is evaporation?", ["Liquid water changing into water vapour", "Water vapour changing into ice", "Ice changing into steam directly only", "Water changing into soil"], "Evaporation is liquid to gas."],
+      ["What is water vapour?", ["Water in gas form", "Water in solid form", "Frozen water", "Clouds only"], "Water vapour is invisible gas."],
+      ["Which places lose water by evaporation?", ["Oceans, rivers and puddles", "Only cups", "Only underground pipes", "Only metal tanks"], "Water evaporates from many surfaces."],
+      ["What is transpiration?", ["Loss of water vapour from plants", "Melting of ice", "Boiling of water", "Freezing of clouds"], "Plants release water vapour."],
+      ["What is condensation?", ["Water vapour changing into liquid water", "Liquid water changing into gas", "Ice changing into gas", "Water changing into light"], "Condensation is gas to liquid."],
+      ["How do clouds form?", ["Water vapour condenses into tiny droplets", "Smoke rises from chimneys", "Dust melts in the sky", "Stars evaporate"], "Clouds form by condensation."],
+      ["What are clouds made of?", ["Tiny water droplets or ice crystals", "Only smoke", "Only dust", "Only gas"], "Clouds contain tiny droplets or ice crystals."],
+      ["What is precipitation?", ["Water falling from clouds as rain, snow, sleet or hail", "Water evaporating from the sea", "Water soaking into soil only", "Water boiling in a kettle"], "Precipitation is falling water."],
+      ["Which is an example of precipitation?", ["Rain", "Steam", "Fog only", "Dew only"], "Rain is precipitation."],
+      ["What happens after precipitation?", ["Water collects in rivers, lakes, sea and ground", "Water disappears forever", "Water becomes rock", "Water becomes sunlight"], "Water collects after precipitation."],
+      ["What is collection in the water cycle?", ["Water gathering in bodies of water", "Water evaporating from leaves", "Water turning into gas", "Water becoming pollen"], "Collection gathers water."],
+      ["What is runoff?", ["Water flowing over land into rivers or drains", "Water rising into clouds", "Water turning into ice only", "Water being made by plants"], "Runoff flows over land."],
+      ["What is infiltration?", ["Water soaking into the ground", "Water boiling", "Water evaporating", "Water shining"], "Infiltration moves water underground."],
+      ["What is groundwater?", ["Water stored underground", "Water found only in clouds", "Water that never moves", "Water made by rocks"], "Groundwater is under the surface."],
+      ["In clouds, water is mainly in what form?", ["Tiny liquid droplets or ice crystals", "Large blocks of ice", "Steam only", "Dry dust"], "Clouds contain tiny droplets or crystals."],
+      ["When Sun heats water, it usually:", ["Evaporates", "Freezes", "Becomes sand", "Turns into metal"], "Heating causes evaporation."],
+      ["When water vapour cools, it usually:", ["Condenses", "Evaporates", "Melts", "Disappears"], "Cooling causes condensation."],
+      ["Why is the water cycle continuous?", ["Water is recycled and reused", "New water is created daily", "Water never moves", "Clouds stop the cycle"], "Water is recycled."],
+      ["What can happen if there is little rain for a long time?", ["Drought", "Flood", "Rainstorm", "Snowfall"], "Little rain can cause drought."],
+      ["What can happen if there is too much rain?", ["Flood", "Drought", "Evaporation only", "Sunshine only"], "Too much rain can cause floods."],
+      ["Why must we keep water clean?", ["Living things need clean water", "Clean water stops the water cycle", "Dirty water helps plants grow better", "Water is not important"], "Clean water is essential."],
+      ["Which is the correct order?", ["Evaporation -> condensation -> precipitation -> collection", "Condensation -> evaporation -> collection -> precipitation", "Collection -> precipitation -> evaporation -> condensation", "Precipitation -> collection -> condensation -> evaporation"], "This is the water cycle order."]
+    ]
+  },
+  {
+    id: "planttransport",
+    title: "Plant Transport and Gas Exchange",
+    emoji: "🚚",
+    blurb: "How plants move water, minerals and food, and exchange gases.",
+    notes: [
+      "Roots absorb water and minerals.",
+      "Xylem carries water and minerals upward.",
+      "Phloem carries food around the plant.",
+      "Stomata allow gases to enter and leave leaves."
+    ],
+    qs: [
+      ["Why do plants need a transport system?", ["To move water, minerals and food", "To make light", "To produce sound", "To attract magnets"], "Plants transport substances."],
+      ["Which part absorbs water and minerals?", ["Roots", "Petals", "Fruits", "Seeds only"], "Roots absorb water and minerals."],
+      ["What do root hairs do?", ["Increase surface area for absorption", "Make flowers colourful", "Block water from entering", "Store pollen"], "Root hairs help absorption."],
+      ["What carries water and minerals upward?", ["Xylem", "Phloem only", "Petals", "Stomata"], "Xylem carries water and minerals."],
+      ["What carries food from leaves?", ["Phloem", "Xylem only", "Root hairs", "Soil"], "Phloem transports food."],
+      ["What is xylem?", ["Tube-like tissue that transports water and minerals", "Tissue that makes flowers", "A type of insect", "A type of fruit"], "Xylem transports water and minerals."],
+      ["What is phloem?", ["Tube-like tissue that transports food", "Tissue that absorbs sunlight only", "A type of soil", "A type of gas"], "Phloem transports food."],
+      ["Water usually moves from:", ["Roots to stem to leaves", "Leaves to roots to soil", "Flowers to fruits only", "Air to roots only"], "Water moves upward through the plant."],
+      ["Food made in leaves moves to:", ["Other parts of the plant", "The soil only", "The air only", "Clouds"], "Food is transported around the plant."],
+      ["What is transpiration?", ["Loss of water vapour from leaves", "Absorption of minerals", "Production of pollen", "Breaking of rocks"], "Transpiration is water vapour loss."],
+      ["What helps pull water upward in plants?", ["Transpiration", "Condensation", "Magnetism", "Reflection"], "Transpiration helps pull water upward."],
+      ["What are stomata?", ["Tiny openings on leaves", "Tiny roots", "Tiny seeds", "Tiny flowers"], "Stomata are leaf openings."],
+      ["What do stomata allow?", ["Gases to enter and leave leaves", "Only water to enter", "Only soil to enter", "Only sunlight to enter"], "Stomata allow gas exchange."],
+      ["Which gas enters leaves for photosynthesis?", ["Carbon dioxide", "Oxygen", "Helium", "Nitrogen only"], "Plants take in carbon dioxide."],
+      ["Which gas leaves during photosynthesis?", ["Oxygen", "Carbon dioxide", "Smoke", "Steam only"], "Plants release oxygen."],
+      ["Which gas do plants take in for respiration?", ["Oxygen", "Carbon dioxide", "Hydrogen", "Chlorine"], "Plants also take in oxygen for respiration."],
+      ["Which gas do plants release during respiration?", ["Carbon dioxide", "Oxygen", "Helium", "Neon"], "Respiration releases carbon dioxide."],
+      ["What may happen to stomata in very dry weather?", ["They may close to reduce water loss", "They may become flowers", "They may turn into roots", "They may produce soil"], "Closing stomata reduces water loss."],
+      ["Why does a plant wilt when it lacks water?", ["Cells lose water and become limp", "Cells become too hard", "The plant makes too much food", "The roots become leaves"], "Lack of water causes wilting."],
+      ["In an experiment with coloured water, which part shows water movement?", ["Stem and leaves", "Flowers only", "Soil only", "Air only"], "Coloured water moves through stem and leaves."],
+      ["What pigment helps leaves make food?", ["Chlorophyll", "Oxygen", "Starch only", "Protein only"], "Chlorophyll absorbs light."],
+      ["What food do leaves make?", ["Glucose", "Salt", "Plastic", "Sand"], "Leaves make glucose."],
+      ["Why do plants need minerals?", ["For healthy growth", "To make sound", "To become animals", "To stop photosynthesis"], "Minerals help plants grow."],
+      ["Which part supports the transport tissues?", ["Stem", "Flower", "Fruit", "Seed coat"], "The stem supports transport."],
+      ["What could happen if a stem is badly damaged?", ["Transport of water and food may be blocked", "The plant will grow faster", "Roots will become leaves", "Flowers will become roots"], "Stem damage can affect transport."]
+    ]
+  },
+  {
+    id: "body-systems",
+    title: "Respiratory and Circulatory Systems",
+    emoji: "❤️",
+    blurb: "Breathing, lungs, heart, blood vessels and transport in the body.",
+    notes: [
+      "The respiratory system helps us breathe.",
+      "The lungs take in oxygen and remove carbon dioxide.",
+      "The heart pumps blood around the body.",
+      "Blood carries oxygen, nutrients and waste."
+    ],
+    qs: [
+      ["What is the respiratory system?", ["System of organs that helps us breathe", "System that digests food", "System that makes bones", "System that controls sight"], "The respiratory system is for breathing."],
+      ["Why do we breathe?", ["To take in oxygen and remove carbon dioxide", "To make food", "To cool our bones", "To pump blood only"], "Breathing supplies oxygen."],
+      ["What are the main respiratory organs?", ["Lungs", "Kidneys", "Stomach", "Liver"], "The lungs are used for breathing."],
+      ["Air usually enters the body through the:", ["Nose or mouth", "Ears", "Skin only", "Fingernails"], "Air enters through nose or mouth."],
+      ["What helps filter air in the nose?", ["Nose hairs and mucus", "Teeth", "Tongue", "Eyelashes"], "Nose hairs and mucus filter air."],
+      ["What is the trachea?", ["Windpipe that carries air to lungs", "Tube that carries food only", "Bone in the arm", "Muscle in the leg"], "The trachea carries air."],
+      ["What are bronchi?", ["Tubes branching from trachea into lungs", "Tiny blood vessels", "Parts of the stomach", "Bones in the skull"], "Bronchi carry air into lungs."],
+      ["What are alveoli?", ["Tiny air sacs where gas exchange happens", "Large muscles", "Bones", "Food tubes"], "Gas exchange happens in alveoli."],
+      ["Which gas passes from alveoli into blood?", ["Oxygen", "Carbon dioxide", "Helium", "Nitrogen only"], "Oxygen enters blood."],
+      ["Which gas passes from blood into alveoli?", ["Carbon dioxide", "Oxygen", "Hydrogen", "Chlorine"], "Carbon dioxide leaves blood."],
+      ["What is breathing?", ["Inhaling and exhaling air", "Chewing and swallowing", "Running and jumping", "Reading and writing"], "Breathing is inhaling and exhaling."],
+      ["What is inhalation?", ["Breathing air into lungs", "Breathing air out", "Swallowing water", "Digesting food"], "Inhalation brings air in."],
+      ["What is exhalation?", ["Breathing air out of lungs", "Taking air in", "Absorbing nutrients", "Pumping blood"], "Exhalation lets air out."],
+      ["What muscle helps breathing?", ["Diaphragm", "Biceps only", "Tongue", "Eyelid"], "The diaphragm helps breathing."],
+      ["What is the circulatory system?", ["System that transports blood around body", "System that digests food", "System that hears sound", "System that makes sweat"], "The circulatory system transports blood."],
+      ["Which organ pumps blood?", ["Heart", "Brain", "Lungs only", "Stomach"], "The heart pumps blood."],
+      ["What are blood vessels?", ["Tubes that carry blood", "Bones that protect organs", "Muscles that move arms", "Nerves that send messages"], "Blood vessels carry blood."],
+      ["What are arteries?", ["Blood vessels that carry blood away from heart", "Blood vessels that carry blood to heart only", "Tiny air sacs", "Digestive tubes"], "Arteries carry blood away from heart."],
+      ["What are veins?", ["Blood vessels that carry blood back to heart", "Tubes that carry air", "Bones", "Muscles"], "Veins carry blood back to heart."],
+      ["What are capillaries?", ["Tiny blood vessels where exchange occurs", "Large arteries", "Bones", "Nerves"], "Capillaries allow exchange."],
+      ["What does blood carry?", ["Oxygen, nutrients and waste", "Only water", "Only carbon dioxide", "Only bones"], "Blood transports many substances."],
+      ["How does exercise affect the heart?", ["It can make the heart muscle stronger", "It stops the heart", "It makes the heart disappear", "It has no effect"], "Exercise strengthens the heart."],
+      ["What is a pulse?", ["The beat of arteries as heart pumps", "The sound of breathing only", "The movement of food", "The flow of sweat"], "Pulse shows heartbeat."],
+      ["What helps blood flow in one direction in veins?", ["Valves", "Bones", "Muscles only", "Skin"], "Valves help direct blood flow."],
+      ["Which habit supports healthy lungs?", ["Breathing fresh air and not smoking", "Smoking", "Eating too much junk food", "Holding breath all day"], "Fresh air and no smoking help lungs."]
+    ]
+  },
+  {
+    id: "electricity",
+    title: "Electrical Systems",
+    emoji: "🔌",
+    blurb: "Circuits, conductors, insulators, switches and electrical safety.",
+    notes: [
+      "A complete circuit is needed for current to flow.",
+      "Conductors allow electricity to flow.",
+      "Insulators reduce the flow of electricity.",
+      "Switches open and close circuits."
+    ],
+    qs: [
+      ["What is electrical energy?", ["Energy carried by electric current", "Energy from food only", "Energy stored in rocks", "Energy made by magnets only"], "Electrical energy is carried by current."],
+      ["What is electric current?", ["Flow of electric charge", "Flow of water", "Flow of air", "Flow of heat only"], "Current is moving charge."],
+      ["What is an electric circuit?", ["A complete path for electric current", "A broken wire", "A type of battery", "A light switch only"], "A circuit is a path for current."],
+      ["What is needed for a bulb to light?", ["A complete circuit", "An open circuit", "A broken circuit", "No battery"], "Current needs a complete path."],
+      ["What is an open circuit?", ["A broken circuit with no current", "A complete circuit", "A dangerous circuit", "A circuit with many bulbs"], "Open circuits do not work."],
+      ["What is a closed circuit?", ["A complete circuit with current", "A broken circuit", "A circuit with no wires", "A circuit with no battery"], "Closed circuits allow current."],
+      ["What is a conductor?", ["A material that allows electric current to flow", "A material that blocks current completely", "A material that makes light", "A material that stores food"], "Conductors allow current."],
+      ["Which is a conductor?", ["Copper", "Rubber", "Plastic", "Dry wood"], "Copper conducts electricity."],
+      ["What is an insulator?", ["A material that does not allow current easily", "A material that conducts very well", "A material that makes sound", "A material that melts easily"], "Insulators reduce current flow."],
+      ["Which is an insulator?", ["Rubber", "Copper", "Aluminium", "Steel"], "Rubber is an insulator."],
+      ["What does a switch do?", ["Opens or closes a circuit", "Makes batteries bigger", "Changes wire colour", "Stops all electricity forever"], "Switches control circuits."],
+      ["Which component provides electrical energy?", ["Battery", "Plastic cover", "Glass bulb only", "Rubber band"], "Batteries provide energy."],
+      ["What is a battery?", ["A source of electrical energy made of cells", "A type of switch", "A type of insulator", "A type of bulb"], "A battery stores chemical energy."],
+      ["What are terminals?", ["Positive and negative ends of a cell or battery", "Wires only", "Bulbs only", "Switch covers"], "Terminals connect the battery."],
+      ["What does a bulb do in a circuit?", ["Converts electrical energy to light and heat", "Stores water", "Produces food", "Makes magnets"], "Bulbs give light and heat."],
+      ["What do wires do?", ["Connect components and carry current", "Block all electricity", "Make circuits open only", "Produce oxygen"], "Wires carry current."],
+      ["Why are wires covered with plastic?", ["To insulate and keep people safe", "To make them heavier", "To make them magnetic", "To conduct better"], "Plastic insulates wires."],
+      ["What is a short circuit?", ["A dangerous path where current bypasses components", "A very safe circuit", "A circuit with no battery", "A circuit with only one wire"], "Short circuits can be dangerous."],
+      ["What is a series circuit?", ["A circuit with components in one loop", "A circuit with separate branches", "A circuit with no switch", "A circuit with no battery"], "Series circuits have one loop."],
+      ["In a series circuit, if one bulb breaks, what happens to others?", ["They usually go off", "They shine brighter", "They change colour", "They become magnets"], "Series circuits break easily."],
+      ["What is a parallel circuit?", ["A circuit with separate branches", "A circuit with one loop only", "A circuit with no wires", "A circuit with no current"], "Parallel circuits have branches."],
+      ["In a parallel circuit, if one bulb breaks, what can happen?", ["Other bulbs may remain lit", "All bulbs always go off", "The battery explodes", "The wires melt"], "Parallel circuits can keep working."],
+      ["Why are home lights often connected in parallel?", ["Each light can work independently", "So all lights must fail together", "To use fewer wires only", "To make wiring dangerous"], "Parallel wiring is convenient."],
+      ["Which is a safe practice?", ["Do not touch sockets with wet hands", "Touch sockets with wet hands", "Insert metal objects into sockets", "Pull wires roughly"], "Water can increase electric risk."],
+      ["Which object could complete a circuit?", ["Metal paper clip", "Plastic ruler", "Rubber eraser", "Dry wooden stick"], "Metal conducts electricity."]
+    ]
+  }
+];
+
+const QUESTIONS = [];
+TOPICS.forEach(topic => {
+  topic.qs.forEach((item, index) => {
+    QUESTIONS.push({
+      id: topic.id + "-" + (index + 1),
+      topic: topic.id,
+      q: item[0],
+      options: item[1],
+      exp: item[2]
+    });
+  });
+});
+
+const STORAGE_KEY = "p5ScienceFullPack";
+const app = document.getElementById("app");
+
+let progress = loadProgress();
+let state = {
+  questions: [],
+  index: 0,
+  correct: 0,
+  answered: false,
+  title: "",
+  misses: []
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: {}, correct: {}, wrong: [] };
+
+    const data = JSON.parse(raw);
+    return {
+      attempts: data.attempts || {},
+      correct: data.correct || {},
+      wrong: data.wrong || []
+    };
+  } catch (error) {
+    return { attempts: {}, correct: {}, wrong: [] };
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (error) {}
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, char => {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
+  });
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function prepareQuestions(list) {
+  return list.map(q => {
+    const optionObjects = q.options.map((text, index) => ({
+      text,
+      correct: index === 0
+    }));
+
+    const shuffled = shuffle(optionObjects);
+
+    return {
+      ...q,
+      options: shuffled.map(option => option.text),
+      answer: shuffled.findIndex(option => option.correct)
+    };
+  });
+}
+
+function getTopic(id) {
+  return TOPICS.find(topic => topic.id === id);
+}
+
+function getQuestionsByTopic(id) {
+  return QUESTIONS.filter(q => q.topic === id);
+}
+
+function getStats() {
+  const attempted = Object.keys(progress.attempts).length;
+  let totalAttempts = 0;
+  let totalCorrect = 0;
+
+  for (const id in progress.attempts) {
+    totalAttempts += progress.attempts[id];
+  }
+
+  for (const id in progress.correct) {
+    totalCorrect += progress.correct[id];
+  }
+
+  const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+
+  return {
+    attempted,
+    accuracy,
+    wrong: progress.wrong.length
+  };
+}
+
+function renderHome() {
+  const stats = getStats();
+
+  const topicCards = TOPICS.map(topic => {
+    const total = topic.qs.length;
+    const mastered = QUESTIONS.filter(q => q.topic === topic.id && progress.correct[q.id] > 0).length;
+    const percent = total ? Math.round((mastered / total) * 100) : 0;
+
+    return `
+      <div class="card topic-card" onclick="openTopic('${topic.id}')">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P5</div>
+        </div>
+
+        <div class="topic-title">${esc(topic.title)}</div>
+        <div class="small">${esc(topic.blurb)}</div>
+
+        <div class="progress">
+          <div style="width:${percent}%"></div>
+        </div>
+
+        <div class="small">${mastered}/${total} questions correct at least once</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">💧 P5 Science Full Pack</div>
+        <div class="chip">125 MCQs</div>
+      </div>
+
+      <div class="hero">
+        <h1>Primary 5 Science Practice</h1>
+        <p>
+          5 topics × 25 questions. Definitions, concepts and explanations included.
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+          <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+          <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+          <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="value">${stats.attempted}</div>
+          <div class="label">Questions practiced</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.accuracy}%</div>
+          <div class="label">Accuracy</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.wrong}</div>
+          <div class="label">Wrong questions</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${TOPICS.length}</div>
+          <div class="label">Topics</div>
+        </div>
+      </div>
+
+      ${topicCards}
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTopic(id) {
+  const topic = getTopic(id);
+
+  const notesHtml = topic.notes.map(note => `<li>${esc(note)}</li>`).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">⬅ Home</button>
+        <div class="chip">P5 Topic</div>
+      </div>
+
+      <div class="card">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P5</div>
+        </div>
+
+        <h2>${esc(topic.title)}</h2>
+        <p style="font-weight:800;">${esc(topic.blurb)}</p>
+
+        <h3>Key ideas</h3>
+        <ul class="notes">${notesHtml}</ul>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 25 Questions</button>
+          <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startAllChallenge() {
+  const questions = shuffle(QUESTIONS).slice(0, 20);
+  startQuiz(questions, "Random 20 Challenge");
+}
+
+function startRandomTen() {
+  const questions = shuffle(QUESTIONS).slice(0, 10);
+  startQuiz(questions, "Random 10");
+}
+
+function startWrongAll() {
+  const questions = QUESTIONS.filter(q => progress.wrong.includes(q.id));
+
+  if (!questions.length) {
+    alert("No wrong questions saved yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay");
+}
+
+function startTopic(id) {
+  const topic = getTopic(id);
+  const questions = getQuestionsByTopic(id);
+  startQuiz(questions, topic.title);
+}
+
+function startTopicWrong(id) {
+  const topic = getTopic(id);
+
+  const questions = QUESTIONS.filter(q => {
+    return q.topic === id && progress.wrong.includes(q.id);
+  });
+
+  if (!questions.length) {
+    alert("No wrong questions in this topic yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay: " + topic.title);
+}
+
+function startQuiz(list, title) {
+  if (!list.length) {
+    alert("No questions available.");
+    return;
+  }
+
+  state = {
+    questions: prepareQuestions(list),
+    index: 0,
+    correct: 0,
+    answered: false,
+    title,
+    misses: []
+  };
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  const topic = getTopic(q.topic);
+  const progressPercent = (state.index / state.questions.length) * 100;
+
+  const optionsHtml = q.options.map((option, index) => {
+    return `
+      <button class="option" onclick="answer(${index})">
+        ${String.fromCharCode(65 + index)}. ${esc(option)}
+      </button>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">${esc(state.title)}</div>
+      </div>
+
+      <div class="card">
+        <div class="progress">
+          <div style="width:${progressPercent}%"></div>
+        </div>
+
+        <div class="small">
+          Question ${state.index + 1} of ${state.questions.length} • Score ${state.correct}
+        </div>
+
+        <div class="chip" style="margin:10px 0;">
+          ${topic.emoji} ${esc(topic.title)}
+        </div>
+
+        <h2>${esc(q.q)}</h2>
+
+        <div class="options">
+          ${optionsHtml}
+        </div>
+
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function answer(selected) {
+  if (state.answered) return;
+
+  state.answered = true;
+
+  const q = state.questions[state.index];
+  const buttons = Array.from(document.querySelectorAll(".option"));
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  buttons[q.answer].classList.add("correct");
+
+  const isCorrect = selected === q.answer;
+
+  if (isCorrect) {
+    state.correct++;
+    buttons[selected].classList.add("correct");
+  } else {
+    buttons[selected].classList.add("wrong");
+    state.misses.push({
+      id: q.id,
+      selected
+    });
+  }
+
+  updateProgress(q.id, isCorrect);
+
+  const feedback = document.getElementById("feedback");
+  feedback.className = "feedback " + (isCorrect ? "good" : "bad");
+
+  feedback.innerHTML = `
+    <div>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</div>
+    <div class="exp">
+      ${esc(q.exp)}
+      ${!isCorrect ? " Correct answer: " + esc(q.options[q.answer]) + "." : ""}
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="nextQuestion()">
+        ${state.index === state.questions.length - 1 ? "Finish 🏁" : "Next ➜"}
+      </button>
+    </div>
+  `;
+}
+
+function updateProgress(id, isCorrect) {
+  progress.attempts[id] = (progress.attempts[id] || 0) + 1;
+
+  if (isCorrect) {
+    progress.correct[id] = (progress.correct[id] || 0) + 1;
+    progress.wrong = progress.wrong.filter(wrongId => wrongId !== id);
+  } else {
+    if (!progress.wrong.includes(id)) {
+      progress.wrong.push(id);
+    }
+  }
+
+  saveProgress();
+}
+
+function nextQuestion() {
+  if (!state.answered) return;
+
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    state.answered = false;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = state.questions.length;
+  const percent = Math.round((state.correct / total) * 100);
+
+  let stars = "💪";
+  let message = "Keep practising! Read the explanations and try again.";
+
+  if (percent >= 90) {
+    stars = "🌟🌟🌟";
+    message = "Excellent! You are showing strong understanding.";
+  } else if (percent >= 75) {
+    stars = "🌟🌟";
+    message = "Great job! Review the missed questions to become even stronger.";
+  } else if (percent >= 50) {
+    stars = "🌟";
+    message = "Good effort! Focus on the explanations and retry the wrong questions.";
+  }
+
+  const seen = new Set();
+  const uniqueMisses = state.misses.filter(miss => {
+    if (seen.has(miss.id)) return false;
+    seen.add(miss.id);
+    return true;
+  });
+
+  const reviewHtml = uniqueMisses.map(miss => {
+    const q = state.questions.find(item => item.id === miss.id);
+    const topic = getTopic(q.topic);
+
+    return `
+      <div class="review-item">
+        <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+        <div class="review-q">${esc(q.q)}</div>
+
+        <div class="user-answer">
+          Your answer: ${esc(q.options[miss.selected])}
+        </div>
+
+        <div class="correct-answer">
+          Correct answer: ${esc(q.options[q.answer])}
+        </div>
+
+        <div>${esc(q.exp)}</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">Result</div>
+      </div>
+
+      <div class="card">
+        <h2>${esc(state.title)} Complete!</h2>
+
+        <div class="result-stars">${stars}</div>
+
+        <p style="font-weight:900;">
+          You scored ${state.correct}/${total} (${percent}%). ${message}
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+          ${
+            uniqueMisses.length
+              ? '<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>'
+              : ""
+          }
+        </div>
+
+        <h3>Review</h3>
+
+        ${
+          uniqueMisses.length
+            ? reviewHtml
+            : "<p>🎉 Perfect! No wrong questions this round.</p>"
+        }
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function retryWrong() {
+  const ids = [...new Set(state.misses.map(miss => miss.id))];
+  const questions = QUESTIONS.filter(q => ids.includes(q.id));
+  startQuiz(questions, "Retry Wrong");
+}
+
+function resetProgress() {
+  if (confirm("Reset all P5 progress?")) {
+    progress = { attempts: {}, correct: {}, wrong: [] };
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
