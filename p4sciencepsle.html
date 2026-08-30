@@ -1,0 +1,882 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>P4 Science Full Pack</title>
+<style>
+:root{
+  --bg1:#dcfce7;
+  --bg2:#e0f2fe;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{
+  display:inline-block;
+  background:#dcfce7;
+  color:#15803d;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:.9rem;
+}
+.hero{
+  background:linear-gradient(135deg,#10b981,#0ea5e9);
+  color:#fff;
+  padding:20px;
+  border-radius:24px;
+  box-shadow:0 14px 34px rgba(16,185,129,.18);
+}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+.stat{
+  background:var(--card);
+  border-radius:18px;
+  padding:12px;
+  text-align:center;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{
+  background:var(--card);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 10px 24px rgba(15,23,42,.08);
+  margin:12px 0;
+}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#86efac}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{
+  height:12px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+  margin:10px 0;
+}
+.progress div{
+  height:100%;
+  background:linear-gradient(90deg,#34d399,#0ea5e9);
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+.btn{
+  border:0;
+  border-radius:16px;
+  padding:12px 16px;
+  font-weight:1000;
+  cursor:pointer;
+}
+.primary{
+  background:linear-gradient(135deg,#10b981,#0ea5e9);
+  color:#fff;
+}
+.secondary{
+  background:#e2e8f0;
+  color:#0f172a;
+}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{
+  border:3px solid #bbf7d0;
+  background:#f8fffb;
+  border-radius:18px;
+  padding:14px;
+  font-size:1rem;
+  font-weight:900;
+  text-align:left;
+  cursor:pointer;
+}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{
+  margin-top:14px;
+  padding:14px;
+  border-radius:18px;
+  font-weight:900;
+}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{
+  border:2px solid #e2e8f0;
+  border-radius:18px;
+  padding:12px;
+  margin:10px 0;
+  background:#fbfdff;
+}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{
+  background:#fff1f2;
+  border:2px solid #f43f5e;
+  border-radius:16px;
+  padding:16px;
+  font-weight:700;
+  white-space:pre-wrap;
+  font-family:monospace;
+}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error", function(e){
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = '<div class="container"><div class="error-box">Page error: ' + (e.message || "Unknown error") + '</div></div>';
+  }
+});
+</script>
+
+<script>
+const TOPICS = [
+  {
+    id: "plants",
+    title: "Plant Parts and Functions",
+    emoji: "🌿",
+    blurb: "Roots, stems, leaves, flowers, fruits, seeds and their functions.",
+    notes: [
+      "Roots absorb water and minerals and anchor the plant.",
+      "The stem supports the plant and transports water and food.",
+      "Leaves make food for the plant.",
+      "Flowers help plants reproduce.",
+      "Fruits contain and protect seeds."
+    ],
+    qs: [
+      ["What is a root?", ["The part of a plant that absorbs water and anchors the plant", "The part that makes flowers", "The part that contains seeds only", "The part that makes pollen"], "Roots absorb water and minerals and anchor the plant."],
+      ["Which part absorbs water and minerals from the soil?", ["Roots", "Petals", "Fruits", "Seeds"], "Roots absorb water and minerals."],
+      ["Which part anchors the plant in the soil?", ["Roots", "Leaves", "Flowers", "Stem only"], "Roots hold the plant firmly in the soil."],
+      ["What is a stem?", ["The part that supports the plant and transports substances", "The part that absorbs sunlight only", "The part that makes seeds only", "The part that stores pollen only"], "The stem supports the plant and transports water and food."],
+      ["Which part supports the plant and holds leaves up?", ["Stem", "Root", "Flower", "Soil"], "The stem supports the plant."],
+      ["Which part carries water and food around the plant?", ["Stem", "Petal", "Fruit", "Seed coat"], "The stem transports water and food."],
+      ["What is a leaf?", ["A plant part that makes food", "A plant part that only protects roots", "A plant part that only makes shade", "A plant part that absorbs soil"], "Leaves make food for the plant."],
+      ["Which part of the plant makes food?", ["Leaf", "Root", "Flower", "Fruit"], "Leaves make food through photosynthesis."],
+      ["What is chlorophyll?", ["The green pigment in leaves that absorbs light", "The water inside roots", "The soil around plants", "The gas released by animals"], "Chlorophyll absorbs light energy."],
+      ["What gives leaves their green colour?", ["Chlorophyll", "Oxygen", "Soil", "Roots"], "Chlorophyll makes leaves green."],
+      ["What is photosynthesis?", ["The process by which plants make their own food", "The process by which plants absorb rocks", "The process by which plants lose leaves", "The process by which plants become animals"], "Photosynthesis is how plants make food."],
+      ["Which gas do plants take in for photosynthesis?", ["Carbon dioxide", "Oxygen", "Helium", "Nitrogen only"], "Plants take in carbon dioxide."],
+      ["Which gas do plants release during photosynthesis?", ["Oxygen", "Carbon dioxide", "Smoke", "Steam only"], "Plants release oxygen."],
+      ["What energy source do plants need for photosynthesis?", ["Sunlight", "Darkness", "Wind", "Moonlight only"], "Plants need sunlight."],
+      ["What is a flower?", ["The part of a plant that helps reproduction", "The part that absorbs water only", "The part that anchors the plant", "The part that stores soil"], "Flowers help plants reproduce."],
+      ["Which part of a flower attracts insects?", ["Petals", "Roots", "Stem", "Leaves only"], "Petals are colourful and attract insects."],
+      ["What is pollen?", ["Tiny grains produced by flowers for reproduction", "Tiny drops of water", "Tiny pieces of soil", "Tiny seeds already grown"], "Pollen is needed for plant reproduction."],
+      ["What is a fruit?", ["The part of a plant that contains seeds", "The part that absorbs sunlight", "The part that takes in water", "The part that makes pollen only"], "Fruits contain seeds."],
+      ["What is one function of a fruit?", ["Protect seeds and help seed dispersal", "Make roots grow downward", "Stop the plant from growing", "Change soil into water"], "Fruits protect seeds and help dispersal."],
+      ["What is a seed?", ["A part that can grow into a new plant", "A type of insect", "A type of flower only", "A waste product of plants"], "A seed can develop into a new plant."],
+      ["Water enters the plant mainly through the:", ["Roots", "Flowers", "Fruits", "Petals"], "Roots absorb water."],
+      ["Water travels from roots to leaves through the:", ["Stem", "Petals", "Soil", "Air around the plant"], "The stem transports water to the leaves."],
+      ["Why are many leaves broad and flat?", ["To capture more sunlight", "To absorb more soil", "To attract animals", "To stop photosynthesis"], "Broad leaves capture more sunlight."],
+      ["What are stomata?", ["Tiny openings on leaves that allow gases to pass", "Tiny roots underground", "Tiny seeds inside fruits", "Tiny insects on flowers"], "Stomata allow gas exchange."],
+      ["What is transpiration?", ["The loss of water vapour from leaves", "The growth of roots", "The making of pollen", "The absorption of sunlight"], "Transpiration is water vapour leaving leaves."]
+    ]
+  },
+  {
+    id: "digestive",
+    title: "Human Digestive System",
+    emoji: "🍽️",
+    blurb: "Digestion, absorption, organs and healthy habits.",
+    notes: [
+      "Digestion breaks food into smaller nutrients.",
+      "The small intestine absorbs digested food into the blood.",
+      "The large intestine absorbs water.",
+      "Undigested waste is removed from the body."
+    ],
+    qs: [
+      ["What is digestion?", ["The breaking down of food into smaller soluble substances", "The process of breathing in air", "The pumping of blood", "The removal of sweat"], "Digestion breaks food down so nutrients can be absorbed."],
+      ["What is the digestive system?", ["The group of organs that digest food", "The group of bones that support the body", "The group of muscles that move the arm", "The group of organs that help us hear"], "The digestive system digests food."],
+      ["Why is digestion important?", ["So nutrients can be absorbed into the blood", "So food stays large and hard", "So water becomes ice", "So oxygen becomes food"], "Digested food can be absorbed by the body."],
+      ["Where does digestion begin?", ["Mouth", "Heart", "Lungs", "Kidneys"], "Digestion begins in the mouth."],
+      ["What do teeth do during digestion?", ["Chew and break food into smaller pieces", "Pump blood", "Absorb oxygen", "Store water"], "Teeth break food into smaller pieces."],
+      ["What does saliva do?", ["Moisten food and begin digestion", "Make bones hard", "Carry oxygen only", "Stop digestion"], "Saliva moistens food and starts digestion."],
+      ["What is chewed food called?", ["Bolus", "Blood", "Urine", "Air"], "Chewed food forms a bolus."],
+      ["What is the oesophagus?", ["The tube that carries food from mouth to stomach", "The organ that pumps blood", "The tube that carries air only", "The organ that stores bile"], "The oesophagus pushes food to the stomach."],
+      ["How does food move down the oesophagus?", ["By wave-like muscle contractions", "By gravity only", "By floating in air", "By dissolving into bones"], "Muscles push food along."],
+      ["What is peristalsis?", ["Wave-like muscle contractions that push food along", "A type of light energy", "A change of state", "A magnetic force"], "Peristalsis moves food through the digestive tract."],
+      ["What is the stomach?", ["A muscular bag that churns food", "A bone that protects the heart", "A tube that carries air", "A gland that makes sweat"], "The stomach churns food."],
+      ["What does the stomach do to food?", ["Churns it with acid", "Freezes it", "Turns it into light", "Changes it into air"], "The stomach churns food with acid."],
+      ["What does acid in the stomach help with?", ["Digest food and kill bacteria", "Make food sweeter", "Make teeth grow", "Stop digestion"], "Stomach acid helps digestion and kills some bacteria."],
+      ["Where does digestion continue and absorption happen?", ["Small intestine", "Mouth only", "Lungs", "Brain"], "The small intestine digests and absorbs food."],
+      ["What is absorption?", ["The movement of digested nutrients into the blood", "The chewing of food", "The removal of sweat", "The breathing of oxygen"], "Absorbed nutrients enter the blood."],
+      ["Which organ absorbs most digested food?", ["Small intestine", "Stomach only", "Liver only", "Heart"], "The small intestine absorbs most nutrients."],
+      ["What happens to undigested food?", ["It passes into the large intestine", "It becomes blood only", "It disappears", "It turns into oxygen"], "Undigested food goes to the large intestine."],
+      ["What does the large intestine absorb?", ["Water", "Oxygen", "Sunlight", "Sound"], "The large intestine absorbs water."],
+      ["What is egestion?", ["The removal of undigested waste from the body", "The absorption of water", "The chewing of food", "The pumping of blood"], "Egestion removes undigested waste."],
+      ["Where does undigested waste leave the body?", ["Anus", "Mouth", "Nose", "Ear"], "Undigested waste leaves through the anus."],
+      ["Which is the correct order of digestion?", ["Mouth -> oesophagus -> stomach -> small intestine -> large intestine -> anus", "Anus -> mouth -> heart -> lungs -> stomach", "Stomach -> mouth -> oesophagus -> brain -> liver", "Mouth -> lungs -> heart -> stomach -> anus"], "This is the digestive pathway."],
+      ["Why should we chew food well?", ["So digestion becomes easier", "So food becomes colder", "So teeth become invisible", "So water becomes solid"], "Chewing makes food easier to digest."],
+      ["Which organ is not part of the digestive system?", ["Heart", "Stomach", "Small intestine", "Large intestine"], "The heart belongs to the circulatory system."],
+      ["Why do water and fibre help digestion?", ["They help prevent constipation", "They stop the stomach from working", "They make food harder", "They remove all bacteria"], "Water and fibre help digestion."],
+      ["Which habit helps digestion?", ["Chewing food properly", "Eating very fast and not chewing", "Skipping meals often", "Swallowing large pieces"], "Chewing food properly helps digestion."]
+    ]
+  },
+  {
+    id: "matter",
+    title: "Matter",
+    emoji: "🧊",
+    blurb: "Solids, liquids, gases and changes of state.",
+    notes: [
+      "Matter has mass and occupies space.",
+      "Matter can exist as solid, liquid, or gas.",
+      "Heating and cooling can cause changes of state."
+    ],
+    qs: [
+      ["What is matter?", ["Anything that has mass and occupies space", "Only things we can see", "Only living things", "Only solids and liquids"], "Matter has mass and takes up space."],
+      ["Which of these is matter?", ["Water", "A thought", "A dream", "A shadow"], "Water has mass and occupies space."],
+      ["Which of these is not matter?", ["Light", "Air", "Stone", "Juice"], "Light does not have mass or occupy space."],
+      ["What is mass?", ["The amount of matter in an object", "The colour of an object", "The temperature of an object", "The brightness of an object"], "Mass measures the amount of matter."],
+      ["What is volume?", ["The amount of space an object occupies", "The weight of sound", "The heat in light", "The colour of gas"], "Volume is the space occupied."],
+      ["What are the three common states of matter?", ["Solid, liquid and gas", "Ice, fire and smoke", "Rock, metal and plastic", "Light, heat and sound"], "The three common states are solid, liquid and gas."],
+      ["Which state of matter has a fixed shape?", ["Solid", "Liquid", "Gas", "None"], "Solids keep their shape."],
+      ["Which state of matter has no fixed shape but a fixed volume?", ["Liquid", "Solid", "Gas", "Light"], "Liquids take the shape of their container."],
+      ["Which state of matter has no fixed shape and no fixed volume?", ["Gas", "Solid", "Liquid", "Wood"], "Gases spread out to fill space."],
+      ["Which of these is a solid?", ["Ice", "Steam", "Water vapour", "Juice"], "Ice is solid water."],
+      ["Which of these is a liquid?", ["Water", "Steam", "Ice", "Air only"], "Water is a liquid."],
+      ["Which of these is a gas?", ["Steam", "Ice", "Stone", "Milk"], "Steam is water vapour, a gas."],
+      ["What is melting?", ["Change from solid to liquid", "Change from gas to solid", "Change from liquid to solid", "Change from solid to gas only"], "Melting is solid to liquid."],
+      ["What is freezing?", ["Change from liquid to solid", "Change from solid to liquid", "Change from gas to liquid", "Change from liquid to gas"], "Freezing is liquid to solid."],
+      ["What is boiling?", ["Change from liquid to gas throughout the liquid", "Change from gas to liquid", "Change from solid to liquid", "Change from liquid to solid"], "Boiling changes liquid to gas quickly."],
+      ["What is evaporation?", ["Change from liquid to gas at the surface", "Change from gas to solid", "Change from solid to liquid", "Change from liquid to solid"], "Evaporation happens at the surface."],
+      ["What is condensation?", ["Change from gas to liquid", "Change from solid to gas", "Change from liquid to solid", "Change from gas to solid"], "Condensation is gas becoming liquid."],
+      ["What causes matter to change state?", ["Heating or cooling", "Colouring", "Magnetism", "Sound only"], "Heat changes can change state."],
+      ["Ice left in a warm room will:", ["Melt", "Freeze", "Boil", "Become harder"], "Ice melts when heated."],
+      ["Water placed in a freezer will:", ["Freeze", "Boil", "Evaporate only", "Become steam"], "Water freezes when cooled."],
+      ["Water boiled in a kettle becomes:", ["Steam", "Ice", "Stone", "Smoke only"], "Boiling water forms steam."],
+      ["Water droplets forming on a cold glass is:", ["Condensation", "Melting", "Freezing", "Boiling"], "Water vapour condenses on cold surfaces."],
+      ["Is air matter?", ["Yes, because air has mass and occupies space", "No, because air is invisible", "No, because air is light", "Yes, because air is liquid"], "Air is matter."],
+      ["When matter is heated, its particles usually:", ["Move faster", "Move slower", "Disappear", "Become solid only"], "Heating makes particles move faster."],
+      ["When matter is cooled, its particles usually:", ["Move slower", "Move faster", "Become brighter", "Become magnetic"], "Cooling makes particles move slower."]
+    ]
+  },
+  {
+    id: "light",
+    title: "Light",
+    emoji: "🔦",
+    blurb: "Light sources, shadows, reflection and materials.",
+    notes: [
+      "Light travels in straight lines.",
+      "Shadows form when light is blocked.",
+      "Transparent, translucent and opaque materials interact with light differently."
+    ],
+    qs: [
+      ["What is light?", ["A form of energy that allows us to see", "A type of sound", "A type of heat only", "A type of magnet"], "Light helps us see."],
+      ["What is a light source?", ["An object that gives out light", "An object that blocks light", "An object that reflects sound", "An object that stores water"], "A light source produces light."],
+      ["Which is a natural light source?", ["Sun", "Torch", "Lamp", "Candle only"], "The Sun is a natural light source."],
+      ["Which is an artificial light source?", ["Lamp", "Moon", "Star", "Firefly only"], "A lamp is made by humans."],
+      ["How does light travel?", ["In straight lines", "In circles only", "In zigzags always", "Through solid walls only"], "Light travels in straight lines."],
+      ["What is a ray of light?", ["A straight path of light", "A type of shadow", "A mirror", "A sound wave"], "A ray is a straight path of light."],
+      ["What is reflection?", ["Light bouncing off a surface", "Light being eaten by a plant", "Light becoming sound", "Light turning into water"], "Reflection is light bouncing back."],
+      ["Which surface reflects light very well?", ["Mirror", "Black cloth", "Wood", "Paper"], "A shiny mirror reflects light well."],
+      ["What is a shadow?", ["A dark area where light is blocked", "A bright area where light is strongest", "A reflection in water", "A type of rainbow"], "Shadows form where light cannot reach."],
+      ["A shadow forms when:", ["An object blocks light", "An object gives out light", "Light passes through clear glass", "The room is very bright"], "Blocking light creates a shadow."],
+      ["If an object moves closer to a light source, its shadow usually:", ["Becomes larger", "Becomes smaller", "Disappears", "Becomes a mirror"], "Closer objects can make larger shadows."],
+      ["If an object moves farther from a light source, its shadow usually:", ["Becomes smaller", "Becomes larger", "Becomes brighter", "Becomes coloured"], "Farther objects usually make smaller shadows."],
+      ["What is a transparent material?", ["A material that allows most light to pass through", "A material that blocks all light", "A material that makes sound", "A material that absorbs water"], "Transparent materials let light through."],
+      ["What is a translucent material?", ["A material that allows some light to pass through", "A material that allows all light through", "A material that blocks all light", "A material that reflects sound"], "Translucent materials let some light through."],
+      ["What is an opaque material?", ["A material that does not allow light to pass through", "A material that allows all light through", "A material that makes electricity", "A material that absorbs magnets"], "Opaque materials block light."],
+      ["Which is an example of a transparent object?", ["Clear glass", "Wooden door", "Metal spoon", "Stone wall"], "Clear glass lets most light through."],
+      ["Which is an example of a translucent object?", ["Frosted glass", "Clear window", "Mirror", "Black paper"], "Frosted glass lets some light through."],
+      ["Which is an example of an opaque object?", ["Wooden block", "Clear plastic", "Clean water", "Clear glass"], "Wood blocks light."],
+      ["Why can we see most objects?", ["Light reflects from them into our eyes", "Our eyes send out light", "Objects are always glowing", "Air makes them visible"], "Reflected light enters our eyes."],
+      ["Why is it difficult to see in a dark room?", ["There is no light", "Our eyes are closed", "The room is too quiet", "Objects disappear"], "We need light to see."],
+      ["What is transmitted light?", ["Light that passes through a material", "Light that is blocked", "Light that becomes food", "Light that becomes sound"], "Transmitted light passes through."],
+      ["Which material transmits the most light?", ["Clear glass", "Cardboard", "Metal", "Wood"], "Clear glass transmits most light."],
+      ["Which object will make the darkest shadow?", ["A metal book", "A clear glass cup", "A thin plastic bag", "A clear window"], "Opaque objects make dark shadows."],
+      ["What happens to light when it hits a mirror?", ["It reflects", "It disappears", "It becomes water", "It becomes solid"], "Mirrors reflect light."],
+      ["Which is a safe practice with light?", ["Never look directly at the Sun", "Look directly at the Sun", "Stare at bright lasers", "Point torches into eyes"], "Looking at the Sun can damage eyes."]
+    ]
+  },
+  {
+    id: "heat",
+    title: "Heat",
+    emoji: "🌡️",
+    blurb: "Heat flow, temperature, conductors, insulators and expansion.",
+    notes: [
+      "Heat flows from hotter objects to colder objects.",
+      "Metals are good conductors of heat.",
+      "Wood, plastic and air are poor conductors of heat.",
+      "Materials expand when heated and contract when cooled."
+    ],
+    qs: [
+      ["What is heat?", ["Energy that makes objects warmer", "A type of sound", "A type of colour", "A type of magnet"], "Heat is energy that warms objects."],
+      ["What is temperature?", ["A measure of how hot or cold something is", "The weight of an object", "The length of an object", "The colour of an object"], "Temperature measures hotness or coldness."],
+      ["Which instrument measures temperature?", ["Thermometer", "Ruler", "Balance", "Clock"], "A thermometer measures temperature."],
+      ["Heat flows from:", ["A hotter object to a colder object", "A colder object to a hotter object", "A bigger object to a smaller object", "A smaller object to a bigger object"], "Heat flows from hot to cold."],
+      ["What happens when an object gains heat?", ["It becomes warmer", "It becomes colder", "It becomes lighter only", "It becomes invisible"], "Gaining heat warms an object."],
+      ["What happens when an object loses heat?", ["It becomes cooler", "It becomes warmer", "It becomes brighter", "It becomes louder"], "Losing heat cools an object."],
+      ["What is a conductor?", ["A material that allows heat to pass through easily", "A material that blocks heat completely", "A material that makes light", "A material that absorbs sound"], "Conductors transfer heat easily."],
+      ["What is an insulator?", ["A material that does not allow heat to pass through easily", "A material that conducts heat very well", "A material that makes electricity only", "A material that reflects light only"], "Insulators reduce heat transfer."],
+      ["Which material is a good conductor of heat?", ["Metal", "Wood", "Plastic", "Rubber"], "Metals conduct heat well."],
+      ["Which material is a poor conductor of heat?", ["Wood", "Copper", "Iron", "Aluminium"], "Wood is a poor conductor."],
+      ["Why are cooking pots often made of metal?", ["Because metal conducts heat well", "Because metal is transparent", "Because metal floats", "Because metal is soft"], "Metal helps heat food."],
+      ["Why are pot handles often made of plastic or wood?", ["Because they are insulators", "Because they conduct heat well", "Because they are magnetic", "Because they are transparent"], "Insulators keep hands cooler."],
+      ["Why does a wool jacket keep us warm?", ["It traps air and reduces heat loss", "It produces cold air", "It reflects heat away from the body", "It makes our body sweat only"], "Trapped air is a good insulator."],
+      ["What is expansion?", ["When a material gets bigger when heated", "When a material gets smaller when heated", "When a material changes colour", "When a material becomes magnetic"], "Most materials expand when heated."],
+      ["What is contraction?", ["When a material gets smaller when cooled", "When a material gets bigger when cooled", "When a material melts", "When a material evaporates"], "Most materials contract when cooled."],
+      ["Why are gaps left in railway tracks?", ["To allow metal to expand when heated", "To let water collect", "To make trains slower", "To reduce friction only"], "Gaps prevent bending during expansion."],
+      ["Why does a balloon expand in a warm place?", ["The air inside expands", "The balloon becomes colder", "The air disappears", "The balloon becomes heavier"], "Warm air expands."],
+      ["Why does a metal spoon in hot soup become hot?", ["Heat is conducted through the spoon", "The spoon makes its own heat", "The spoon is a light source", "The soup becomes colder"], "Heat travels through metal by conduction."],
+      ["What is conduction?", ["Heat transfer through solids", "Heat transfer by light only", "Heat transfer by sound only", "Heat transfer by magnetism"], "Conduction happens in solids."],
+      ["What is convection?", ["Heat transfer by movement in liquids or gases", "Heat transfer through solids only", "Heat transfer by reflection", "Heat transfer by magnetism"], "Convection happens in fluids."],
+      ["What happens to hot air?", ["It rises", "It sinks", "It freezes", "It becomes solid"], "Hot air rises."],
+      ["Which container keeps a hot drink hot for longer?", ["An insulated cup", "A thin metal cup", "A paper cup with holes", "A cup made of ice"], "Insulation reduces heat loss."],
+      ["Which is the best insulator?", ["Wood", "Copper", "Aluminium", "Iron"], "Wood is a better insulator than metals."],
+      ["Why do animals with fur keep warm?", ["Fur traps air and insulates the body", "Fur makes the animal colder", "Fur reflects all heat away", "Fur turns sunlight into water"], "Fur traps insulating air."],
+      ["What is heat loss?", ["When an object loses heat to its surroundings", "When an object gains heat", "When an object becomes brighter", "When an object becomes louder"], "Heat loss cools an object."]
+    ]
+  }
+];
+
+const QUESTIONS = [];
+TOPICS.forEach(topic => {
+  topic.qs.forEach((item, index) => {
+    QUESTIONS.push({
+      id: topic.id + "-" + (index + 1),
+      topic: topic.id,
+      q: item[0],
+      options: item[1],
+      exp: item[2]
+    });
+  });
+});
+
+const STORAGE_KEY = "p4ScienceFullPack";
+const app = document.getElementById("app");
+
+let progress = loadProgress();
+let state = {
+  questions: [],
+  index: 0,
+  correct: 0,
+  answered: false,
+  title: "",
+  misses: []
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: {}, correct: {}, wrong: [] };
+
+    const data = JSON.parse(raw);
+    return {
+      attempts: data.attempts || {},
+      correct: data.correct || {},
+      wrong: data.wrong || []
+    };
+  } catch (error) {
+    return { attempts: {}, correct: {}, wrong: [] };
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (error) {}
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, char => {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
+  });
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function prepareQuestions(list) {
+  return list.map(q => {
+    const optionObjects = q.options.map((text, index) => ({
+      text,
+      correct: index === 0
+    }));
+
+    const shuffled = shuffle(optionObjects);
+
+    return {
+      ...q,
+      options: shuffled.map(option => option.text),
+      answer: shuffled.findIndex(option => option.correct)
+    };
+  });
+}
+
+function getTopic(id) {
+  return TOPICS.find(topic => topic.id === id);
+}
+
+function getQuestionsByTopic(id) {
+  return QUESTIONS.filter(q => q.topic === id);
+}
+
+function getStats() {
+  const attempted = Object.keys(progress.attempts).length;
+  let totalAttempts = 0;
+  let totalCorrect = 0;
+
+  for (const id in progress.attempts) {
+    totalAttempts += progress.attempts[id];
+  }
+
+  for (const id in progress.correct) {
+    totalCorrect += progress.correct[id];
+  }
+
+  const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+
+  return {
+    attempted,
+    accuracy,
+    wrong: progress.wrong.length
+  };
+}
+
+function renderHome() {
+  const stats = getStats();
+
+  const topicCards = TOPICS.map(topic => {
+    const total = topic.qs.length;
+    const mastered = QUESTIONS.filter(q => q.topic === topic.id && progress.correct[q.id] > 0).length;
+    const percent = total ? Math.round((mastered / total) * 100) : 0;
+
+    return `
+      <div class="card topic-card" onclick="openTopic('${topic.id}')">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P4</div>
+        </div>
+
+        <div class="topic-title">${esc(topic.title)}</div>
+        <div class="small">${esc(topic.blurb)}</div>
+
+        <div class="progress">
+          <div style="width:${percent}%"></div>
+        </div>
+
+        <div class="small">${mastered}/${total} questions correct at least once</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">🌿 P4 Science Full Pack</div>
+        <div class="chip">125 MCQs</div>
+      </div>
+
+      <div class="hero">
+        <h1>Primary 4 Science Practice</h1>
+        <p>
+          5 topics × 25 questions. Definitions, concepts and explanations included.
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+          <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+          <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+          <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="value">${stats.attempted}</div>
+          <div class="label">Questions practiced</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.accuracy}%</div>
+          <div class="label">Accuracy</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.wrong}</div>
+          <div class="label">Wrong questions</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${TOPICS.length}</div>
+          <div class="label">Topics</div>
+        </div>
+      </div>
+
+      ${topicCards}
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTopic(id) {
+  const topic = getTopic(id);
+
+  const notesHtml = topic.notes.map(note => `<li>${esc(note)}</li>`).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">⬅ Home</button>
+        <div class="chip">P4 Topic</div>
+      </div>
+
+      <div class="card">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P4</div>
+        </div>
+
+        <h2>${esc(topic.title)}</h2>
+        <p style="font-weight:800;">${esc(topic.blurb)}</p>
+
+        <h3>Key ideas</h3>
+        <ul class="notes">${notesHtml}</ul>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 25 Questions</button>
+          <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startAllChallenge() {
+  const questions = shuffle(QUESTIONS).slice(0, 20);
+  startQuiz(questions, "Random 20 Challenge");
+}
+
+function startRandomTen() {
+  const questions = shuffle(QUESTIONS).slice(0, 10);
+  startQuiz(questions, "Random 10");
+}
+
+function startWrongAll() {
+  const questions = QUESTIONS.filter(q => progress.wrong.includes(q.id));
+
+  if (!questions.length) {
+    alert("No wrong questions saved yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay");
+}
+
+function startTopic(id) {
+  const topic = getTopic(id);
+  const questions = getQuestionsByTopic(id);
+  startQuiz(questions, topic.title);
+}
+
+function startTopicWrong(id) {
+  const topic = getTopic(id);
+
+  const questions = QUESTIONS.filter(q => {
+    return q.topic === id && progress.wrong.includes(q.id);
+  });
+
+  if (!questions.length) {
+    alert("No wrong questions in this topic yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay: " + topic.title);
+}
+
+function startQuiz(list, title) {
+  if (!list.length) {
+    alert("No questions available.");
+    return;
+  }
+
+  state = {
+    questions: prepareQuestions(list),
+    index: 0,
+    correct: 0,
+    answered: false,
+    title,
+    misses: []
+  };
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  const topic = getTopic(q.topic);
+  const progressPercent = (state.index / state.questions.length) * 100;
+
+  const optionsHtml = q.options.map((option, index) => {
+    return `
+      <button class="option" onclick="answer(${index})">
+        ${String.fromCharCode(65 + index)}. ${esc(option)}
+      </button>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">${esc(state.title)}</div>
+      </div>
+
+      <div class="card">
+        <div class="progress">
+          <div style="width:${progressPercent}%"></div>
+        </div>
+
+        <div class="small">
+          Question ${state.index + 1} of ${state.questions.length} • Score ${state.correct}
+        </div>
+
+        <div class="chip" style="margin:10px 0;">
+          ${topic.emoji} ${esc(topic.title)}
+        </div>
+
+        <h2>${esc(q.q)}</h2>
+
+        <div class="options">
+          ${optionsHtml}
+        </div>
+
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function answer(selected) {
+  if (state.answered) return;
+
+  state.answered = true;
+
+  const q = state.questions[state.index];
+  const buttons = Array.from(document.querySelectorAll(".option"));
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  buttons[q.answer].classList.add("correct");
+
+  const isCorrect = selected === q.answer;
+
+  if (isCorrect) {
+    state.correct++;
+    buttons[selected].classList.add("correct");
+  } else {
+    buttons[selected].classList.add("wrong");
+    state.misses.push({
+      id: q.id,
+      selected
+    });
+  }
+
+  updateProgress(q.id, isCorrect);
+
+  const feedback = document.getElementById("feedback");
+  feedback.className = "feedback " + (isCorrect ? "good" : "bad");
+
+  feedback.innerHTML = `
+    <div>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</div>
+    <div class="exp">
+      ${esc(q.exp)}
+      ${!isCorrect ? " Correct answer: " + esc(q.options[q.answer]) + "." : ""}
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="nextQuestion()">
+        ${state.index === state.questions.length - 1 ? "Finish 🏁" : "Next ➜"}
+      </button>
+    </div>
+  `;
+}
+
+function updateProgress(id, isCorrect) {
+  progress.attempts[id] = (progress.attempts[id] || 0) + 1;
+
+  if (isCorrect) {
+    progress.correct[id] = (progress.correct[id] || 0) + 1;
+    progress.wrong = progress.wrong.filter(wrongId => wrongId !== id);
+  } else {
+    if (!progress.wrong.includes(id)) {
+      progress.wrong.push(id);
+    }
+  }
+
+  saveProgress();
+}
+
+function nextQuestion() {
+  if (!state.answered) return;
+
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    state.answered = false;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = state.questions.length;
+  const percent = Math.round((state.correct / total) * 100);
+
+  let stars = "💪";
+  let message = "Keep practising! Read the explanations and try again.";
+
+  if (percent >= 90) {
+    stars = "🌟🌟🌟";
+    message = "Excellent! You are showing strong understanding.";
+  } else if (percent >= 75) {
+    stars = "🌟🌟";
+    message = "Great job! Review the missed questions to become even stronger.";
+  } else if (percent >= 50) {
+    stars = "🌟";
+    message = "Good effort! Focus on the explanations and retry the wrong questions.";
+  }
+
+  const seen = new Set();
+  const uniqueMisses = state.misses.filter(miss => {
+    if (seen.has(miss.id)) return false;
+    seen.add(miss.id);
+    return true;
+  });
+
+  const reviewHtml = uniqueMisses.map(miss => {
+    const q = state.questions.find(item => item.id === miss.id);
+    const topic = getTopic(q.topic);
+
+    return `
+      <div class="review-item">
+        <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+        <div class="review-q">${esc(q.q)}</div>
+
+        <div class="user-answer">
+          Your answer: ${esc(q.options[miss.selected])}
+        </div>
+
+        <div class="correct-answer">
+          Correct answer: ${esc(q.options[q.answer])}
+        </div>
+
+        <div>${esc(q.exp)}</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">Result</div>
+      </div>
+
+      <div class="card">
+        <h2>${esc(state.title)} Complete!</h2>
+
+        <div class="result-stars">${stars}</div>
+
+        <p style="font-weight:900;">
+          You scored ${state.correct}/${total} (${percent}%). ${message}
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+          ${
+            uniqueMisses.length
+              ? '<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>'
+              : ""
+          }
+        </div>
+
+        <h3>Review</h3>
+
+        ${
+          uniqueMisses.length
+            ? reviewHtml
+            : "<p>🎉 Perfect! No wrong questions this round.</p>"
+        }
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function retryWrong() {
+  const ids = [...new Set(state.misses.map(miss => miss.id))];
+  const questions = QUESTIONS.filter(q => ids.includes(q.id));
+  startQuiz(questions, "Retry Wrong");
+}
+
+function resetProgress() {
+  if (confirm("Reset all P4 progress?")) {
+    progress = { attempts: {}, correct: {}, wrong: [] };
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
