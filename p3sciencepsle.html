@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>P3 Science Full Pack</title>
+<style>
+:root{
+  --bg1:#e0f2fe;
+  --bg2:#ede9fe;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{
+  display:inline-block;
+  background:#e0f2fe;
+  color:#0369a1;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:.9rem;
+}
+.hero{
+  background:linear-gradient(135deg,#0ea5e9,#8b5cf6);
+  color:#fff;
+  padding:20px;
+  border-radius:24px;
+  box-shadow:0 14px 34px rgba(14,165,233,.18);
+}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+.stat{
+  background:var(--card);
+  border-radius:18px;
+  padding:12px;
+  text-align:center;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{
+  background:var(--card);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 10px 24px rgba(15,23,42,.08);
+  margin:12px 0;
+}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#7dd3fc}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{
+  height:12px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+  margin:10px 0;
+}
+.progress div{
+  height:100%;
+  background:linear-gradient(90deg,#34d399,#0ea5e9);
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+.btn{
+  border:0;
+  border-radius:16px;
+  padding:12px 16px;
+  font-weight:1000;
+  cursor:pointer;
+}
+.primary{
+  background:linear-gradient(135deg,#0ea5e9,#8b5cf6);
+  color:#fff;
+}
+.secondary{
+  background:#e2e8f0;
+  color:#0f172a;
+}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{
+  border:3px solid #dbeafe;
+  background:#f8fbff;
+  border-radius:18px;
+  padding:14px;
+  font-size:1rem;
+  font-weight:900;
+  text-align:left;
+  cursor:pointer;
+}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{
+  margin-top:14px;
+  padding:14px;
+  border-radius:18px;
+  font-weight:900;
+}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{
+  border:2px solid #e2e8f0;
+  border-radius:18px;
+  padding:12px;
+  margin:10px 0;
+  background:#fbfdff;
+}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+const TOPICS = [
+  {
+    id: "diversity",
+    title: "Diversity of Living & Non-Living Things",
+    emoji: "🌳",
+    blurb: "Living things, non-living things, needs, life processes and classification.",
+    notes: [
+      "Living things grow, breathe, need food and water, and reproduce.",
+      "Non-living things do not grow, breathe or reproduce.",
+      "We classify things using observable features and life processes."
+    ],
+    qs: [
+      ["What is a living thing?", ["An organism that grows, breathes, needs food and water, and can reproduce", "A machine that moves", "A colourful object", "A heavy object"], "A living thing carries out life processes."],
+      ["What is a non-living thing?", ["Something that does not grow, breathe or reproduce", "Something that needs food", "Something that can breathe", "Something that grows"], "Non-living things do not carry out life processes."],
+      ["Which one is a living thing?", ["Butterfly", "Stone", "Spoon", "Water"], "A butterfly grows, breathes, feeds and reproduces."],
+      ["Which one is a non-living thing?", ["Bicycle", "Cat", "Mango tree", "Mushroom"], "A bicycle does not grow, breathe or reproduce."],
+      ["Which do living things need?", ["Food, water and air", "Only toys", "Only rocks", "Only sunlight for all living things"], "Living things need food, water and air. Some also need sunlight."],
+      ["What can living things do?", ["Grow and reproduce", "Stay exactly the same forever", "Only be moved by wind", "Only change colour"], "Living things grow and can reproduce."],
+      ["What can non-living things not do?", ["Grow and reproduce", "Have a shape", "Have a colour", "Be seen"], "Non-living things do not grow or reproduce."],
+      ["Which shows that a plant is living?", ["It grows and needs water", "It is green only", "It is outdoors", "It can be touched"], "Growth and needing water are signs of living things."],
+      ["Which shows that a bird is living?", ["It breathes and needs food", "It has colour", "It is small", "It can be seen"], "Breathing and feeding are life processes."],
+      ["Which man-made object is non-living?", ["Toy robot", "Puppy", "Bean seed", "Mushroom"], "A robot may move but does not grow or reproduce."],
+      ["Which natural thing is non-living?", ["Water", "Fish", "Tree", "Ant"], "Water is non-living."],
+      ["What is classification?", ["Grouping things based on their features", "Breaking things into dust", "Colouring things", "Throwing things away"], "Classification means grouping by features."],
+      ["Which feature helps decide if something is living?", ["Whether it grows and reproduces", "Whether it is red", "Whether it is big", "Whether it is round"], "Life processes help identify living things."],
+      ["Which is a living thing?", ["Mushroom", "Stone", "Spoon", "Cloud"], "A mushroom is a living organism."],
+      ["Which is non-living even though it moves?", ["Cloud", "Bird", "Butterfly", "Frog"], "Clouds move with wind but are not alive."],
+      ["Which is needed by animals but not by a stone?", ["Food and water", "Shape", "Colour", "Size"], "Animals need food and water; stones do not."],
+      ["Which can make new living things?", ["Living things", "Rocks", "Spoons", "Clouds"], "Living things reproduce."],
+      ["Which cannot grow bigger by itself?", ["Toy car", "Baby chick", "Bean seed", "Young plant"], "A toy car is non-living."],
+      ["A seed can grow into a plant, so a seed is:", ["A living thing", "A non-living thing", "A man-made thing", "A magnetic thing"], "A seed can grow and develop."],
+      ["A car moves but is non-living because it:", ["Does not grow or reproduce", "Has wheels", "Is fast", "Has colour"], "Movement alone does not make something living."],
+      ["Living things can respond to changes. Which is an example?", ["A plant grows towards light", "A rock stays still", "A spoon shines", "A book tears"], "Living things respond to their surroundings."],
+      ["What are life processes?", ["Processes such as growth, breathing, feeding and reproduction", "Processes in machines", "Processes in rocks", "Processes in clouds"], "Life processes happen in living things."],
+      ["Which object was once part of a living thing?", ["Wooden chair", "Plastic ruler", "Metal spoon", "Glass cup"], "Wood comes from trees."],
+      ["Which group contains only living things?", ["Tree, ant, bird", "Stone, water, paper", "Car, robot, pencil", "Cloud, sand, spoon"], "All three are living organisms."],
+      ["Which group contains only non-living things?", ["Stone, spoon, water", "Cat, tree, mushroom", "Fish, bird, worm", "Seed, leaf, ant"], "These are non-living."]
+    ]
+  },
+  {
+    id: "materials",
+    title: "Materials and Their Properties",
+    emoji: "🧵",
+    blurb: "Properties such as hard, soft, flexible, waterproof, absorbent and transparent.",
+    notes: [
+      "Materials are used to make objects.",
+      "Properties describe how materials look, feel or behave.",
+      "We choose materials based on their purpose."
+    ],
+    qs: [
+      ["What is a material?", ["A substance used to make objects", "A type of animal", "A life process", "A magnetic pole"], "Materials are used to make objects."],
+      ["What is a property?", ["A feature that describes a material", "A type of plant", "A living process", "A type of sound"], "Properties describe materials."],
+      ["What does hard mean?", ["Firm and not easily scratched", "Soft and squashy", "Transparent", "Magnetic"], "Hard materials are firm."],
+      ["What does soft mean?", ["Easy to press or squash", "Very strong", "Waterproof", "Transparent"], "Soft materials can be pressed easily."],
+      ["What does flexible mean?", ["Can bend without breaking", "Breaks easily", "Only floats", "Conducts heat"], "Flexible materials bend."],
+      ["What does waterproof mean?", ["Does not let water pass through easily", "Absorbs water easily", "Lets light through", "Is magnetic"], "Waterproof materials keep water out."],
+      ["What does absorbent mean?", ["Soaks up water easily", "Repels water", "Conducts heat", "Is transparent"], "Absorbent materials soak up water."],
+      ["What does transparent mean?", ["Allows most light to pass through", "Blocks all light", "Absorbs water", "Is magnetic"], "Transparent materials let light through."],
+      ["What does opaque mean?", ["Does not allow light to pass through", "Allows all light through", "Is waterproof", "Bends easily"], "Opaque materials block light."],
+      ["Which material usually conducts heat well?", ["Metal", "Wood", "Plastic", "Paper"], "Metals are good heat conductors."],
+      ["Which material is usually a poor conductor of heat?", ["Wood", "Copper", "Iron", "Aluminium"], "Wood does not conduct heat well."],
+      ["Which material is best for a raincoat?", ["Plastic", "Paper", "Cotton towel", "Metal foil"], "Plastic is waterproof."],
+      ["Which material is best for a window?", ["Glass", "Wood", "Cloth", "Rubber"], "Glass is transparent."],
+      ["Which material is best for a cooking pot?", ["Metal", "Paper", "Sponge", "Cotton"], "Metal conducts heat well."],
+      ["Which material is best for a pot handle?", ["Plastic or wood", "Metal", "Glass", "Aluminium"], "Poor conductors keep hands safer."],
+      ["Why is paper not good for an umbrella?", ["It absorbs water and becomes weak", "It is waterproof", "It is transparent", "It is magnetic"], "Paper is absorbent and weak when wet."],
+      ["Why is rubber used for rubber bands?", ["It is flexible and stretchable", "It is hard", "It is opaque", "It conducts heat"], "Rubber can stretch."],
+      ["Which material often floats on water?", ["Wood", "Iron nail", "Stone", "Steel spoon"], "Wood often floats."],
+      ["Which material is attracted to a magnet?", ["Iron", "Plastic", "Paper", "Wood"], "Iron is magnetic."],
+      ["Which material is absorbent?", ["Towel", "Metal", "Glass", "Plastic"], "A towel soaks up water."],
+      ["Which property is most important for a school bag?", ["Strong and waterproof", "Soft and transparent", "Magnetic and heavy", "Breakable and thin"], "A bag should be strong and waterproof."],
+      ["Which property describes glass?", ["Transparent and smooth", "Absorbent and fluffy", "Magnetic and soft", "Flexible and stretchy"], "Glass is transparent and smooth."],
+      ["Which material is most suitable for a coin?", ["Metal", "Tissue", "Sponge", "Leaf"], "Metal is hard and durable."],
+      ["What is texture?", ["How a surface feels, such as rough or smooth", "How heavy an object is", "How loud an object is", "How hot an object is"], "Texture describes feel."],
+      ["Which choice matches material and property?", ["Plastic: waterproof", "Glass: absorbent", "Metal: transparent", "Paper: waterproof"], "Plastic is waterproof."]
+    ]
+  },
+  {
+    id: "lifecycles",
+    title: "Life Cycles",
+    emoji: "🐛",
+    blurb: "Stages of growth in plants and animals.",
+    notes: [
+      "A life cycle shows the stages of growth and reproduction.",
+      "Butterfly: egg -> larva -> pupa -> adult.",
+      "Frog: egg -> tadpole -> adult frog."
+    ],
+    qs: [
+      ["What is a life cycle?", ["The series of stages a living thing passes through", "A type of machine", "A kind of weather", "A kind of magnet"], "A life cycle shows stages of life."],
+      ["What does a life cycle show?", ["Growth and reproduction stages", "Only colour", "Only size", "Only sound"], "It shows how living things grow."],
+      ["Which is the correct life cycle of a butterfly?", ["Egg -> larva -> pupa -> adult", "Egg -> pupa -> larva -> adult", "Adult -> egg -> pupa -> larva", "Larva -> egg -> adult -> pupa"], "Butterflies undergo complete metamorphosis."],
+      ["Which is the correct life cycle of a frog?", ["Egg -> tadpole -> adult frog", "Egg -> caterpillar -> frog", "Seed -> tadpole -> frog", "Adult frog -> egg -> caterpillar"], "Frogs hatch into tadpoles."],
+      ["What is an egg in a life cycle?", ["An early stage that can develop into a young animal", "A fully grown animal", "A dead leaf", "A type of rock"], "Eggs are early stages."],
+      ["What is a larva?", ["A young form of an insect that looks different from the adult", "An adult insect", "A seed", "A type of rock"], "A caterpillar is a larva."],
+      ["What is a pupa?", ["The stage where the larva changes into an adult", "The first stage", "The feeding stage only", "The adult stage"], "Inside the pupa, changes happen."],
+      ["What is an adult?", ["A fully grown living thing that can reproduce", "A baby animal", "A seed", "A young plant"], "Adults can reproduce."],
+      ["What is a tadpole?", ["A young frog that lives in water", "A young bird", "A seed", "An adult frog"], "Tadpoles live in water."],
+      ["Which animal lays eggs?", ["Chicken", "Cat", "Dog", "Cow"], "Chickens lay eggs."],
+      ["Which animal gives birth to live young?", ["Cat", "Butterfly", "Frog", "Goldfish"], "Cats are mammals."],
+      ["A plant life cycle can begin from a:", ["Seed", "Stone", "Spoon", "Cloud"], "Many plants start as seeds."],
+      ["What is germination?", ["When a seed begins to grow", "When a rock breaks", "When water freezes", "When light turns off"], "Germination is seed growth starting."],
+      ["What does a seed need to germinate?", ["Water, air and warmth", "Darkness only", "Plastic", "Metal"], "Seeds need water, air and warmth."],
+      ["What comes after a seed in a plant life cycle?", ["Seedling", "Adult tree only", "Flower only", "Fruit only"], "A seedling grows from the seed."],
+      ["What comes after a young plant grows bigger?", ["Adult plant", "Egg", "Pupa", "Tadpole"], "The plant becomes an adult plant."],
+      ["What can an adult flowering plant produce?", ["Seeds or fruits", "Rocks", "Sand", "Plastic"], "Adult plants can produce seeds."],
+      ["Why is reproduction important?", ["It helps living things produce new living things", "It makes rocks", "It stops growth", "It changes weather"], "Reproduction continues life."],
+      ["Where might a butterfly lay eggs?", ["On a leaf", "In a cloud", "Inside a stone", "On a magnet"], "Butterflies lay eggs on plants."],
+      ["What is a caterpillar?", ["The larva of a butterfly", "The pupa", "The adult butterfly", "A seed"], "A caterpillar is the larval stage."],
+      ["What happens inside a pupa?", ["The body changes into the adult form", "The animal stays exactly the same", "The seed germinates", "The rock melts"], "Metamorphosis happens in the pupa."],
+      ["What does a tadpole grow into?", ["A frog", "A bird", "A fish only", "A butterfly"], "Tadpoles become frogs."],
+      ["Which feature does a tadpole have?", ["A tail for swimming", "Wings for flying", "Fur for warmth", "A beak for eating seeds"], "Tadpoles swim with tails."],
+      ["How are young animals usually different from adults?", ["They are smaller and may look different", "They are always the same size", "They do not need food", "They are made of metal"], "Young animals grow and change."],
+      ["Which is the correct plant sequence?", ["Seed -> seedling -> adult plant -> seeds", "Seed -> adult plant -> pupa -> egg", "Egg -> larva -> seed -> flower", "Adult plant -> tadpole -> seed -> frog"], "This is a plant life cycle."]
+    ]
+  },
+  {
+    id: "magnets",
+    title: "Magnets",
+    emoji: "🧲",
+    blurb: "Magnetic attraction, poles, attracting and repelling.",
+    notes: [
+      "Magnets attract magnetic materials such as iron and steel.",
+      "Like poles repel; unlike poles attract.",
+      "Magnets are used in compasses and everyday objects."
+    ],
+    qs: [
+      ["What is a magnet?", ["An object that attracts magnetic materials such as iron and steel", "An object that gives light", "An object that makes sound", "An object that stores water"], "Magnets attract magnetic materials."],
+      ["What is magnetic force?", ["The push or pull exerted by a magnet", "A type of light", "A type of heat", "A type of food"], "Magnets can push or pull."],
+      ["Which material is magnetic?", ["Iron", "Plastic", "Wood", "Paper"], "Iron is attracted to magnets."],
+      ["Which material is not magnetic?", ["Plastic", "Steel", "Iron", "Iron nail"], "Plastic is not attracted to magnets."],
+      ["What are the poles of a magnet?", ["The ends where magnetic force is strongest", "The middle only", "The coloured part only", "The heaviest part"], "Poles are strongest ends."],
+      ["What are the two poles called?", ["North pole and South pole", "East pole and West pole", "Red pole and Blue pole", "Hot pole and Cold pole"], "Magnets have north and south poles."],
+      ["What happens when two north poles are brought near?", ["They repel", "They attract", "They melt", "They shine"], "Like poles repel."],
+      ["What happens when a north pole and south pole are brought near?", ["They attract", "They repel", "They freeze", "They disappear"], "Unlike poles attract."],
+      ["What does attract mean?", ["To pull towards", "To push away", "To break", "To cool"], "Attract means pull closer."],
+      ["What does repel mean?", ["To push away", "To pull towards", "To heat", "To colour"], "Repel means push away."],
+      ["Which object is attracted to a magnet?", ["Iron nail", "Plastic ruler", "Wooden spoon", "Rubber eraser"], "Iron is magnetic."],
+      ["Which object is not attracted to a magnet?", ["Plastic ruler", "Iron nail", "Steel paper clip", "Steel spoon"], "Plastic is not magnetic."],
+      ["Which object uses a magnet?", ["Compass", "Thermometer", "Ruler", "Mirror"], "A compass contains a magnet."],
+      ["What does a compass use a magnet for?", ["To show direction", "To make heat", "To measure weight", "To make light"], "A compass shows direction."],
+      ["What is the magnetic field?", ["The space around a magnet where its force can act", "The colour of a magnet", "The weight of a magnet", "The smell of a magnet"], "The field is where magnetic force works."],
+      ["Can a magnet attract an object without touching it?", ["Yes, magnetic force can act at a distance", "No, magnets must always touch", "Only in water", "Only in sunlight"], "Magnets can act from a distance."],
+      ["Can a magnet attract a paper clip through thin paper?", ["Yes, if the paper is thin and the magnet is strong enough", "No, never", "Only if paper is wet", "Only if paper is magnetic"], "Magnetic force can pass through thin materials."],
+      ["Where is a magnet's force strongest?", ["At its poles", "At the centre only", "Outside the field", "Only on the south pole"], "The poles are strongest."],
+      ["If a bar magnet breaks into two pieces, what happens?", ["Each piece has a north pole and a south pole", "One piece has only a north pole", "One piece has only a south pole", "Both pieces lose magnetism"], "Each piece becomes a smaller magnet."],
+      ["How can you separate iron filings from sand?", ["Use a magnet", "Add light", "Use a mirror", "Add sound"], "A magnet attracts iron filings."],
+      ["Why does a fridge magnet stick to a refrigerator door?", ["The door contains iron or steel", "The door is made of glass", "The door is made of paper", "The door is made of rubber"], "Magnets stick to magnetic materials."],
+      ["Which is not a use of magnets?", ["Making water boil", "Holding notes", "Helping a compass work", "Picking up iron objects"], "Magnets do not boil water."],
+      ["What happens when south pole is brought near south pole?", ["They repel", "They attract", "They grow", "They dissolve"], "Like poles repel."],
+      ["What happens when south pole is brought near north pole?", ["They attract", "They repel", "They evaporate", "They freeze"], "Unlike poles attract."],
+      ["Why is steel attracted to a magnet?", ["Steel contains iron", "Steel is plastic", "Steel is wood", "Steel is glass"], "Steel contains iron, so it is magnetic."]
+    ]
+  }
+];
+
+const QUESTIONS = [];
+TOPICS.forEach(topic => {
+  topic.qs.forEach((item, index) => {
+    QUESTIONS.push({
+      id: topic.id + "-" + (index + 1),
+      topic: topic.id,
+      q: item[0],
+      options: item[1],
+      exp: item[2]
+    });
+  });
+});
+
+const STORAGE_KEY = "p3ScienceFullPack";
+const app = document.getElementById("app");
+
+let progress = loadProgress();
+let state = {
+  questions: [],
+  index: 0,
+  correct: 0,
+  answered: false,
+  title: "",
+  misses: []
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: {}, correct: {}, wrong: [] };
+
+    const data = JSON.parse(raw);
+    return {
+      attempts: data.attempts || {},
+      correct: data.correct || {},
+      wrong: data.wrong || []
+    };
+  } catch (error) {
+    return { attempts: {}, correct: {}, wrong: [] };
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (error) {}
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, char => {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char];
+  });
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function prepareQuestions(list) {
+  return list.map(q => {
+    const optionObjects = q.options.map((text, index) => ({
+      text,
+      correct: index === 0
+    }));
+
+    const shuffled = shuffle(optionObjects);
+
+    return {
+      ...q,
+      options: shuffled.map(option => option.text),
+      answer: shuffled.findIndex(option => option.correct)
+    };
+  });
+}
+
+function getTopic(id) {
+  return TOPICS.find(topic => topic.id === id);
+}
+
+function getQuestionsByTopic(id) {
+  return QUESTIONS.filter(q => q.topic === id);
+}
+
+function getStats() {
+  const attempted = Object.keys(progress.attempts).length;
+  let totalAttempts = 0;
+  let totalCorrect = 0;
+
+  for (const id in progress.attempts) {
+    totalAttempts += progress.attempts[id];
+  }
+
+  for (const id in progress.correct) {
+    totalCorrect += progress.correct[id];
+  }
+
+  const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+
+  return {
+    attempted,
+    accuracy,
+    wrong: progress.wrong.length
+  };
+}
+
+function renderHome() {
+  const stats = getStats();
+
+  const topicCards = TOPICS.map(topic => {
+    const total = topic.qs.length;
+    const mastered = QUESTIONS.filter(q => q.topic === topic.id && progress.correct[q.id] > 0).length;
+    const percent = total ? Math.round((mastered / total) * 100) : 0;
+
+    return `
+      <div class="card topic-card" onclick="openTopic('${topic.id}')">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P3</div>
+        </div>
+
+        <div class="topic-title">${esc(topic.title)}</div>
+        <div class="small">${esc(topic.blurb)}</div>
+
+        <div class="progress">
+          <div style="width:${percent}%"></div>
+        </div>
+
+        <div class="small">${mastered}/${total} questions correct at least once</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">🌱 P3 Science Full Pack</div>
+        <div class="chip">100 MCQs</div>
+      </div>
+
+      <div class="hero">
+        <h1>Primary 3 Science Practice</h1>
+        <p>
+          4 topics × 25 questions. Definitions, concepts and explanations included.
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+          <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+          <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+          <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="value">${stats.attempted}</div>
+          <div class="label">Questions practiced</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.accuracy}%</div>
+          <div class="label">Accuracy</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${stats.wrong}</div>
+          <div class="label">Wrong questions</div>
+        </div>
+
+        <div class="stat">
+          <div class="value">${TOPICS.length}</div>
+          <div class="label">Topics</div>
+        </div>
+      </div>
+
+      ${topicCards}
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTopic(id) {
+  const topic = getTopic(id);
+
+  const notesHtml = topic.notes.map(note => `<li>${esc(note)}</li>`).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">⬅ Home</button>
+        <div class="chip">P3 Topic</div>
+      </div>
+
+      <div class="card">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P3</div>
+        </div>
+
+        <h2>${esc(topic.title)}</h2>
+        <p style="font-weight:800;">${esc(topic.blurb)}</p>
+
+        <h3>Key ideas</h3>
+        <ul class="notes">${notesHtml}</ul>
+
+        <div class="actions">
+          <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 25 Questions</button>
+          <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startAllChallenge() {
+  const questions = shuffle(QUESTIONS).slice(0, 20);
+  startQuiz(questions, "Random 20 Challenge");
+}
+
+function startRandomTen() {
+  const questions = shuffle(QUESTIONS).slice(0, 10);
+  startQuiz(questions, "Random 10");
+}
+
+function startWrongAll() {
+  const questions = QUESTIONS.filter(q => progress.wrong.includes(q.id));
+
+  if (!questions.length) {
+    alert("No wrong questions saved yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay");
+}
+
+function startTopic(id) {
+  const topic = getTopic(id);
+  const questions = getQuestionsByTopic(id);
+  startQuiz(questions, topic.title);
+}
+
+function startTopicWrong(id) {
+  const topic = getTopic(id);
+
+  const questions = QUESTIONS.filter(q => {
+    return q.topic === id && progress.wrong.includes(q.id);
+  });
+
+  if (!questions.length) {
+    alert("No wrong questions in this topic yet.");
+    return;
+  }
+
+  startQuiz(questions, "Wrong Replay: " + topic.title);
+}
+
+function startQuiz(list, title) {
+  if (!list.length) {
+    alert("No questions available.");
+    return;
+  }
+
+  state = {
+    questions: prepareQuestions(list),
+    index: 0,
+    correct: 0,
+    answered: false,
+    title,
+    misses: []
+  };
+
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  const topic = getTopic(q.topic);
+  const progressPercent = (state.index / state.questions.length) * 100;
+
+  const optionsHtml = q.options.map((option, index) => {
+    return `
+      <button class="option" onclick="answer(${index})">
+        ${String.fromCharCode(65 + index)}. ${esc(option)}
+      </button>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">${esc(state.title)}</div>
+      </div>
+
+      <div class="card">
+        <div class="progress">
+          <div style="width:${progressPercent}%"></div>
+        </div>
+
+        <div class="small">
+          Question ${state.index + 1} of ${state.questions.length} • Score ${state.correct}
+        </div>
+
+        <div class="chip" style="margin:10px 0;">
+          ${topic.emoji} ${esc(topic.title)}
+        </div>
+
+        <h2>${esc(q.q)}</h2>
+
+        <div class="options">
+          ${optionsHtml}
+        </div>
+
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function answer(selected) {
+  if (state.answered) return;
+
+  state.answered = true;
+
+  const q = state.questions[state.index];
+  const buttons = Array.from(document.querySelectorAll(".option"));
+
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
+
+  buttons[q.answer].classList.add("correct");
+
+  const isCorrect = selected === q.answer;
+
+  if (isCorrect) {
+    state.correct++;
+    buttons[selected].classList.add("correct");
+  } else {
+    buttons[selected].classList.add("wrong");
+    state.misses.push({
+      id: q.id,
+      selected
+    });
+  }
+
+  updateProgress(q.id, isCorrect);
+
+  const feedback = document.getElementById("feedback");
+  feedback.className = "feedback " + (isCorrect ? "good" : "bad");
+
+  feedback.innerHTML = `
+    <div>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</div>
+    <div class="exp">
+      ${esc(q.exp)}
+      ${!isCorrect ? " Correct answer: " + esc(q.options[q.answer]) + "." : ""}
+    </div>
+    <div class="actions">
+      <button class="btn primary" onclick="nextQuestion()">
+        ${state.index === state.questions.length - 1 ? "Finish 🏁" : "Next ➜"}
+      </button>
+    </div>
+  `;
+}
+
+function updateProgress(id, isCorrect) {
+  progress.attempts[id] = (progress.attempts[id] || 0) + 1;
+
+  if (isCorrect) {
+    progress.correct[id] = (progress.correct[id] || 0) + 1;
+    progress.wrong = progress.wrong.filter(wrongId => wrongId !== id);
+  } else {
+    if (!progress.wrong.includes(id)) {
+      progress.wrong.push(id);
+    }
+  }
+
+  saveProgress();
+}
+
+function nextQuestion() {
+  if (!state.answered) return;
+
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    state.answered = false;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = state.questions.length;
+  const percent = Math.round((state.correct / total) * 100);
+
+  let stars = "💪";
+  let message = "Keep practising! Read the explanations and try again.";
+
+  if (percent >= 90) {
+    stars = "🌟🌟🌟";
+    message = "Excellent! You are showing strong understanding.";
+  } else if (percent >= 75) {
+    stars = "🌟🌟";
+    message = "Great job! Review the missed questions to become even stronger.";
+  } else if (percent >= 50) {
+    stars = "🌟";
+    message = "Good effort! Focus on the explanations and retry the wrong questions.";
+  }
+
+  const seen = new Set();
+  const uniqueMisses = state.misses.filter(miss => {
+    if (seen.has(miss.id)) return false;
+    seen.add(miss.id);
+    return true;
+  });
+
+  const reviewHtml = uniqueMisses.map(miss => {
+    const q = state.questions.find(item => item.id === miss.id);
+    const topic = getTopic(q.topic);
+
+    return `
+      <div class="review-item">
+        <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+        <div class="review-q">${esc(q.q)}</div>
+
+        <div class="user-answer">
+          Your answer: ${esc(q.options[miss.selected])}
+        </div>
+
+        <div class="correct-answer">
+          Correct answer: ${esc(q.options[q.answer])}
+        </div>
+
+        <div>${esc(q.exp)}</div>
+      </div>
+    `;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">Result</div>
+      </div>
+
+      <div class="card">
+        <h2>${esc(state.title)} Complete!</h2>
+
+        <div class="result-stars">${stars}</div>
+
+        <p style="font-weight:900;">
+          You scored ${state.correct}/${total} (${percent}%). ${message}
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+          ${
+            uniqueMisses.length
+              ? '<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>'
+              : ""
+          }
+        </div>
+
+        <h3>Review</h3>
+
+        ${
+          uniqueMisses.length
+            ? reviewHtml
+            : "<p>🎉 Perfect! No wrong questions this round.</p>"
+        }
+      </div>
+    </div>
+  `;
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function retryWrong() {
+  const ids = [...new Set(state.misses.map(miss => miss.id))];
+  const questions = QUESTIONS.filter(q => ids.includes(q.id));
+  startQuiz(questions, "Retry Wrong");
+}
+
+function resetProgress() {
+  if (confirm("Reset all P3 progress?")) {
+    progress = { attempts: {}, correct: {}, wrong: [] };
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
