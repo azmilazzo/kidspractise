@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>P4 Maths Full Pack</title>
+<style>
+:root{
+  --bg1:#ffedd5;
+  --bg2:#ede9fe;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{display:inline-block;background:#ffedd5;color:#c2410c;padding:8px 12px;border-radius:999px;font-weight:900;font-size:.9rem}
+.hero{background:linear-gradient(135deg,#ea580c,#7c3aed);color:#fff;padding:20px;border-radius:24px;box-shadow:0 14px 34px rgba(234,88,12,.18)}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);border-radius:18px;padding:12px;text-align:center;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:0 10px 24px rgba(15,23,42,.08);margin:12px 0}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#fdba74}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:10px 0}
+.progress div{height:100%;background:linear-gradient(90deg,#ea580c,#7c3aed)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.btn{border:0;border-radius:16px;padding:12px 16px;font-weight:1000;cursor:pointer}
+.primary{background:linear-gradient(135deg,#ea580c,#7c3aed);color:#fff}
+.secondary{background:#e2e8f0;color:#0f172a}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{border:3px solid #fed7aa;background:#fffaf5;border-radius:18px;padding:14px;font-size:1rem;font-weight:900;text-align:left;cursor:pointer}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{margin-top:14px;padding:14px;border-radius:18px;font-weight:900}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{border:2px solid #e2e8f0;border-radius:18px;padding:12px;margin:10px 0;background:#fbfdff}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{background:#fff1f2;border:2px solid #f43f5e;border-radius:16px;padding:16px;font-weight:700;white-space:pre-wrap;font-family:monospace}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error", function(e){
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = '<div class="container"><div class="error-box">Page error: ' + (e.message || "Unknown error") + '</div></div>';
+  }
+});
+</script>
+
+<script>
+const TOPICS = [
+  {
+    id: "numbers",
+    title: "Numbers to 100,000",
+    emoji: "🔢",
+    blurb: "Place value, reading, comparing, ordering and rounding up to 100,000.",
+    notes: ["Each digit has a place value: ones, tens, hundreds, thousands, ten thousands.", "Round by looking at the digit to the right."]
+    ,qs:[
+      ["What is the value of 8 in 84,321?",["80,000","8,000","800","8"],"8 is in the ten thousands place."],
+      ["Which digit is in the thousands place in 56,789?",["6","5","7","8"],"The thousands digit is 6."],
+      ["How is 70,405 written in words?",["Seventy thousand, four hundred and five","Seventy thousand, forty-five","Seven thousand, four hundred and five","Seventy-four hundred and five"],"Read each period carefully."],
+      ["What is 40,000 + 3,000 + 50 + 2?",["43,052","43,520","40,352","43,502"],"Add the place values together."],
+      ["Round 67,850 to the nearest thousand.",["68,000","67,000","67,800","68,800"],"The hundreds digit is 8, so round up."],
+      ["Round 45,321 to the nearest hundred.",["45,300","45,400","45,000","45,320"],"The tens digit is 2, so round down."],
+      ["Which number is the largest?",["99,099","99,900","98,999","99,009"],"Compare the thousands, then hundreds."],
+      ["Which number is the smallest?",["10,011","10,101","10,110","11,001"],"10,011 is the smallest."],
+      ["What is 10,000 more than 45,678?",["55,678","46,678","54,678","45,688"],"Add 10,000 to the ten thousands digit."],
+      ["What is 1,000 less than 30,000?",["29,000","31,000","20,000","29,900"],"Subtract 1,000 from 30,000."],
+      ["Arrange in order: 34,100; 34,010; 34,110",["34,010; 34,100; 34,110","34,110; 34,100; 34,010","34,100; 34,010; 34,110","34,010; 34,110; 34,100"],"Compare the tens digits."],
+      ["What is the missing number: 23,450, 23,550, ___, 23,750?",["23,650","23,600","23,560","24,650"],"The pattern adds 100."],
+      ["What is the greatest 5-digit number you can make with 1, 0, 9, 5, 3?",["95,310","95,130","93,510","90,531"],"Put the largest digits on the left."],
+      ["What is the smallest 5-digit number you can make with 1, 0, 9, 5, 3?",["10,359","13,590","10,539","10,395"],"The first digit cannot be 0. Use 1, then 0, then the rest in order."],
+      ["How many hundreds are in 65,000?",["650","65","6,500","65,000"],"65,000 / 100 = 650."],
+      ["How many tens are in 4,500?",["450","45","4,500","45,000"],"4,500 / 10 = 450."],
+      ["Which number rounds to 50,000 when rounded to the nearest ten thousand?",["46,123","55,123","44,999","56,000"],"46,123 is closer to 50,000 than 40,000."],
+      ["What is the place value of 0 in 90,432?",["Thousands","Ten Thousands","Hundreds","Tens"],"0 is in the thousands place."],
+      ["Which number has 7 in the hundreds place?",["47,231","74,231","42,731","42,371"],"In 42,731, 7 is in the hundreds place."],
+      ["What is 99,999 + 1?",["100,000","99,100","10,000","9,999"],"Adding 1 causes cascading regrouping."],
+      ["What is the difference between the largest 5-digit number and smallest 4-digit number?",["98,999","99,000","89,999","90,000"],"99,999 - 1,000 = 98,999."],
+      ["Which comparison is correct?",["65,432 > 65,423","65,432 < 65,423","65,432 = 65,423","64,532 > 65,432"],"32 is greater than 23."],
+      ["What number is exactly halfway between 40,000 and 50,000?",["45,000","40,500","49,000","44,000"],"The average of 40k and 50k is 45k."],
+      ["In 88,888, what is the difference in value between the first 8 and the last 8?",["79,992","80,000","8,000","88,880"],"80,000 - 8 = 79,992."],
+      ["A number is rounded to 70,000. Which could it be?",["69,500","70,500","69,499","75,000"],"69,500 rounds up to 70,000."]
+    ]
+  },
+  {
+    id: "operations",
+    title: "Four Operations",
+    emoji: "➕",
+    blurb: "Multiplication, division, remainders, and order of operations.",
+    notes: ["Multiply up to 3 digits by 1 digit or 2 digits by 2 digits.", "Divide up to 4 digits by 1 digit.", "Follow order of operations: Brackets, Multiply/Divide, Add/Subtract."]
+    ,qs:[
+      ["What is 345 x 6?",["2,070","2,030","1,870","2,470"],"Multiply each digit and regroup."],
+      ["What is 45 x 23?",["1,035","1,025","935","1,135"],"45 x 3 = 135, 45 x 20 = 900. Total = 1035."],
+      ["What is 4,520 ÷ 4?",["1,130","1,180","1,120","1,030"],"Divide each place value."],
+      ["What is the remainder when 23 is divided by 5?",["3","4","5","2"],"5 x 4 = 20, remainder 3."],
+      ["A box holds 8 apples. How many boxes are needed for 50 apples?",["7","6","8","5"],"50 / 8 = 6 remainder 2. You need 7 boxes to hold all."],
+      ["What is 10 + 2 x 5?",["20","60","12","17"],"Multiply first: 2x5=10. Then 10+10=20."],
+      ["What is (10 + 2) x 5?",["60","20","12","17"],"Brackets first: 12 x 5 = 60."],
+      ["What is 100 - 20 ÷ 4?",["95","20","80","90"],"Divide first: 20/4=5. 100-5=95."],
+      ["A factory makes 1,250 toys a day. How many in 5 days?",["6,250","5,250","6,000","7,250"],"1250 x 5 = 6250."],
+      ["360 students are split into 8 equal groups. How many per group?",["45","40","50","36"],"360 / 8 = 45."],
+      ["What is 125 x 8?",["1,000","800","1,200","900"],"125 x 8 = 1000."],
+      ["What is the missing number: ___ x 6 = 432?",["72","62","82","68"],"432 / 6 = 72."],
+      ["What is the missing number: 500 ÷ ___ = 25?",["20","25","10","50"],"500 / 25 = 20."],
+      ["Which expression gives the largest value?",["10 x 10","50 + 50","200 - 90","110"],"10 x 10 = 100, 50+50=100, 200-90=110. 110 is largest."],
+      ["A baker bakes 45 cakes. He packs them in boxes of 6. How many cakes are left over?",["3","4","5","2"],"45 / 6 = 7 remainder 3."],
+      ["What is 99 x 5?",["495","485","505","450"],"100 x 5 = 500, minus 5 = 495."],
+      ["What is 3,000 x 4?",["12,000","1,200","120,000","7,000"],"3 x 4 = 12, add three zeros."],
+      ["What is 840 ÷ 40?",["21","210","2","20"],"84 / 4 = 21."],
+      ["Which is an estimate for 412 x 19?",["About 8,000","About 4,000","About 10,000","About 800"],"400 x 20 = 8000."],
+      ["What is 25 x 4 x 5?",["500","100","400","250"],"25x4=100, 100x5=500."],
+      ["A car travels 60 km per hour. How far in 4 hours?",["240 km","120 km","180 km","300 km"],"60 x 4 = 240."],
+      ["What is 1,000 - 345?",["655","665","755","645"],"Borrow across zeros."],
+      ["Divide 4,518 by 9. What is the quotient?",["502","520","508","492"],"4518 / 9 = 502."],
+      ["If 15 books cost $60, how much is 1 book?",["$4","$5","$3","$10"],"60 / 15 = 4."],
+      ["What is 34 + 66 x 2?",["166","200","132","100"],"Multiply first: 66x2=132. 132+34=166."]
+    ]
+  },
+  {
+    id: "fractions",
+    title: "Fractions",
+    emoji: "🍕",
+    blurb: "Mixed numbers, addition/subtraction of related fractions, and fraction of a set.",
+    notes: ["A mixed number has a whole number and a proper fraction.", "To add/subtract, make denominators the same."]
+    ,qs:[
+      ["What is 1 3/4 as an improper fraction?",["7/4","4/4","3/4","5/4"],"1x4 + 3 = 7."],
+      ["What is 9/3 as a whole number?",["3","9","1/3","1"],"9 / 3 = 3."],
+      ["What is 1/2 + 1/4?",["3/4","2/6","1/6","2/4"],"1/2 = 2/4. 2/4 + 1/4 = 3/4."],
+      ["What is 5/6 - 1/3?",["1/2","4/3","2/3","4/6"],"1/3 = 2/6. 5/6 - 2/6 = 3/6 = 1/2."],
+      ["What is 2/3 of 45?",["30","15","20","25"],"45 / 3 = 15. 15 x 2 = 30."],
+      ["What is 3/5 of 100?",["60","30","50","75"],"100 / 5 = 20. 20 x 3 = 60."],
+      ["Which fraction is the largest?",["3/4","2/3","5/8","1/2"],"3/4 = 0.75, 2/3 = 0.66, 5/8 = 0.625."],
+      ["What is 2 1/2 + 1 1/4?",["3 3/4","3 2/6","4 1/4","3 1/2"],"2+1=3. 1/2+1/4 = 3/4."],
+      ["What is 5 - 1 1/3?",["3 2/3","4 1/3","4 2/3","3 1/3"],"5 = 4 3/3. 4 3/3 - 1 1/3 = 3 2/3."],
+      ["Ali spent 1/4 of his money. What fraction is left?",["3/4","1/4","2/4","1/3"],"1 - 1/4 = 3/4."],
+      ["A pizza is cut into 8 slices. Tom eats 3. What fraction is left?",["5/8","3/8","1/2","4/8"],"8 - 3 = 5 slices left."],
+      ["What is 3/8 + 1/4 + 1/8?",["3/4","5/8","1/2","4/8"],"1/4 = 2/8. 3+2+1 = 6/8 = 3/4."],
+      ["Which is equal to 2?",["8/4","6/4","4/8","2/4"],"8 / 4 = 2."],
+      ["What is 1/2 of 1/2?",["1/4","1","2/4","1/2"],"Half of a half is a quarter."],
+      ["Simplify 12/16.",["3/4","4/3","6/8","2/3"],"Divide top and bottom by 4."],
+      ["Mary had 60 beads. She gave 1/3 to Jane and 1/4 to Sue. How many left?",["25","20","15","35"],"1/3 of 60 = 20. 1/4 of 60 = 15. 60-20-15 = 25."],
+      ["What is the numerator of 7/9?",["7","9","16","2"],"Top number is numerator."],
+      ["What fraction of 1 metre is 25 cm?",["1/4","1/25","25/10","1/5"],"1m = 100cm. 25/100 = 1/4."],
+      ["Which fraction is closest to 0?",["1/10","1/2","1/5","1/3"],"Larger denominator means smaller fraction."],
+      ["What is 4 2/5 - 2 4/5?",["1 3/5","2 2/5","1 2/5","2 3/5"],"4 2/5 = 3 7/5. 3 7/5 - 2 4/5 = 1 3/5."],
+      ["Express 2.5 as a mixed number.",["2 1/2","2 1/5","25/10","1/2"],"0.5 is 1/2."],
+      ["What is 1/6 + 2/3?",["5/6","3/9","1/2","3/6"],"2/3 = 4/6. 1/6 + 4/6 = 5/6."],
+      ["A recipe needs 3/4 cup of sugar. You want to make half the recipe. How much?",["3/8 cup","1/2 cup","1/4 cup","3/4 cup"],"Half of 3/4 is 3/8."],
+      ["Which is an improper fraction?",["9/5","4/5","1/2","3/8"],"Numerator > denominator."],
+      ["What is 7/7 + 2/7?",["1 2/7","9/14","5/7","1"],"7/7 = 1. 1 + 2/7 = 1 2/7."]
+    ]
+  },
+  {
+    id: "decimals",
+    title: "Decimals",
+    emoji: "🔟",
+    blurb: "Decimals up to 3 decimal places, operations, and conversions.",
+    notes: ["Tenths, hundredths, thousandths.", "When multiplying or dividing by 10, 100, 1000, shift the decimal point."]
+    ,qs:[
+      ["What is the value of 5 in 3.452?",["5 hundredths","5 tenths","5 thousandths","5 ones"],"5 is in the hundredths place."],
+      ["What is 3.4 + 2.56?",["5.96","5.10","6.00","5.86"],"Line up decimals: 3.40 + 2.56."],
+      ["What is 5.00 - 1.45?",["3.55","4.55","3.65","4.45"],"Borrow across zeros."],
+      ["What is 4.5 x 10?",["45","450","0.45","4.50"],"Move decimal 1 place right."],
+      ["What is 345.6 ÷ 100?",["3.456","34.56","0.3456","3456"],"Move decimal 2 places left."],
+      ["How is 0.75 written as a fraction?",["3/4","7/5","75/10","1/4"],"75/100 simplifies to 3/4."],
+      ["How is 1/8 written as a decimal?",["0.125","0.8","0.18","1.8"],"1 divided by 8 is 0.125."],
+      ["Round 4.567 to 2 decimal places.",["4.57","4.56","4.6","4.50"],"The 3rd decimal is 7, so round up."],
+      ["Which is the largest?",["0.45","0.405","0.045","0.4"],"0.45 is 45 hundredths, larger than 40 hundredths."],
+      ["What is 0.3 x 0.2?",["0.06","0.6","0.5","0.05"],"3x2=6. Two decimal places total."],
+      ["What is 1.2 ÷ 4?",["0.3","0.03","3","0.4"],"12 tenths / 4 = 3 tenths."],
+      ["Convert 3 L 450 mL to litres.",["3.45 L","3.450 L","34.5 L","0.345 L"],"450 mL = 0.45 L."],
+      ["What is 10 - 0.1?",["9.9","9.99","9.0","0.9"],"10.0 - 0.1 = 9.9."],
+      ["What is 2.5 + 2.5 + 2.5 + 2.5?",["10","8","10.5","5"],"2.5 x 4 = 10."],
+      ["Which decimal is equal to 4/5?",["0.8","0.45","0.4","4.5"],"4 divided by 5 is 0.8."],
+      ["What is 0.05 x 100?",["5","50","0.5","0.005"],"Move decimal 2 places right."],
+      ["A rope is 2.4 m long. 0.8 m is cut off. How much is left?",["1.6 m","1.4 m","3.2 m","1.2 m"],"2.4 - 0.8 = 1.6."],
+      ["What is the place value of 9 in 0.091?",["Hundredths","Tenths","Thousandths","Ones"],"9 is in the hundredths place."],
+      ["Which is the smallest?",["0.01","0.1","0.001","0.11"],"0.001 is one thousandth."],
+      ["What is 7.05 + 3.95?",["11.00","10.10","11.10","10.00"],"7.05 + 3.95 = 11."],
+      ["How many tenths are in 2.4?",["24","2","4","240"],"2.4 = 24 tenths."],
+      ["What is 1.44 ÷ 12?",["0.12","1.2","0.012","12"],"144 / 12 = 12, adjust decimal."],
+      ["Express 0.6 as a fraction in simplest form.",["3/5","6/10","2/3","1/6"],"6/10 = 3/5."],
+      ["What is 5.6 km in metres?",["5,600 m","560 m","56,000 m","56 m"],"Multiply by 1000."],
+      ["What is 0.25 + 3/4?",["1","1.00","Both A and B","0.100"],"0.25 + 0.75 = 1."]
+    ]
+  },
+  {
+    id: "time-volume",
+    title: "Time and Volume",
+    emoji: "⏱️",
+    blurb: "24-hour clock, time duration, and volume of liquids.",
+    notes: ["1 L = 1,000 mL.", "24-hour clock avoids AM/PM confusion."]
+    ,qs:[
+      ["What is 3:30 PM in 24-hour clock?",["1530","1330","0330","15:30 PM"],"Add 12 to PM hours."],
+      ["What is 0845 in 12-hour clock?",["8:45 AM","8:45 PM","20:45","8:45"],"Before 1200 is AM."],
+      ["A movie starts at 1400 and lasts 2 hours 15 mins. When does it end?",["1615","16:15 PM","4:15","1515"],"1400 + 2h 15m = 1615."],
+      ["How many minutes from 0940 to 1110?",["90 mins","80 mins","100 mins","70 mins"],"20 mins to 1000, then 70 mins to 1110. Total 90."],
+      ["What is 2.5 L in mL?",["2,500 mL","250 mL","25 mL","2050 mL"],"1 L = 1000 mL."],
+      ["What is 3 L 40 mL in mL?",["3,040 mL","3,400 mL","340 mL","3,004 mL"],"3000 + 40 = 3040."],
+      ["A jug has 1.5 L of water. 400 mL is poured out. How much is left?",["1,100 mL","1.1 mL","110 mL","1,900 mL"],"1500 - 400 = 1100."],
+      ["How many seconds in 4 minutes?",["240","400","120","40"],"4 x 60 = 240."],
+      ["What is 2015 in 12-hour clock?",["8:15 PM","8:15 AM","10:15 PM","2:15 PM"],"20 - 12 = 8 PM."],
+      ["A train leaves at 10:45 AM and arrives at 1:15 PM. How long is the trip?",["2 h 30 m","3 h 30 m","2 h 15 m","1 h 30 m"],"10:45 to 12:45 is 2h, plus 30m."],
+      ["What is 5,000 mL in Litres?",["5 L","50 L","0.5 L","500 L"],"Divide by 1000."],
+      ["Which volume is the largest?",["2.5 L","2.05 L","2,050 mL","2 L 500 mL"],"2.5 L = 2500 mL, which is largest."],
+      ["How many hours in 3 days?",["72","48","36","24"],"3 x 24 = 72."],
+      ["What time is 3 hours before 0200?",["2300","0500","0100","11 PM"],"0200 minus 3 hours is 2300 (previous day)."],
+      ["A bottle holds 250 mL. How many bottles to fill a 2 L jug?",["8","4","5","10"],"2000 / 250 = 8."],
+      ["What is 12:00 midnight in 24-hour clock?",["0000","2400","1200","0012"],"Midnight is 0000."],
+      ["What is 12:00 noon in 24-hour clock?",["1200","0000","2400","12 PM"],"Noon is 1200."],
+      ["How many mL in half a litre?",["500 mL","50 mL","100 mL","250 mL"],"1000 / 2 = 500."],
+      ["A tap leaks 50 mL per minute. How much in 1 hour?",["3,000 mL","300 mL","500 mL","3 L 500 mL"],"50 x 60 = 3000."],
+      ["What is the time 45 minutes after 2340?",["0025","2425","0015","2385"],"20 mins to midnight, then 25 mins more."],
+      ["How many days in a leap year?",["366","365","364","28"],"Leap year has 366 days."],
+      ["Convert 4 L 5 mL to mL.",["4,005 mL","4,500 mL","450 mL","4,050 mL"],"4000 + 5 = 4005."],
+      ["A flight takes 3 h 20 m. It leaves at 0950. When does it arrive?",["1310","1210","1350","1270"],"0950 + 3h = 1250. +20m = 1310."],
+      ["What is 1.25 L + 750 mL?",["2 L","2.5 L","1.25 L","2,000 mL"],"1250 + 750 = 2000 mL = 2 L."],
+      ["How many quarters of an hour in 2 hours?",["8","4","6","2"],"2 hours = 120 mins. 120 / 15 = 8."]
+    ]
+  },
+  {
+    id: "area-perimeter",
+    title: "Area and Perimeter",
+    emoji: "📐",
+    blurb: "Rectangles, squares, composite figures, and real-world applications.",
+    notes: ["Area = Length x Width.", "Perimeter = total distance around the outside."]
+    ,qs:[
+      ["What is the area of a square with side 6 cm?",["36 cm²","12 cm²","24 cm²","6 cm²"],"6 x 6 = 36."],
+      ["What is the perimeter of a square with side 6 cm?",["24 cm","36 cm","12 cm","18 cm"],"6 x 4 = 24."],
+      ["A rectangle is 8 cm by 5 cm. What is its area?",["40 cm²","26 cm²","13 cm²","85 cm²"],"8 x 5 = 40."],
+      ["A rectangle is 8 cm by 5 cm. What is its perimeter?",["26 cm","40 cm","13 cm","30 cm"],"2 x (8+5) = 26."],
+      ["A square has perimeter 32 cm. What is its area?",["64 cm²","16 cm²","32 cm²","256 cm²"],"Side = 8. Area = 8x8 = 64."],
+      ["A rectangle has area 48 cm² and width 6 cm. What is its length?",["8 cm","6 cm","42 cm","12 cm"],"48 / 6 = 8."],
+      ["An L-shape is made of two rectangles: 10x4 and 4x4 attached. Total area?",["56 cm²","40 cm²","16 cm²","100 cm²"],"(10x4) + (4x4) = 40+16 = 56."],
+      ["To fence a rectangular garden 10m by 5m, how much fencing is needed?",["30 m","50 m","15 m","100 m"],"Perimeter = 2x(10+5) = 30."],
+      ["A floor is 4m by 3m. Tiles are 1m². How many tiles needed?",["12","7","24","10"],"Area = 12 m². 12 tiles."],
+      ["What happens to the area of a square if its side is doubled?",["It is multiplied by 4","It doubles","It is multiplied by 8","It stays same"],"2x2=4, 4x4=16. 16 is 4 times 4."],
+      ["A square is cut into 4 equal smaller squares. If the big square has area 100, what is the perimeter of a small square?",["20 cm","10 cm","25 cm","5 cm"],"Small square area=25, side=5. Perim=20."],
+      ["A rectangular path is 20m long and 2m wide. What is its area?",["40 m²","44 m²","22 m²","10 m²"],"20 x 2 = 40."],
+      ["The perimeter of a rectangle is 20 cm. Its length is 6 cm. What is its width?",["4 cm","14 cm","8 cm","3 cm"],"20 / 2 = 10. 10 - 6 = 4."],
+      ["A square has area 81 cm². What is its perimeter?",["36 cm","324 cm","18 cm","9 cm"],"Side = 9. Perim = 9x4 = 36."],
+      ["If you remove a 1x1 square from the corner of a 5x5 square, what happens to the perimeter?",["It stays the same","It decreases by 2","It increases by 2","It decreases by 1"],"You lose 2 edges but expose 2 new inner edges."],
+      ["A rectangle has length 12 and width 5. What is the area of half the rectangle?",["30","60","17","120"],"Area=60. Half is 30."],
+      ["Two identical squares of side 4 cm are placed side by side. What is the perimeter of the new rectangle?",["24 cm","32 cm","16 cm","64 cm"],"New shape is 8x4. Perim = 2x(8+4) = 24."],
+      ["A square piece of paper has perimeter 40 cm. It is folded in half. What is the area of the folded shape?",["50 cm²","100 cm²","20 cm²","40 cm²"],"Side=10. Area=100. Folded area = 50."],
+      ["What is the area of a rectangle with sides 2.5 m and 4 m?",["10 m²","13 m²","6.5 m²","8 m²"],"2.5 x 4 = 10."],
+      ["A rectangular field is 50 m by 20 m. Ali runs 3 laps. What distance?",["420 m","140 m","300 m","210 m"],"Perim = 140. 3 x 140 = 420."],
+      ["A square and a rectangle have the same perimeter. The square has side 5. Rectangle width is 4. What is rectangle length?",["6","5","10","20"],"Square perim=20. Rect: 2x(L+4)=20 -> L+4=10 -> L=6."],
+      ["A garden is 10m by 8m. A 1m wide flower bed is along one 10m side. Area of flower bed?",["10 m²","8 m²","80 m²","18 m²"],"10 x 1 = 10."],
+      ["If the side of a square is 0, what is its area?",["0","1","4","Cannot tell"],"0 x 0 = 0."],
+      ["A rectangle is 10 cm by 6 cm. A 2 cm square is cut from the middle. Area left?",["56 cm²","60 cm²","52 cm²","48 cm²"],"60 - 4 = 56."],
+      ["How many 2 cm by 2 cm squares fit into a 10 cm by 4 cm rectangle?",["10","20","8","5"],"Area 40 / Area 4 = 10. (Also 5x2 = 10)."]
+    ]
+  },
+  {
+    id: "angles",
+    title: "Angles",
+    emoji: "📏",
+    blurb: "Angles on a straight line, angles at a point, and angles in squares/rectangles.",
+    notes: ["Angles on a straight line add up to 180°.", "Angles at a point add up to 360°."]
+    ,qs:[
+      ["What is the sum of angles on a straight line?",["180°","90°","360°","100°"],"Angles on a straight line add to 180°."],
+      ["What is the sum of angles at a point?",["360°","180°","90°","270°"],"A full circle is 360°."],
+      ["An angle on a straight line is 70°. What is the other angle?",["110°","120°","90°","290°"],"180 - 70 = 110."],
+      ["Three angles at a point are 90°, 120° and x. What is x?",["150°","130°","60°","240°"],"360 - 90 - 120 = 150."],
+      ["What is the angle between the hands of a clock at 6:00?",["180°","90°","360°","60°"],"The hands form a straight line."],
+      ["What is the angle between the hands of a clock at 3:00?",["90°","180°","45°","30°"],"The hands form a right angle."],
+      ["A rectangle is folded so two corners meet. The angle formed is always related to:",["90°","45°","180°","60°"],"Corners of a rectangle are 90°."],
+      ["Two lines cross. One angle is 50°. What is the opposite angle?",["50°","130°","90°","40°"],"Vertically opposite angles are equal."],
+      ["Two lines cross. One angle is 50°. What is the adjacent angle on the straight line?",["130°","50°","90°","310°"],"180 - 50 = 130."],
+      ["What is half of a right angle?",["45°","90°","180°","30°"],"90 / 2 = 45."],
+      ["An angle is 3 times a right angle. What is it?",["270°","180°","360°","90°"],"3 x 90 = 270."],
+      ["What do we call an angle of 180°?",["Straight angle","Right angle","Reflex angle","Acute angle"],"180° is a straight angle."],
+      ["If 4 equal angles meet at a point, what is each angle?",["90°","45°","180°","60°"],"360 / 4 = 90."],
+      ["A square is cut along its diagonal. What are the angles of the triangle formed?",["90°, 45°, 45°","90°, 60°, 30°","60°, 60°, 60°","90°, 90°, 0°"],"Corners are 90°, diagonal splits 90° into two 45°."],
+      ["What is 180° - 90° - 45°?",["45°","90°","135°","0°"],"180 - 135 = 45."],
+      ["An angle is greater than 90° but less than 180°. It is:",["Obtuse","Acute","Right","Reflex"],"Between 90 and 180 is obtuse."],
+      ["Two angles add up to 90°. One is 35°. What is the other?",["55°","65°","145°","45°"],"90 - 35 = 55."],
+      ["How many right angles are in a full turn?",["4","2","3","1"],"360 / 90 = 4."],
+      ["A straight line is divided into 3 angles: 40°, 60° and x.",["80°","100°","20°","90°"],"180 - 100 = 80."],
+      ["What is the angle of the corner of a book?",["90°","45°","180°","100°"],"Books are rectangular."],
+      ["If you turn 180° from facing North, which way do you face?",["South","East","West","North"],"180° is a half turn."],
+      ["If you turn 90° clockwise from North, you face:",["East","South","West","North-East"],"Clockwise from North is East."],
+      ["An angle is 15° more than a right angle. What is it?",["105°","95°","115°","75°"],"90 + 15 = 105."],
+      ["What is the sum of the 4 angles in a rectangle?",["360°","180°","90°","270°"],"4 x 90 = 360."],
+      ["Two angles on a straight line are equal. What is each?",["90°","45°","180°","60°"],"180 / 2 = 90."]
+    ]
+  },
+  {
+    id: "shapes",
+    title: "Lines and 2D Shapes",
+    emoji: "🔷",
+    blurb: "Parallel, perpendicular lines, and properties of quadrilaterals.",
+    notes: ["Parallel lines never meet.", "Perpendicular lines meet at 90°.", "Know properties of square, rectangle, parallelogram, rhombus, trapezium."]
+    ,qs:[
+      ["Lines that never meet are called:",["Parallel","Perpendicular","Intersecting","Curved"],"Parallel lines stay the same distance apart."],
+      ["Lines that meet at a right angle are:",["Perpendicular","Parallel","Diagonal","Horizontal"],"Perpendicular means meeting at 90°."],
+      ["How many pairs of parallel sides does a parallelogram have?",["2","1","4","0"],"A parallelogram has 2 pairs."],
+      ["How many pairs of parallel sides does a trapezium have?",["1","2","4","0"],"A trapezium has exactly 1 pair."],
+      ["A rhombus has:",["4 equal sides","4 equal angles","2 equal sides","1 pair of parallel sides"],"All 4 sides of a rhombus are equal."],
+      ["Which shape always has 4 right angles?",["Rectangle","Rhombus","Parallelogram","Trapezium"],"Rectangles and squares have 4 right angles."],
+      ["How many lines of symmetry does a square have?",["4","2","1","0"],"Horizontal, vertical, and 2 diagonals."],
+      ["How many lines of symmetry does a rectangle (not square) have?",["2","4","1","0"],"Horizontal and vertical only."],
+      ["A shape has 4 equal sides but no right angles. It is a:",["Rhombus","Square","Rectangle","Trapezium"],"A rhombus has equal sides but not necessarily 90° corners."],
+      ["Which letter has parallel lines?",["H","A","T","L"],"The two vertical lines in H are parallel."],
+      ["Which letter has perpendicular lines?",["T","Z","V","W"],"The horizontal and vertical lines in T meet at 90°."],
+      ["A parallelogram has opposite angles that are:",["Equal","Add to 90°","Add to 180°","Different"],"Opposite angles are equal."],
+      ["True or false: All squares are rectangles.",["True","False","Sometimes","Cannot tell"],"A square meets all properties of a rectangle."],
+      ["True or false: All rectangles are squares.",["False","True","Sometimes","Cannot tell"],"Rectangles don't need 4 equal sides."],
+      ["How many lines of symmetry does an equilateral triangle have?",["3","1","2","0"],"From each corner to the opposite midpoint."],
+      ["A shape with exactly one pair of parallel sides is a:",["Trapezium","Parallelogram","Rhombus","Square"],"Definition of a trapezium."],
+      ["The diagonals of a square:",["Bisect each other at 90°","Are not equal","Do not cross","Meet at 60°"],"They cross at right angles and are equal length."],
+      ["Which shape is NOT a quadrilateral?",["Triangle","Rhombus","Trapezium","Kite"],"A triangle has 3 sides."],
+      ["A line that cuts a shape into two identical mirror halves is a:",["Line of symmetry","Parallel line","Diagonal","Perimeter"],"Definition of line of symmetry."],
+      ["How many pairs of parallel sides does a regular hexagon have?",["3","2","6","0"],"Opposite sides are parallel."],
+      ["What is the name of a 5-sided polygon?",["Pentagon","Hexagon","Octagon","Heptagon"],"Penta = 5."],
+      ["A rhombus is a special type of:",["Parallelogram","Trapezium","Triangle","Pentagon"],"It has 2 pairs of parallel sides."],
+      ["If a quadrilateral has 4 equal sides and 4 right angles, it is a:",["Square","Rhombus","Rectangle","Kite"],"Square is the most specific correct name."],
+      ["Which of these is true about a parallelogram?",["Opposite sides are equal","All sides are equal","All angles are 90°","Only 1 pair of parallel sides"],"Opposite sides are equal and parallel."],
+      ["Can a trapezium have a right angle?",["Yes","No","Only if it's a square","Only if it's a rectangle"],"A right trapezium has a 90° angle."]
+    ]
+  },
+  {
+    id: "data",
+    title: "Data Representation",
+    emoji: "📈",
+    blurb: "Line graphs, tables, and interpreting trends.",
+    notes: ["Line graphs show change over time.", "Always check the scale on the axes."]
+    ,qs:[
+      ["Which graph is best to show change over time?",["Line graph","Bar graph","Pie chart","Pictograph"],"Line graphs show trends over time."],
+      ["In a line graph, a steep upward line means:",["Fast increase","Slow increase","Decrease","No change"],"Steepness shows rate of change."],
+      ["In a line graph, a flat horizontal line means:",["No change","Fast increase","Decrease","Error"],"The value stays the same."],
+      ["What does the vertical axis of a graph usually show?",["The scale/amount","The categories","The title","The time"],"Vertical is usually the measured value."],
+      ["If a graph scale goes 0, 5, 10, 15... what is the interval?",["5","10","15","0"],"The step between marks is 5."],
+      ["A table shows: Mon 10, Tue 15, Wed 20. What is the total?",["45","35","50","20"],"10+15+20 = 45."],
+      ["A line graph shows temperature. It peaks at 2 PM. This means:",["2 PM was the hottest","2 PM was the coldest","Temperature was constant","It was night"],"Peak means highest value."],
+      ["Why is a title important on a graph?",["It tells what the data is about","It makes it colourful","It is not important","It shows the scale"],"A title gives context."],
+      ["If a pictograph uses 1 star = 5 items, how many items do 4 stars show?",["20","4","9","5"],"4 x 5 = 20."],
+      ["A table has columns 'Age' and 'Height'. What is it showing?",["Relationship between age and height","Only ages","Only heights","Time"],"It compares two variables."],
+      ["A line graph goes down from left to right. This shows:",["A decrease","An increase","No change","A peak"],"Going down means decreasing."],
+      ["What should you check first when reading a graph?",["The scale and labels","The colours","The highest point","The lowest point"],"Scale tells you the true values."],
+      ["A bar graph and a line graph both have:",["Axes and scales","Bars","Points connected by lines","Pictures"],"Both use X and Y axes."],
+      ["If a graph's scale starts at 50 instead of 0, what can happen?",["Differences look exaggerated","It is more accurate","It is wrong","It shows less data"],"Starting above 0 can mislead visually."],
+      ["A table shows: Apple 12, Banana 8. How many more apples?",["4","20","8","12"],"12 - 8 = 4."],
+      ["In a line graph of a plant's growth, what is the independent variable (x-axis)?",["Time (Days)","Height (cm)","Colour","Pot size"],"Time is usually on the x-axis."],
+      ["If a line graph has two lines crossing, it means:",["The values were equal at that point","The graph is broken","One stopped growing","They are parallel"],"Crossing means same value at same time."],
+      ["What is the mode in a data set?",["The most frequent value","The average","The middle value","The highest value"],"Mode = most common."],
+      ["A survey asks 'Favourite Colour'. Which graph is best?",["Bar graph or Pie chart","Line graph","Scatter plot","Histogram"],"Categories are best shown with bars or pies."],
+      ["If 100 people were surveyed, and 25% chose Blue, how many chose Blue?",["25","50","10","75"],"25% of 100 is 25."],
+      ["A line graph shows a car's distance over time. A flat line means:",["The car stopped","The car sped up","The car reversed","The car crashed"],"Distance isn't changing = stopped."],
+      ["What does 'data' mean?",["Information or facts collected","A type of graph","A math formula","A computer game"],"Data is collected information."],
+      ["If a table has 5 rows and 3 columns, how many data cells (excluding headers)?",["15","8","5","3"],"5 x 3 = 15."],
+      ["Which is NOT a way to represent data?",["Paragraph","Table","Graph","Chart"],"Paragraphs are text, not data representations."],
+      ["A line graph is better than a bar graph when:",["Showing continuous change over time","Comparing distinct categories","Showing parts of a whole","Showing pictures"],"Line graphs connect continuous data points."]
+    ]
+  },
+  {
+    id: "heuristics",
+    title: "Word Problems & Heuristics",
+    emoji: "🧠",
+    blurb: "Working backwards, assumptions, and multi-step logic.",
+    notes: ["Draw models or work backwards to solve tricky problems.", "Check if your final answer makes sense in the story."]
+    ,qs:[
+      ["Ali had some marbles. He lost 5, then won 10. He now has 25. How many at first?",["20","15","30","10"],"Work backwards: 25 - 10 + 5 = 20."],
+      ["A number is multiplied by 3, then 5 is added. The answer is 26. What is the number?",["7","21","8","6"],"26 - 5 = 21. 21 / 3 = 7."],
+      ["Tom and Jerry have 40 sweets in total. Tom has 10 more than Jerry. How many does Jerry have?",["15","20","25","10"],"40 - 10 = 30. 30 / 2 = 15."],
+      ["A farmer has chickens and cows. 10 heads and 28 legs. How many chickens?",["6","4","5","8"],"Assume all cows: 10x4=40 legs. Extra legs = 12. Chickens have 2 less legs. 12/2 = 6 chickens."],
+      ["A pen costs $2, a book costs $5. Ali bought 8 items for $25. How many pens?",["5","3","4","6"],"Assume all books: 8x5=40. Diff = 15. 15 / (5-2) = 5 pens."],
+      ["If I buy 4 apples, I have $2 left. If I buy 6 apples, I am $4 short. How much is 1 apple?",["$3","$2","$4","$6"],"Difference in money = 6. Difference in apples = 2. 6/2 = $3."],
+      ["In the above problem, how much money did I have?",["$14","$12","$10","$8"],"4 apples = $12. $12 + $2 = $14."],
+      ["A rope is cut into 3 pieces. The first is 2m. The second is twice the first. The third is 3m. Total length?",["9m","7m","11m","5m"],"2 + 4 + 3 = 9."],
+      ["Mary is 12 years old. Her mother is 3 times as old. How old was her mother when Mary was born?",["24","36","12","20"],"Mother is 36. Difference is 24 years."],
+      ["A box of apples weighs 5 kg. The empty box weighs 500 g. What is the mass of the apples?",["4.5 kg","4.5 g","5.5 kg","450 g"],"5 kg = 5000 g. 5000 - 500 = 4500 g = 4.5 kg."],
+      ["3 identical shirts cost as much as 2 identical pairs of shoes. A shirt is $20. How much is a pair of shoes?",["$30","$40","$60","$15"],"3 x 20 = 60. 60 / 2 = 30."],
+      ["A tank is 1/4 full. Adding 15 L makes it 1/2 full. What is the capacity?",["60 L","30 L","45 L","15 L"],"1/2 - 1/4 = 1/4. 1/4 of tank = 15 L. Total = 60 L."],
+      ["There are 50 coins of 20c and 50c. Total value is $16. How many 50c coins?",["20","30","25","15"],"Assume all 20c: 50x0.2 = $10. Diff = $6. Diff per coin = $0.3. 6 / 0.3 = 20."],
+      ["A bus had some passengers. 15 alighted, 8 boarded. Now there are 40. How many at first?",["47","33","55","23"],"40 - 8 + 15 = 47."],
+      ["A rectangle's length is 3 times its width. Perimeter is 40 cm. What is the width?",["5 cm","10 cm","8 cm","4 cm"],"Perim = 2 x (L+W) = 2 x (3W+W) = 8W. 8W = 40 -> W = 5."],
+      ["John reads 15 pages a day. How many days to finish a 120-page book?",["8","7","9","10"],"120 / 15 = 8."],
+      ["A shop sells 3 apples for $2. How much for 12 apples?",["$8","$6","$12","$4"],"12 / 3 = 4 sets. 4 x $2 = $8."],
+      ["If 2 workers can build a wall in 6 days, how long for 4 workers? (Assuming equal rate)",["3 days","12 days","2 days","4 days"],"Twice as many workers = half the time."],
+      ["A number divided by 5 gives a quotient of 12 and remainder 3. What is the number?",["63","60","58","65"],"12 x 5 + 3 = 63."],
+      ["The sum of three consecutive numbers is 30. What is the largest?",["11","10","12","9"],"30 / 3 = 10 (middle). Largest is 11."],
+      ["A square and a triangle have the same perimeter. The square's side is 6 cm. What is the triangle's side? (Equilateral)",["8 cm","6 cm","12 cm","24 cm"],"Square perim = 24. Triangle side = 24 / 3 = 8."],
+      ["Water flows into a tank at 2 L per minute. How long to fill 60 L?",["30 mins","20 mins","120 mins","15 mins"],"60 / 2 = 30."],
+      ["A shirt costs $40. It is discounted by 20%. What is the new price?",["$32","$20","$38","$8"],"20% of 40 is 8. 40 - 8 = 32."],
+      ["A baker bakes 450 cookies. He packs them in boxes of 12. How many cookies are left over?",["6","12","8","10"],"450 / 12 = 37 remainder 6."],
+      ["A train travels 120 km in 2 hours. What is its speed?",["60 km/h","240 km/h","120 km/h","30 km/h"],"120 / 2 = 60."]
+    ]
+  }
+];
+
+const QUESTIONS = [];
+TOPICS.forEach(topic => {
+  topic.qs.forEach((item, index) => {
+    QUESTIONS.push({
+      id: topic.id + "-" + (index + 1),
+      topic: topic.id,
+      q: item[0],
+      options: item[1],
+      exp: item[2]
+    });
+  });
+});
+
+const STORAGE_KEY = "p4MathsFullPack";
+const app = document.getElementById("app");
+
+let progress = loadProgress();
+let state = {
+  questions: [],
+  index: 0,
+  correct: 0,
+  answered: false,
+  title: "",
+  misses: []
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: {}, correct: {}, wrong: [] };
+    const data = JSON.parse(raw);
+    return {
+      attempts: data.attempts || {},
+      correct: data.correct || {},
+      wrong: data.wrong || []
+    };
+  } catch (error) {
+    return { attempts: {}, correct: {}, wrong: [] };
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (error) {}
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, char => {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char];
+  });
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function prepareQuestions(list) {
+  return list.map(q => {
+    const optionObjects = q.options.map((text, index) => ({
+      text,
+      correct: index === 0
+    }));
+    const shuffled = shuffle(optionObjects);
+    return {
+      ...q,
+      options: shuffled.map(o => o.text),
+      answer: shuffled.findIndex(o => o.correct)
+    };
+  });
+}
+
+function getTopic(id) {
+  return TOPICS.find(t => t.id === id);
+}
+
+function getQuestionsByTopic(id) {
+  return QUESTIONS.filter(q => q.topic === id);
+}
+
+function getStats() {
+  const attempted = Object.keys(progress.attempts).length;
+  let totalAttempts = 0;
+  let totalCorrect = 0;
+  for (const id in progress.attempts) totalAttempts += progress.attempts[id];
+  for (const id in progress.correct) totalCorrect += progress.correct[id];
+  const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+  return { attempted, accuracy, wrong: progress.wrong.length };
+}
+
+function renderHome() {
+  const stats = getStats();
+  const topicCards = TOPICS.map(topic => {
+    const total = topic.qs.length;
+    const mastered = QUESTIONS.filter(q => q.topic === topic.id && progress.correct[q.id] > 0).length;
+    const percent = total ? Math.round((mastered / total) * 100) : 0;
+    return `
+      <div class="card topic-card" onclick="openTopic('${topic.id}')">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P4</div>
+        </div>
+        <div class="topic-title">${esc(topic.title)}</div>
+        <div class="small">${esc(topic.blurb)}</div>
+        <div class="progress"><div style="width:${percent}%"></div></div>
+        <div class="small">${mastered}/${total} questions correct at least once</div>
+      </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">🔢 P4 Maths Full Pack</div>
+        <div class="chip">250 MCQs</div>
+      </div>
+      <div class="hero">
+        <h1>Primary 4 Maths Practice</h1>
+        <p>10 topics × 25 questions. Definitions, concepts and explanations.</p>
+        <div class="actions">
+          <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+          <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+          <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+          <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="value">${stats.attempted}</div><div class="label">Questions practiced</div></div>
+        <div class="stat"><div class="value">${stats.accuracy}%</div><div class="label">Accuracy</div></div>
+        <div class="stat"><div class="value">${stats.wrong}</div><div class="label">Wrong questions</div></div>
+        <div class="stat"><div class="value">${TOPICS.length}</div><div class="label">Topics</div></div>
+      </div>
+      ${topicCards}
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTopic(id) {
+  const topic = getTopic(id);
+  const notesHtml = topic.notes.map(n => `<li>${esc(n)}</li>`).join("");
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">⬅ Home</button>
+        <div class="chip">P4 Topic</div>
+      </div>
+      <div class="card">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P4</div>
+        </div>
+        <h2>${esc(topic.title)}</h2>
+        <p style="font-weight:800;">${esc(topic.blurb)}</p>
+        <h3>Key ideas</h3>
+        <ul class="notes">${notesHtml}</ul>
+        <div class="actions">
+          <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 25 Questions</button>
+          <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+        </div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startAllChallenge() {
+  startQuiz(shuffle(QUESTIONS).slice(0, 20), "Random 20 Challenge");
+}
+function startRandomTen() {
+  startQuiz(shuffle(QUESTIONS).slice(0, 10), "Random 10");
+}
+function startWrongAll() {
+  const questions = QUESTIONS.filter(q => progress.wrong.includes(q.id));
+  if (!questions.length) { alert("No wrong questions saved yet."); return; }
+  startQuiz(questions, "Wrong Replay");
+}
+function startTopic(id) {
+  const topic = getTopic(id);
+  startQuiz(getQuestionsByTopic(id), topic.title);
+}
+function startTopicWrong(id) {
+  const topic = getTopic(id);
+  const questions = QUESTIONS.filter(q => q.topic === id && progress.wrong.includes(q.id));
+  if (!questions.length) { alert("No wrong questions in this topic yet."); return; }
+  startQuiz(questions, "Wrong Replay: " + topic.title);
+}
+
+function startQuiz(list, title) {
+  if (!list.length) { alert("No questions available."); return; }
+  state = {
+    questions: prepareQuestions(list),
+    index: 0,
+    correct: 0,
+    answered: false,
+    title,
+    misses: []
+  };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  const topic = getTopic(q.topic);
+  const pct = (state.index / state.questions.length) * 100;
+  const opts = q.options.map((o, i) =>
+    `<button class="option" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${esc(o)}</button>`
+  ).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">${esc(state.title)}</div>
+      </div>
+      <div class="card">
+        <div class="progress"><div style="width:${pct}%"></div></div>
+        <div class="small">Question ${state.index+1} of ${state.questions.length} • Score ${state.correct}</div>
+        <div class="chip" style="margin:10px 0;">${topic.emoji} ${esc(topic.title)}</div>
+        <h2>${esc(q.q)}</h2>
+        <div class="options">${opts}</div>
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function answer(selected) {
+  if (state.answered) return;
+  state.answered = true;
+  const q = state.questions[state.index];
+  const buttons = Array.from(document.querySelectorAll(".option"));
+  buttons.forEach(b => b.disabled = true);
+  buttons[q.answer].classList.add("correct");
+  const isCorrect = selected === q.answer;
+  if (isCorrect) {
+    state.correct++;
+    buttons[selected].classList.add("correct");
+  } else {
+    buttons[selected].classList.add("wrong");
+    state.misses.push({ id: q.id, selected });
+  }
+  updateProgress(q.id, isCorrect);
+  const fb = document.getElementById("feedback");
+  fb.className = "feedback " + (isCorrect ? "good" : "bad");
+  fb.innerHTML = `
+    <div>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</div>
+    <div class="exp">${esc(q.exp)}${!isCorrect ? " Correct answer: " + esc(q.options[q.answer]) + "." : ""}</div>
+    <div class="actions">
+      <button class="btn primary" onclick="nextQuestion()">
+        ${state.index === state.questions.length - 1 ? "Finish 🏁" : "Next ➜"}
+      </button>
+    </div>`;
+}
+
+function updateProgress(id, isCorrect) {
+  progress.attempts[id] = (progress.attempts[id] || 0) + 1;
+  if (isCorrect) {
+    progress.correct[id] = (progress.correct[id] || 0) + 1;
+    progress.wrong = progress.wrong.filter(w => w !== id);
+  } else {
+    if (!progress.wrong.includes(id)) progress.wrong.push(id);
+  }
+  saveProgress();
+}
+
+function nextQuestion() {
+  if (!state.answered) return;
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    state.answered = false;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = state.questions.length;
+  const percent = Math.round((state.correct / total) * 100);
+  let stars = "💪";
+  let msg = "Keep practising! Read the explanations and try again.";
+  if (percent >= 90) { stars = "🌟🌟🌟"; msg = "Excellent!"; }
+  else if (percent >= 75) { stars = "🌟🌟"; msg = "Great job! Review the missed questions."; }
+  else if (percent >= 50) { stars = "🌟"; msg = "Good effort! Focus on the explanations."; }
+
+  const seen = new Set();
+  const unique = state.misses.filter(m => {
+    if (seen.has(m.id)) return false;
+    seen.add(m.id);
+    return true;
+  });
+
+  const reviewHtml = unique.map(miss => {
+    const q = state.questions.find(i => i.id === miss.id);
+    const topic = getTopic(q.topic);
+    return `
+      <div class="review-item">
+        <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+        <div class="review-q">${esc(q.q)}</div>
+        <div class="user-answer">Your answer: ${esc(q.options[miss.selected])}</div>
+        <div class="correct-answer">Correct answer: ${esc(q.options[q.answer])}</div>
+        <div>${esc(q.exp)}</div>
+      </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">Result</div>
+      </div>
+      <div class="card">
+        <h2>${esc(state.title)} Complete!</h2>
+        <div class="result-stars">${stars}</div>
+        <p style="font-weight:900;">You scored ${state.correct}/${total} (${percent}%). ${msg}</p>
+        <div class="actions">
+          <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+          ${unique.length ? '<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>' : ""}
+        </div>
+        <h3>Review</h3>
+        ${unique.length ? reviewHtml : "<p>🎉 Perfect! No wrong questions this round.</p>"}
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function retryWrong() {
+  const ids = [...new Set(state.misses.map(m => m.id))];
+  startQuiz(QUESTIONS.filter(q => ids.includes(q.id)), "Retry Wrong");
+}
+
+function resetProgress() {
+  if (confirm("Reset all P4 Maths progress?")) {
+    progress = { attempts: {}, correct: {}, wrong: [] };
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
