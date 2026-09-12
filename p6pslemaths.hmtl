@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>P6 Maths Full Pack</title>
+<style>
+:root{
+  --bg1:#fee2e2;
+  --bg2:#ede9fe;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{display:inline-block;background:#fee2e2;color:#b91c1c;padding:8px 12px;border-radius:999px;font-weight:900;font-size:.9rem}
+.hero{background:linear-gradient(135deg,#dc2626,#7c3aed);color:#fff;padding:20px;border-radius:24px;box-shadow:0 14px 34px rgba(220,38,38,.18)}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);border-radius:18px;padding:12px;text-align:center;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:0 10px 24px rgba(15,23,42,.08);margin:12px 0}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#fca5a5}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:10px 0}
+.progress div{height:100%;background:linear-gradient(90deg,#dc2626,#7c3aed)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.btn{border:0;border-radius:16px;padding:12px 16px;font-weight:1000;cursor:pointer}
+.primary{background:linear-gradient(135deg,#dc2626,#7c3aed);color:#fff}
+.secondary{background:#e2e8f0;color:#0f172a}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{border:3px solid #fecaca;background:#fffafa;border-radius:18px;padding:14px;font-size:1rem;font-weight:900;text-align:left;cursor:pointer}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{margin-top:14px;padding:14px;border-radius:18px;font-weight:900}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{border:2px solid #e2e8f0;border-radius:18px;padding:12px;margin:10px 0;background:#fbfdff}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{background:#fff1f2;border:2px solid #f43f5e;border-radius:16px;padding:16px;font-weight:700;white-space:pre-wrap;font-family:monospace}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error", function(e){
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = '<div class="container"><div class="error-box">Page error: ' + (e.message || "Unknown error") + '</div></div>';
+  }
+});
+</script>
+
+<script>
+const TOPICS = [
+  {
+    id: "algebra",
+    title: "Algebra",
+    emoji: "🔤",
+    blurb: "Expressions, equations, substitution and simplification.",
+    notes: [
+      "Letters stand for numbers.",
+      "Solve equations by doing the inverse operation."
+    ],
+    qs: [
+      ["If a = 5, what is 3a + 2?",["17","15","12","20"],"3 × 5 + 2 = 17."],
+      ["If x = 4, what is 5x - 6?",["14","20","10","26"],"5 × 4 - 6 = 14."],
+      ["Simplify 4p + 3p.",["7p","12p","p","7"],"Add like terms."],
+      ["Simplify 9m - 2m.",["7m","11m","7","9m"],"9 - 2 = 7."],
+      ["Simplify 2a + 3b + 4a.",["6a + 3b","9a","5a + 3b","6a + 4b"],"Combine the a terms."],
+      ["What is y + y + y?",["3y","y3","3","y"],"Three y added together is 3y."],
+      ["How is 5 multiplied by n written?",["5n","5 + n","n5 only","5/n"],"Multiplication is written as 5n."],
+      ["If 2x = 18, what is x?",["9","36","16","20"],"Divide both sides by 2."],
+      ["If x + 7 = 15, what is x?",["8","22","7","15"],"15 - 7 = 8."],
+      ["If 3y - 4 = 11, what is y?",["5","7","3","15"],"11 + 4 = 15, 15 ÷ 3 = 5."],
+      ["If 4x + 3 = 19, what is x?",["4","16","5","6"],"19 - 3 = 16, 16 ÷ 4 = 4."],
+      ["A number increased by 6 is 20. What is the number?",["14","26","6","12"],"20 - 6 = 14."],
+      ["A number multiplied by 3 gives 21. What is the number?",["7","18","24","3"],"21 ÷ 3 = 7."],
+      ["Ali is x years old. Tom is 3 years older. What is Tom's age?",["x + 3","x - 3","3x","x / 3"],"Older means add."],
+      ["Mary has n sweets. She gives away 4. How many are left?",["n - 4","n + 4","4n","4 - n"],"Giving away means subtract."],
+      ["Each box has a books. How many books are in 5 boxes?",["5a","a + 5","a/5","5 + a"],"Multiply by 5."],
+      ["A pencil costs $x. What is the cost of 4 pencils?",["$4x","$x4 only","$4 + x","$x/4"],"Cost is 4 times x."],
+      ["Simplify 2(x + 3).",["2x + 6","2x + 3","x + 6","2x + 5"],"Multiply both terms inside."],
+      ["Simplify 4(2y - 1).",["8y - 4","6y - 4","8y - 1","4y - 4"],"4 × 2y = 8y, 4 × 1 = 4."],
+      ["If a = 3 and b = 2, what is 2a + 3b?",["12","10","15","9"],"2×3 + 3×2 = 6 + 6 = 12."],
+      ["If p = 5, what is p²?",["25","10","52","5"],"p² means p × p."],
+      ["If x = 6, what is x/2 + 4?",["7","10","8","5"],"6 ÷ 2 = 3, 3 + 4 = 7."],
+      ["Solve x/3 = 6.",["18","2","3","9"],"Multiply both sides by 3."],
+      ["Two numbers are x and x + 5. What is their sum?",["2x + 5","x + 5","2x","x + 10"],"x + x + 5 = 2x + 5."],
+      ["A rectangle has width w and length w + 2. What is its perimeter?",["4w + 4","2w + 2","4w","w² + 2w"],"Perimeter = 2(w + w + 2)."]
+    ]
+  },
+  {
+    id: "ratio",
+    title: "Ratio",
+    emoji: "⚖️",
+    blurb: "Simplifying ratios, dividing quantities and ratio word problems.",
+    notes: [
+      "A ratio compares quantities.",
+      "Use parts to divide totals."
+    ],
+    qs: [
+      ["Simplify 6:9.",["2:3","3:2","6:9","1:2"],"Divide by 3."],
+      ["Simplify 12:18.",["2:3","3:2","4:6","6:9"],"Divide by 6."],
+      ["Two numbers are in the ratio 4:5. Their total is 45. What is the smaller number?",["20","25","15","30"],"4 + 5 = 9 parts, 45 ÷ 9 = 5, 4 × 5 = 20."],
+      ["The ratio of boys to girls is 3:4. There are 12 boys. How many girls?",["16","9","12","20"],"12 ÷ 3 = 4, 4 × 4 = 16."],
+      ["Red to blue beads is 2:7. There are 36 beads altogether. How many are red?",["8","28","14","7"],"2 + 7 = 9 parts, 36 ÷ 9 = 4, 2 × 4 = 8."],
+      ["$70 is shared in the ratio 2:5. What is the larger share?",["$50","$20","$35","$70"],"2 + 5 = 7 parts, 70 ÷ 7 = 10, 5 × 10 = 50."],
+      ["Sweets are shared among 3 children in the ratio 3:2:5. Total is 100. What is the smallest share?",["20","30","50","10"],"3 + 2 + 5 = 10 parts, 100 ÷ 10 = 10, 2 × 10 = 20."],
+      ["If A:B = 2:3 and B:C = 3:4, what is A:B:C?",["2:3:4","2:4:3","3:2:4","4:3:2"],"B is the same in both ratios."],
+      ["Which ratio is equivalent to 5:8?",["15:24","10:18","5:16","8:5"],"Multiply both by 3."],
+      ["3:4 = 12:___. What is the missing number?",["16","9","12","20"],"12 ÷ 3 = 4, 4 × 4 = 16."],
+      ["The ratio of apples to oranges is 5:3. There are 25 apples. How many oranges?",["15","10","20","25"],"25 ÷ 5 = 5, 3 × 5 = 15."],
+      ["In a class of 24, the ratio of boys to girls is 1:3. How many girls?",["18","6","12","20"],"1 + 3 = 4 parts, 24 ÷ 4 = 6, 3 × 6 = 18."],
+      ["The ratio of length to width is 5:2. The length is 20 cm. What is the width?",["8 cm","5 cm","10 cm","4 cm"],"20 ÷ 5 = 4, 2 × 4 = 8."],
+      ["Three numbers are in the ratio 2:3:4. Their total is 63. What is the largest?",["28","21","14","36"],"2 + 3 + 4 = 9 parts, 63 ÷ 9 = 7, 4 × 7 = 28."],
+      ["Two numbers are in the ratio 4:7. Their difference is 15. What is the smaller number?",["20","35","15","25"],"7 - 4 = 3 parts, 15 ÷ 3 = 5, 4 × 5 = 20."],
+      ["A:B = 5:2. If A is 35, what is B?",["14","70","10","25"],"35 ÷ 5 = 7, 2 × 7 = 14."],
+      ["Sugar to flour is 1:4. If flour is 600 g, how much sugar?",["150 g","300 g","600 g","100 g"],"600 ÷ 4 = 150."],
+      ["Two numbers are in the ratio 3:5. Their total is 64. What is their difference?",["16","32","8","24"],"3 + 5 = 8 parts, 64 ÷ 8 = 8, 2 × 8 = 16."],
+      ["8:12 = 2:___. What is the missing number?",["3","4","6","8"],"Simplify 8:12 to 2:3."],
+      ["What is 10:25 as a simplified fraction?",["2/5","5/2","10/25","1/5"],"10 ÷ 25 = 2/5."],
+      ["The ratio of cats to dogs is 7:3. There are 12 dogs. How many cats?",["28","21","14","7"],"12 ÷ 3 = 4, 7 × 4 = 28."],
+      ["Two numbers are in the ratio 2:3. Their total is 45. What is their difference?",["9","18","15","6"],"2 + 3 = 5 parts, 45 ÷ 5 = 9, 1 × 9 = 9."],
+      ["A recipe uses 2 cups of water for every 3 cups of rice. For 6 cups of rice, how much water?",["4 cups","3 cups","6 cups","2 cups"],"6 ÷ 3 = 2, 2 × 2 = 4."],
+      ["$96 is shared in the ratio 3:5. What is the larger share?",["$60","$36","$48","$96"],"3 + 5 = 8 parts, 96 ÷ 8 = 12, 5 × 12 = 60."],
+      ["The ratio of pens to pencils is 3:4. There are 28 pencils. How many pens?",["21","28","14","24"],"28 ÷ 4 = 7, 3 × 7 = 21."]
+    ]
+  },
+  {
+    id: "rate-speed",
+    title: "Rate and Speed",
+    emoji: "🚗",
+    blurb: "Unit rate, speed, distance and time.",
+    notes: [
+      "Speed = Distance ÷ Time.",
+      "Distance = Speed × Time."
+    ],
+    qs: [
+      ["What is the formula for speed?",["Distance ÷ Time","Distance × Time","Time ÷ Distance","Distance + Time"],"Speed is how far per unit time."],
+      ["A car travels 120 km in 2 hours. What is its speed?",["60 km/h","240 km/h","30 km/h","120 km/h"],"120 ÷ 2 = 60."],
+      ["A cyclist rides at 15 km/h for 3 hours. How far?",["45 km","18 km","5 km","15 km"],"15 × 3 = 45."],
+      ["A train travels at 80 km/h for 2.5 hours. How far?",["200 km","160 km","82.5 km","40 km"],"80 × 2.5 = 200."],
+      ["A car travels 90 km at 30 km/h. How long?",["3 hours","60 hours","2 hours","30 hours"],"90 ÷ 30 = 3."],
+      ["A man walks at 5 km/h for 2 hours. How far?",["10 km","7 km","2.5 km","5 km"],"5 × 2 = 10."],
+      ["60 km/h is the same as:",["1 km/min","60 km/min","10 km/min","6 km/min"],"60 km in 60 min = 1 km/min."],
+      ["120 m/min is the same as:",["2 m/s","120 m/s","6 m/s","0.5 m/s"],"120 ÷ 60 = 2."],
+      ["An object moves at 5 m/s for 10 seconds. How far?",["50 m","15 m","0.5 m","500 m"],"5 × 10 = 50."],
+      ["A runner runs at 10 m/s for 1 minute. How far?",["600 m","10 m","60 m","100 m"],"1 minute = 60 s, 10 × 60 = 600."],
+      ["5 apples cost $3. What is the cost of 1 apple?",["$0.60","$0.50","$1.50","$0.30"],"3 ÷ 5 = 0.60."],
+      ["12 books cost $36. What is the cost of 1 book?",["$3","$4","$36","$12"],"36 ÷ 12 = 3."],
+      ["A machine fills 500 mL in 2 minutes. What is the rate?",["250 mL/min","1000 mL/min","500 mL/min","100 mL/min"],"500 ÷ 2 = 250."],
+      ["At 250 mL/min, how long to fill 1.5 L?",["6 minutes","1.5 minutes","250 minutes","3 minutes"],"1.5 L = 1500 mL, 1500 ÷ 250 = 6."],
+      ["A typist types 240 words in 4 minutes. What is the rate?",["60 words/min","240 words/min","40 words/min","960 words/min"],"240 ÷ 4 = 60."],
+      ["At 60 words/min, how long to type 900 words?",["15 minutes","9 minutes","60 minutes","54 minutes"],"900 ÷ 60 = 15."],
+      ["Speed is 45 km/h and time is 4 hours. Distance?",["180 km","49 km","11.25 km","90 km"],"45 × 4 = 180."],
+      ["Distance is 240 km and speed is 60 km/h. Time?",["4 hours","300 hours","180 hours","2 hours"],"240 ÷ 60 = 4."],
+      ["A car travels at 70 km/h for 3 hours. Distance?",["210 km","73 km","23.3 km","140 km"],"70 × 3 = 210."],
+      ["A car travels 100 km in 2 hours. Speed?",["50 km/h","200 km/h","102 km/h","48 km/h"],"100 ÷ 2 = 50."],
+      ["Which is faster?",["90 km/h","20 m/s","72 km/h","They are equal"],"20 m/s = 72 km/h, so 90 km/h is faster."],
+      ["A boy runs 3 km in 30 minutes. What is his speed?",["6 km/h","3 km/h","0.1 km/h","90 km/h"],"30 min = 0.5 h, 3 ÷ 0.5 = 6."],
+      ["A girl runs 400 m in 50 seconds. Speed?",["8 m/s","20 m/s","0.125 m/s","450 m/s"],"400 ÷ 50 = 8."],
+      ["For the same distance, if speed increases, time:",["decreases","increases","stays the same","becomes zero"],"Faster means less time."],
+      ["A train covers 300 km in 5 hours. Average speed?",["60 km/h","1500 km/h","305 km/h","55 km/h"],"300 ÷ 5 = 60."]
+    ]
+  },
+  {
+    id: "percentage",
+    title: "Percentage",
+    emoji: "💯",
+    blurb: "Percentage of quantities, increase, decrease, discount and original price.",
+    notes: [
+      "Percent means out of 100.",
+      "Increase: multiply by 1 + percentage.",
+      "Decrease: multiply by 1 - percentage."
+    ],
+    qs: [
+      ["What is 20% of 80?",["16","20","40","4"],"0.2 × 80 = 16."],
+      ["What is 35% of 200?",["70","35","130","65"],"0.35 × 200 = 70."],
+      ["What is 12.5% of 80?",["10","12.5","8","20"],"0.125 × 80 = 10."],
+      ["What is 125% of 40?",["50","45","40","60"],"1.25 × 40 = 50."],
+      ["45 is what percent of 60?",["75%","45%","60%","80%"],"45 ÷ 60 = 0.75."],
+      ["18 is 30% of what number?",["60","54","30","18"],"18 ÷ 0.3 = 60."],
+      ["Convert 0.375 to a percentage.",["37.5%","3.75%","0.375%","375%"],"Multiply by 100."],
+      ["Convert 7/8 to a percentage.",["87.5%","78%","87%","70.8%"],"7 ÷ 8 = 0.875."],
+      ["A price of $60 is increased by 15%. New price?",["$69","$75","$66","$70"],"60 × 1.15 = 69."],
+      ["A price of $80 is decreased by 25%. New price?",["$60","$55","$65","$20"],"80 × 0.75 = 60."],
+      ["A $45 shirt has a 20% discount. Sale price?",["$36","$35","$40","$9"],"45 × 0.8 = 36."],
+      ["After a 10% discount, a bag costs $54. Original price?",["$60","$48.60","$59.40","$50"],"54 ÷ 0.9 = 60."],
+      ["After a 20% increase, a price is $60. Original price?",["$50","$72","$48","$55"],"60 ÷ 1.2 = 50."],
+      ["A 7% service charge is added to $100. Total?",["$107","$170","$100.7","$93"],"100 × 1.07 = 107."],
+      ["An 8% tax is added to $25. Total?",["$27","$33","$25.8","$26"],"25 × 1.08 = 27."],
+      ["30 out of 120 pupils are absent. What percent are absent?",["25%","30%","20%","35%"],"30 ÷ 120 = 0.25."],
+      ["A score of 42 out of 50 is what percentage?",["84%","42%","50%","92%"],"42 ÷ 50 = 0.84."],
+      ["55% of 40 pupils are boys. How many boys?",["22","18","55","40"],"0.55 × 40 = 22."],
+      ["60% of 120 pupils passed. How many passed?",["72","60","48","100"],"0.6 × 120 = 72."],
+      ["Increase 200 by 5%.",["210","205","250","220"],"200 × 1.05 = 210."],
+      ["Decrease 500 by 12%.",["440","380","488","450"],"500 × 0.88 = 440."],
+      ["A price rises from $50 to $65. Percentage increase?",["30%","15%","25%","35%"],"15 ÷ 50 = 0.3."],
+      ["A price falls from $80 to $60. Percentage decrease?",["25%","20%","30%","15%"],"20 ÷ 80 = 0.25."],
+      ["15% of a number is 45. What is the number?",["300","67.5","45","150"],"45 ÷ 0.15 = 300."],
+      ["A shop sells 80 shirts. 25% are white. How many are not white?",["60","20","40","80"],"25% white means 75% not white, 0.75 × 80 = 60."]
+    ]
+  },
+  {
+    id: "circles",
+    title: "Circles",
+    emoji: "⭕",
+    blurb: "Radius, diameter, circumference and area. Use π = 3.14.",
+    notes: [
+      "Circumference = π × diameter or 2πr.",
+      "Area = π × r × r."
+    ],
+    qs: [
+      ["What is the formula for circumference?",["π × diameter","π × radius","radius × radius","diameter ÷ π"],"Circumference is π times diameter."],
+      ["A circle has radius 7 cm. What is its diameter?",["14 cm","7 cm","21 cm","3.5 cm"],"Diameter = 2 × radius."],
+      ["A circle has diameter 20 cm. What is its radius?",["10 cm","20 cm","40 cm","5 cm"],"Radius = diameter ÷ 2."],
+      ["What is the circumference of a circle with diameter 10 cm?",["31.4 cm","78.5 cm","15.7 cm","10 cm"],"3.14 × 10 = 31.4."],
+      ["What is the circumference of a circle with radius 5 cm?",["31.4 cm","15.7 cm","78.5 cm","10 cm"],"2 × 3.14 × 5 = 31.4."],
+      ["What is the area of a circle with radius 5 cm?",["78.5 cm²","31.4 cm²","25 cm²","157 cm²"],"3.14 × 5 × 5 = 78.5."],
+      ["What is the area of a circle with diameter 10 cm?",["78.5 cm²","31.4 cm²","157 cm²","15.7 cm²"],"Radius = 5, area = 78.5."],
+      ["What is the circumference of a circle with radius 4 cm?",["25.12 cm","12.56 cm","50.24 cm","8 cm"],"2 × 3.14 × 4 = 25.12."],
+      ["What is the area of a circle with radius 4 cm?",["50.24 cm²","25.12 cm²","12.56 cm²","100.48 cm²"],"3.14 × 4 × 4 = 50.24."],
+      ["A circle has circumference 62.8 cm. What is its diameter?",["20 cm","10 cm","31.4 cm","40 cm"],"62.8 ÷ 3.14 = 20."],
+      ["A circle has circumference 31.4 cm. What is its radius?",["5 cm","10 cm","20 cm","3.14 cm"],"31.4 ÷ 3.14 ÷ 2 = 5."],
+      ["What is the area of a circle with radius 10 cm?",["314 cm²","62.8 cm²","31.4 cm²","100 cm²"],"3.14 × 10 × 10 = 314."],
+      ["What is the area of a circle with diameter 4 cm?",["12.56 cm²","25.12 cm²","6.28 cm²","50.24 cm²"],"Radius = 2, area = 12.56."],
+      ["What is the area of a semicircle with radius 5 cm?",["39.25 cm²","78.5 cm²","15.7 cm²","25 cm²"],"Half of 78.5."],
+      ["What is the perimeter of a semicircle with diameter 10 cm?",["25.7 cm","15.7 cm","31.4 cm","20 cm"],"Arc = 15.7, plus diameter 10."],
+      ["A wheel has radius 5 cm. How far does it move in one turn?",["31.4 cm","78.5 cm","10 cm","15.7 cm"],"One turn = circumference."],
+      ["A wheel has diameter 10 cm. How far in 10 turns?",["314 cm","31.4 cm","100 cm","3140 cm"],"31.4 × 10 = 314."],
+      ["If the radius of a circle is doubled, its area becomes:",["4 times","2 times","8 times","same"],"Area depends on radius squared."],
+      ["What is the area of a circle with radius 3 cm?",["28.26 cm²","18.84 cm²","9 cm²","56.52 cm²"],"3.14 × 3 × 3 = 28.26."],
+      ["What is the circumference of a circle with diameter 6 cm?",["18.84 cm","9.42 cm","37.68 cm","6 cm"],"3.14 × 6 = 18.84."],
+      ["The largest possible circle is drawn inside a 10 cm square. What is its area?",["78.5 cm²","100 cm²","31.4 cm²","50 cm²"],"Diameter = 10, radius = 5."],
+      ["A circular pond has radius 2 m. What is its area?",["12.56 m²","6.28 m²","4 m²","25.12 m²"],"3.14 × 2 × 2 = 12.56."],
+      ["A fence is built around a circular pond of diameter 10 m. How long is the fence?",["31.4 m","78.5 m","10 m","15.7 m"],"Fence is circumference."],
+      ["A square of side 10 cm has a circle of radius 5 cm inside. What is the area outside the circle?",["21.5 cm²","78.5 cm²","100 cm²","121.5 cm²"],"100 - 78.5 = 21.5."],
+      ["A circle is cut into 4 equal sectors. If radius is 10 cm, what is the area of each sector?",["78.5 cm²","314 cm²","31.4 cm²","157 cm²"],"314 ÷ 4 = 78.5."]
+    ]
+  },
+  {
+    id: "angles",
+    title: "Angles in Triangles and Quadrilaterals",
+    emoji: "📐",
+    blurb: "Angle sums, special triangles and quadrilaterals.",
+    notes: [
+      "Angles in a triangle add to 180°.",
+      "Angles in a quadrilateral add to 360°."
+    ],
+    qs: [
+      ["What is the sum of angles in a triangle?",["180°","360°","90°","270°"],"Triangle angle sum is 180°."],
+      ["What is the sum of angles in a quadrilateral?",["360°","180°","90°","540°"],"Quadrilateral angle sum is 360°."],
+      ["A triangle has angles 50° and 60°. What is the third angle?",["70°","110°","80°","90°"],"180 - 50 - 60 = 70."],
+      ["A triangle has angles 90° and 45°. What is the third angle?",["45°","90°","135°","60°"],"180 - 90 - 45 = 45."],
+      ["What is each angle in an equilateral triangle?",["60°","90°","45°","30°"],"180 ÷ 3 = 60."],
+      ["An isosceles triangle has a top angle of 80°. What is each base angle?",["50°","80°","100°","40°"],"180 - 80 = 100, ÷ 2 = 50."],
+      ["An isosceles triangle has base angles of 70°. What is the top angle?",["40°","70°","110°","140°"],"180 - 70 - 70 = 40."],
+      ["A right isosceles triangle has one angle 90°. What are the other two?",["45° and 45°","60° and 30°","50° and 40°","90° and 0°"],"Remaining 90° is split equally."],
+      ["Three angles of a quadrilateral are 90°, 100° and 80°. What is the fourth?",["90°","80°","100°","110°"],"360 - 270 = 90."],
+      ["A parallelogram has one angle 70°. What is the adjacent angle?",["110°","70°","90°","180°"],"Adjacent angles sum to 180°."],
+      ["What is each angle in a rectangle?",["90°","60°","45°","120°"],"Rectangles have four right angles."],
+      ["A rhombus has one angle 60°. What is the adjacent angle?",["120°","60°","90°","30°"],"Adjacent angles sum to 180°."],
+      ["In a trapezium, two angles on the same side between parallel lines add to:",["180°","360°","90°","270°"],"Co-interior angles sum to 180°."],
+      ["A triangle has interior angles 40° and 60°. What is the exterior angle next to the third angle?",["100°","80°","120°","140°"],"Exterior equals sum of opposite interior angles."],
+      ["Triangle angles are in the ratio 1:2:3. What is the largest angle?",["90°","60°","30°","120°"],"1+2+3=6 parts, 180÷6=30, 3×30=90."],
+      ["A square is cut along a diagonal. What are the angles of each triangle?",["45°, 45°, 90°","60°, 60°, 60°","30°, 60°, 90°","90°, 90°, 0°"],"Diagonal splits right angles into 45°."],
+      ["What is the sum of interior angles of a pentagon?",["540°","360°","720°","180°"],"Pentagon angle sum is 540°."],
+      ["What is the sum of interior angles of a hexagon?",["720°","540°","360°","900°"],"Hexagon angle sum is 720°."],
+      ["Three angles of a quadrilateral are 100°, 90° and 70°. What is the fourth?",["100°","90°","110°","80°"],"360 - 260 = 100."],
+      ["In an isosceles triangle, the equal angles are opposite:",["Equal sides","Different sides","The largest angle","The smallest angle only"],"Equal sides have equal opposite angles."],
+      ["Why can a triangle not have two right angles?",["Angle sum would exceed 180°","It would become a circle","It would have no sides","It would have four sides"],"90 + 90 already equals 180."],
+      ["An exterior angle of a triangle is 120°. What is the adjacent interior angle?",["60°","120°","180°","90°"],"Angles on a straight line sum to 180."],
+      ["A triangle has angles x, x and 80°. What is x?",["50°","80°","100°","40°"],"2x + 80 = 180, x = 50."],
+      ["Quadrilateral angles are x, 2x, 3x and 4x. What is x?",["36°","40°","30°","45°"],"10x = 360, x = 36."],
+      ["In a parallelogram, consecutive angles add to:",["180°","360°","90°","270°"],"Consecutive angles are supplementary."]
+    ]
+  },
+  {
+    id: "area-perimeter",
+    title: "Area and Perimeter of Composite Figures",
+    emoji: "🧩",
+    blurb: "Rectangles, squares, triangles, circles and combined shapes.",
+    notes: [
+      "Break composite figures into simpler shapes.",
+      "Use π = 3.14 for circle questions."
+    ],
+    qs: [
+      ["A rectangle is 12 cm by 5 cm. What is its area?",["60 cm²","34 cm²","17 cm²","120 cm²"],"12 × 5 = 60."],
+      ["A rectangle is 12 cm by 5 cm. What is its perimeter?",["34 cm","60 cm","17 cm","24 cm"],"2 × (12 + 5) = 34."],
+      ["A square has side 9 cm. What is its area?",["81 cm²","36 cm²","18 cm²","729 cm²"],"9 × 9 = 81."],
+      ["A square has side 9 cm. What is its perimeter?",["36 cm","81 cm","18 cm","27 cm"],"4 × 9 = 36."],
+      ["A triangle has base 12 cm and height 7 cm. What is its area?",["42 cm²","84 cm²","19 cm²","84 cm"],"1/2 × 12 × 7 = 42."],
+      ["A parallelogram has base 15 cm and height 8 cm. What is its area?",["120 cm²","23 cm²","46 cm²","60 cm²"],"15 × 8 = 120."],
+      ["A shape is made of a 10 cm by 6 cm rectangle and a triangle with base 10 cm and height 4 cm. Total area?",["80 cm²","60 cm²","40 cm²","100 cm²"],"60 + 20 = 80."],
+      ["An L-shape is made of a 10 cm by 4 cm rectangle and a 4 cm square attached. Total area?",["56 cm²","40 cm²","16 cm²","100 cm²"],"40 + 16 = 56."],
+      ["A rectangle 20 cm by 15 cm has a 5 cm by 3 cm piece cut out. What is the area left?",["285 cm²","300 cm²","15 cm²","315 cm²"],"300 - 15 = 285."],
+      ["A rectangular garden is 10 m by 8 m. A 1 m wide path is built all around it outside. What is the area of the path?",["40 m²","80 m²","120 m²","18 m²"],"Outer 12×10=120, inner 10×8=80, path=40."],
+      ["What is the area of a circle with radius 5 cm?",["78.5 cm²","31.4 cm²","25 cm²","157 cm²"],"3.14 × 5 × 5 = 78.5."],
+      ["What is the area of a semicircle with radius 4 cm?",["25.12 cm²","50.24 cm²","12.56 cm²","100.48 cm²"],"Half of 50.24."],
+      ["What is the area of a quarter circle with radius 10 cm?",["78.5 cm²","314 cm²","31.4 cm²","157 cm²"],"314 ÷ 4 = 78.5."],
+      ["A rectangle 20 cm by 10 cm has a semicircle attached to one 10 cm side. Total area?",["239.25 cm²","200 cm²","39.25 cm²","250 cm²"],"200 + 39.25 = 239.25."],
+      ["What is the perimeter of a rectangle 8 cm by 5 cm?",["26 cm","40 cm","13 cm","80 cm"],"2 × (8 + 5) = 26."],
+      ["What is the perimeter of a square with side 7 cm?",["28 cm","49 cm","14 cm","21 cm"],"4 × 7 = 28."],
+      ["What is the perimeter of a semicircle with diameter 14 cm?",["35.98 cm","21.98 cm","43.96 cm","14 cm"],"Arc 21.98 + diameter 14."],
+      ["What is the perimeter of a quarter circle with radius 10 cm?",["35.7 cm","15.7 cm","78.5 cm","20 cm"],"Arc 15.7 + two radii 20."],
+      ["A rectangle has length 15 cm and width 4 cm. What is its perimeter?",["38 cm","60 cm","19 cm","30 cm"],"2 × (15 + 4) = 38."],
+      ["A square has perimeter 24 cm. What is its area?",["36 cm²","24 cm²","96 cm²","144 cm²"],"Side = 6, area = 36."],
+      ["A rectangle has perimeter 30 cm and length 10 cm. What is its area?",["50 cm²","300 cm²","20 cm²","150 cm²"],"Width = 5, area = 50."],
+      ["A square of side 10 cm has a semicircle attached to one side. Total area?",["139.25 cm²","100 cm²","39.25 cm²","178.5 cm²"],"100 + 39.25."],
+      ["A field is 50 m by 30 m. A 5 m wide track is built around it outside. What is the area of the track?",["900 m²","1500 m²","2400 m²","600 m²"],"Outer 60×40=2400, inner 50×30=1500."],
+      ["A rectangle 12 cm by 6 cm has a circle of radius 3 cm removed. What area is left?",["43.74 cm²","72 cm²","28.26 cm²","100.26 cm²"],"72 - 28.26 = 43.74."],
+      ["A wire of length 31.4 cm is bent into a circle. What is the diameter?",["10 cm","31.4 cm","5 cm","20 cm"],"31.4 ÷ 3.14 = 10."]
+    ]
+  },
+  {
+    id: "volume",
+    title: "Volume and Capacity",
+    emoji: "📦",
+    blurb: "Cubes, cuboids, capacity and displacement.",
+    notes: [
+      "Volume of cuboid = length × width × height.",
+      "1 L = 1000 mL = 1000 cm³."
+    ],
+    qs: [
+      ["What is the formula for the volume of a cuboid?",["Length × width × height","Length + width + height","Length × width","2 × length × width"],"Volume is three-dimensional."],
+      ["A cube has side 6 cm. What is its volume?",["216 cm³","36 cm³","18 cm³","72 cm³"],"6 × 6 × 6 = 216."],
+      ["A cuboid is 8 cm by 5 cm by 3 cm. What is its volume?",["120 cm³","16 cm³","80 cm³","1200 cm³"],"8 × 5 × 3 = 120."],
+      ["What is the volume of a 1 cm cube?",["1 cm³","1 cm²","3 cm³","6 cm³"],"1 × 1 × 1 = 1."],
+      ["A tank is 40 cm by 30 cm by 20 cm. What is its capacity in litres?",["24 L","240 L","2.4 L","2400 L"],"40×30×20=24000 cm³ = 24 L."],
+      ["What is 3.5 L in millilitres?",["3500 mL","350 mL","35 mL","35000 mL"],"3.5 × 1000 = 3500."],
+      ["What is 2500 cm³ in litres?",["2.5 L","25 L","0.25 L","250 L"],"2500 ÷ 1000 = 2.5."],
+      ["A cuboid has volume 180 cm³, length 9 cm and width 4 cm. What is its height?",["5 cm","20 cm","45 cm","10 cm"],"180 ÷ 9 ÷ 4 = 5."],
+      ["A cube has volume 125 cm³. What is its side?",["5 cm","25 cm","125 cm","625 cm"],"5 × 5 × 5 = 125."],
+      ["A prism has base area 24 cm² and height 7 cm. What is its volume?",["168 cm³","31 cm³","247 cm³","1680 cm³"],"24 × 7 = 168."],
+      ["An object raises water level by 60 mL. What is its volume?",["60 cm³","60 L","600 cm³","6 cm³"],"1 mL = 1 cm³."],
+      ["A container is 20 cm by 15 cm by 10 cm. What is its capacity?",["3 L","30 L","300 L","0.3 L"],"20×15×10=3000 cm³ = 3 L."],
+      ["How many 2 cm cubes fit into a 6 cm by 4 cm by 2 cm box?",["6","12","48","3"],"Volume 48 ÷ 8 = 6."],
+      ["Two cubes each have side 3 cm. What is their total volume?",["54 cm³","27 cm³","18 cm³","81 cm³"],"Each is 27, total 54."],
+      ["A tank has base 50 cm by 40 cm and volume 60 L. What is its height?",["30 cm","60 cm","15 cm","40 cm"],"60000 ÷ 2000 = 30."],
+      ["A cuboid is 10 cm by 6 cm by 4 cm. What is its volume?",["240 cm³","20 cm³","120 cm³","480 cm³"],"10 × 6 × 4 = 240."],
+      ["If the side of a cube is doubled, its volume becomes:",["8 times","2 times","4 times","6 times"],"2 × 2 × 2 = 8."],
+      ["A container has base area 100 cm² and water height 8 cm. What is the volume of water?",["800 cm³","108 cm³","8000 cm³","80 cm³"],"100 × 8 = 800."],
+      ["How many cm³ are in 1 m³?",["1,000,000 cm³","1000 cm³","100 cm³","10,000 cm³"],"100 × 100 × 100."],
+      ["What is 2 L 350 mL in cm³?",["2350 cm³","235 cm³","2035 cm³","23500 cm³"],"2000 + 350 = 2350."],
+      ["Water level rises from 300 mL to 420 mL when an object is added. What is the volume of the object?",["120 cm³","720 cm³","420 cm³","300 cm³"],"420 - 300 = 120."],
+      ["A tank is 25 cm by 20 cm by 40 cm. What is its capacity?",["20 L","200 L","2 L","2000 L"],"25×20×40=20000 cm³ = 20 L."],
+      ["A cube has volume 64 cm³. What is its side?",["4 cm","8 cm","16 cm","64 cm"],"4 × 4 × 4 = 64."],
+      ["A rectangular container has base 12 cm by 5 cm and height 10 cm. What is its volume?",["600 cm³","60 cm³","170 cm³","6000 cm³"],"12 × 5 × 10 = 600."],
+      ["Which unit is best for the volume of a swimming pool?",["m³","cm","mL","cm²"],"Large volumes use cubic metres."]
+    ]
+  },
+  {
+    id: "data",
+    title: "Data Analysis",
+    emoji: "📊",
+    blurb: "Mean, median, mode, range and graphs.",
+    notes: [
+      "Mean = total ÷ number of values.",
+      "Median is the middle value."
+    ],
+    qs: [
+      ["What is the formula for mean?",["Total ÷ number of values","Total × number of values","Largest - smallest","Most frequent value"],"Mean is the average."],
+      ["What is the mean of 5, 8 and 11?",["8","24","11","5"],"24 ÷ 3 = 8."],
+      ["What is the mean of 12, 15, 18 and 19?",["16","64","15","18"],"64 ÷ 4 = 16."],
+      ["The mean of 4 numbers is 10. What is their total?",["40","14","10","4"],"10 × 4 = 40."],
+      ["What is the median of 3, 6, 7, 9, 10?",["7","3","9","6"],"Middle value is 7."],
+      ["What is the median of 2, 4, 6, 8?",["5","4","6","2"],"Average of 4 and 6."],
+      ["What is the mode of 3, 5, 5, 7, 8?",["5","3","7","8"],"Mode is most frequent."],
+      ["What is the range of 12, 25, 18, 30?",["18","30","12","42"],"30 - 12 = 18."],
+      ["A table shows sales: Mon 12, Tue 18, Wed 20. What is the total?",["50","30","40","20"],"12 + 18 + 20 = 50."],
+      ["A table shows sales: Mon 12, Tue 18, Wed 20. Which day had the highest sales?",["Wednesday","Monday","Tuesday","All equal"],"20 is highest."],
+      ["In a line graph, a steep upward line means:",["Greatest increase","Greatest decrease","No change","Error"],"Steepness shows rate of change."],
+      ["A flat horizontal line on a graph means:",["No change","Increase","Decrease","Peak"],"The value stays constant."],
+      ["Which graph is best for change over time?",["Line graph","Bar graph","Pie chart","Pictograph"],"Line graphs show trends."],
+      ["Which graph is best for comparing categories?",["Bar graph","Line graph","Histogram only","Scatter plot"],"Bars compare categories."],
+      ["Which graph shows parts of a whole?",["Pie chart","Line graph","Bar graph","Pictograph"],"Pie charts show percentages."],
+      ["A pie chart sector is 25%. What is its angle?",["90°","25°","45°","180°"],"25% of 360 = 90."],
+      ["40% of 120 pupils walk to school. How many?",["48","40","120","72"],"0.4 × 120 = 48."],
+      ["The mean of five numbers is 6. Four numbers are 5, 6, 7, 8. What is the fifth?",["4","6","5","3"],"Total 30, sum of four = 26."],
+      ["What is the median of 1, 2, 2, 3, 4?",["2","1","3","4"],"Middle value is 2."],
+      ["Which measure is most affected by an extreme value?",["Mean","Mode","Median","Range"],"Mean uses all values."],
+      ["What is the mode?",["Most frequent value","Middle value","Average","Largest minus smallest"],"Mode is most common."],
+      ["What is the range?",["Largest minus smallest","Total ÷ count","Middle value","Most frequent"],"Range measures spread."],
+      ["A line graph peaks in July. What does this mean?",["July had the highest value","July had the lowest value","July had no data","The graph is wrong"],"Peak means highest."],
+      ["A survey of 200 people found 35% like blue. How many like blue?",["70","35","130","200"],"0.35 × 200 = 70."],
+      ["A data set has mean 12. If every value increases by 3, new mean?",["15","12","9","36"],"Each value adds 3 to the mean."]
+    ]
+  },
+  {
+    id: "word-problems",
+    title: "Word Problems and Heuristics",
+    emoji: "🧠",
+    blurb: "Multi-step PSLE-style reasoning using ratio, percentage, speed and algebra.",
+    notes: [
+      "Identify what stays constant.",
+      "Work backwards when needed."
+    ],
+    qs: [
+      ["The ratio of boys to girls is 3:5. There are 64 pupils. How many boys?",["24","40","32","16"],"3+5=8 parts, 64÷8=8, 3×8=24."],
+      ["Ali and Ben have $75 in the ratio 2:3. How much does Ali have?",["$30","$45","$25","$50"],"2+3=5 parts, 75÷5=15, 2×15=30."],
+      ["A number is increased by 20% and becomes 60. What was the number?",["50","72","48","40"],"60 ÷ 1.2 = 50."],
+      ["A shirt is sold at a 25% discount for $45. What was the original price?",["$60","$33.75","$56.25","$50"],"45 ÷ 0.75 = 60."],
+      ["A car travels at 60 km/h. How long to travel 150 km?",["2.5 hours","9000 hours","2 hours","3 hours"],"150 ÷ 60 = 2.5."],
+      ["A train leaves at 08:45 and arrives at 11:15. How long is the journey?",["2 hours 30 minutes","3 hours 30 minutes","2 hours 15 minutes","1 hour 45 minutes"],"From 08:45 to 11:15."],
+      ["A shopkeeper had some eggs. He sold half of them, then sold 5 more. He had 12 left. How many at first?",["34","17","29","24"],"Work backwards: (12+5)×2=34."],
+      ["Ali and Ben have $80 altogether. After Ali gives Ben $10, they have equal amounts. How much did Ali have at first?",["$50","$40","$60","$30"],"After they each have 40, Ali had 50."],
+      ["A father is 4 times as old as his son. The difference in their ages is 30. How old is the son?",["10","30","40","15"],"4 parts - 1 part = 3 parts = 30."],
+      ["Pencils cost 40 cents and pens cost 80 cents. 10 items cost $6.00. How many pens?",["5","4","6","3"],"Assume all pencils $4.00, extra $2.00, each pen extra 40 cents."],
+      ["Sweets are put into packets. If 4 sweets are put in each packet, 3 are left. If 5 are put in each packet, 2 more are needed. How many sweets?",["23","20","25","18"],"4p+3 = 5p-2, p=5, sweets=23."],
+      ["A rectangle has length x + 4 and width x. Its perimeter is 36. What is x?",["8","10","14","4"],"2(2x+4)=36, 4x+4=36, x=8."],
+      ["There are 200 pupils. 45% are girls. How many girls?",["90","110","45","55"],"0.45 × 200 = 90."],
+      ["Two towns are 240 km apart. A car travels at 60 km/h. After 3 hours, how far is it from the destination?",["60 km","180 km","240 km","120 km"],"Travelled 180, left 60."],
+      ["A girl spends 1/4 of her money, then 20% of the remainder. She has $48 left. How much at first?",["$80","$60","$96","$48"],"3/5 of original = 48, original = 80."],
+      ["A tank is 30 cm by 20 cm by 15 cm. It is half full. What is the volume of water?",["4500 cm³","9000 cm³","4.5 cm³","450 cm³"],"30×20×15=9000, half is 4500."],
+      ["A circular garden has diameter 20 m. Fencing costs $5 per metre. What is the cost?",["$314","$62.80","$157","$100"],"Circumference 62.8 × 5 = 314."],
+      ["A triangle has angles x, x + 20 and 50. What is the largest angle?",["75°","55°","50°","80°"],"2x+70=180, x=55, largest 75."],
+      ["The mean of five numbers is 12. Four numbers add to 45. What is the fifth?",["15","12","60","3"],"Total 60, 60 - 45 = 15."],
+      ["Three numbers are in the ratio 2:3:4. The largest is 36. What is the total?",["81","72","108","63"],"4 parts = 36, each 9, total 9×9=81."],
+      ["What is 15 m/s in km/h?",["54 km/h","15 km/h","36 km/h","90 km/h"],"15 × 3.6 = 54."],
+      ["A price increases from $40 to $50. What is the percentage increase?",["25%","20%","10%","30%"],"10 ÷ 40 = 0.25."],
+      ["Three consecutive numbers add to 72. What is the largest?",["25","24","23","26"],"Middle is 24, largest 25."],
+      ["A book has 300 pages. A girl reads 2/5 on day 1 and 25% of the remainder on day 2. How many pages are left?",["135","120","45","180"],"Day 1 120, left 180, day 2 45, left 135."],
+      ["8 adult tickets and 4 child tickets cost $80. An adult ticket costs twice a child ticket. How much is a child ticket?",["$4","$8","$5","$10"],"Let child x, adult 2x. 16x + 4x = 20x = 80."]
+    ]
+  }
+];
+
+const QUESTIONS = [];
+TOPICS.forEach(topic => {
+  topic.qs.forEach((item, index) => {
+    QUESTIONS.push({
+      id: topic.id + "-" + (index + 1),
+      topic: topic.id,
+      q: item[0],
+      options: item[1],
+      exp: item[2]
+    });
+  });
+});
+
+const STORAGE_KEY = "p6MathsFullPack";
+const app = document.getElementById("app");
+
+let progress = loadProgress();
+let state = {
+  questions: [],
+  index: 0,
+  correct: 0,
+  answered: false,
+  title: "",
+  misses: []
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: {}, correct: {}, wrong: [] };
+    const data = JSON.parse(raw);
+    return {
+      attempts: data.attempts || {},
+      correct: data.correct || {},
+      wrong: data.wrong || []
+    };
+  } catch (error) {
+    return { attempts: {}, correct: {}, wrong: [] };
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (error) {}
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, char => {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char];
+  });
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function prepareQuestions(list) {
+  return list.map(q => {
+    const optionObjects = q.options.map((text, index) => ({
+      text,
+      correct: index === 0
+    }));
+    const shuffled = shuffle(optionObjects);
+    return {
+      ...q,
+      options: shuffled.map(o => o.text),
+      answer: shuffled.findIndex(o => o.correct)
+    };
+  });
+}
+
+function getTopic(id) {
+  return TOPICS.find(t => t.id === id);
+}
+
+function getQuestionsByTopic(id) {
+  return QUESTIONS.filter(q => q.topic === id);
+}
+
+function getStats() {
+  const attempted = Object.keys(progress.attempts).length;
+  let totalAttempts = 0;
+  let totalCorrect = 0;
+  for (const id in progress.attempts) totalAttempts += progress.attempts[id];
+  for (const id in progress.correct) totalCorrect += progress.correct[id];
+  const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+  return { attempted, accuracy, wrong: progress.wrong.length };
+}
+
+function renderHome() {
+  const stats = getStats();
+  const topicCards = TOPICS.map(topic => {
+    const total = topic.qs.length;
+    const mastered = QUESTIONS.filter(q => q.topic === topic.id && progress.correct[q.id] > 0).length;
+    const percent = total ? Math.round((mastered / total) * 100) : 0;
+    return `
+      <div class="card topic-card" onclick="openTopic('${topic.id}')">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P6</div>
+        </div>
+        <div class="topic-title">${esc(topic.title)}</div>
+        <div class="small">${esc(topic.blurb)}</div>
+        <div class="progress"><div style="width:${percent}%"></div></div>
+        <div class="small">${mastered}/${total} questions correct at least once</div>
+      </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">🎓 P6 Maths Full Pack</div>
+        <div class="chip">250 MCQs</div>
+      </div>
+      <div class="hero">
+        <h1>Primary 6 Maths Practice</h1>
+        <p>10 topics × 25 questions. Algebra, ratio, speed, percentage, circles, angles, volume, data and word problems.</p>
+        <div class="actions">
+          <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+          <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+          <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+          <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="value">${stats.attempted}</div><div class="label">Questions practiced</div></div>
+        <div class="stat"><div class="value">${stats.accuracy}%</div><div class="label">Accuracy</div></div>
+        <div class="stat"><div class="value">${stats.wrong}</div><div class="label">Wrong questions</div></div>
+        <div class="stat"><div class="value">${TOPICS.length}</div><div class="label">Topics</div></div>
+      </div>
+      ${topicCards}
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTopic(id) {
+  const topic = getTopic(id);
+  const notesHtml = topic.notes.map(n => `<li>${esc(n)}</li>`).join("");
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">⬅ Home</button>
+        <div class="chip">P6 Topic</div>
+      </div>
+      <div class="card">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P6</div>
+        </div>
+        <h2>${esc(topic.title)}</h2>
+        <p style="font-weight:800;">${esc(topic.blurb)}</p>
+        <h3>Key ideas</h3>
+        <ul class="notes">${notesHtml}</ul>
+        <div class="actions">
+          <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 25 Questions</button>
+          <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+        </div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startAllChallenge() {
+  startQuiz(shuffle(QUESTIONS).slice(0, 20), "Random 20 Challenge");
+}
+function startRandomTen() {
+  startQuiz(shuffle(QUESTIONS).slice(0, 10), "Random 10");
+}
+function startWrongAll() {
+  const questions = QUESTIONS.filter(q => progress.wrong.includes(q.id));
+  if (!questions.length) { alert("No wrong questions saved yet."); return; }
+  startQuiz(questions, "Wrong Replay");
+}
+function startTopic(id) {
+  const topic = getTopic(id);
+  startQuiz(getQuestionsByTopic(id), topic.title);
+}
+function startTopicWrong(id) {
+  const topic = getTopic(id);
+  const questions = QUESTIONS.filter(q => q.topic === id && progress.wrong.includes(q.id));
+  if (!questions.length) { alert("No wrong questions in this topic yet."); return; }
+  startQuiz(questions, "Wrong Replay: " + topic.title);
+}
+
+function startQuiz(list, title) {
+  if (!list.length) { alert("No questions available."); return; }
+  state = {
+    questions: prepareQuestions(list),
+    index: 0,
+    correct: 0,
+    answered: false,
+    title,
+    misses: []
+  };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  const topic = getTopic(q.topic);
+  const pct = (state.index / state.questions.length) * 100;
+  const opts = q.options.map((o, i) =>
+    `<button class="option" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${esc(o)}</button>`
+  ).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">${esc(state.title)}</div>
+      </div>
+      <div class="card">
+        <div class="progress"><div style="width:${pct}%"></div></div>
+        <div class="small">Question ${state.index+1} of ${state.questions.length} • Score ${state.correct}</div>
+        <div class="chip" style="margin:10px 0;">${topic.emoji} ${esc(topic.title)}</div>
+        <h2>${esc(q.q)}</h2>
+        <div class="options">${opts}</div>
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function answer(selected) {
+  if (state.answered) return;
+  state.answered = true;
+  const q = state.questions[state.index];
+  const buttons = Array.from(document.querySelectorAll(".option"));
+  buttons.forEach(b => b.disabled = true);
+  buttons[q.answer].classList.add("correct");
+  const isCorrect = selected === q.answer;
+  if (isCorrect) {
+    state.correct++;
+    buttons[selected].classList.add("correct");
+  } else {
+    buttons[selected].classList.add("wrong");
+    state.misses.push({ id: q.id, selected });
+  }
+  updateProgress(q.id, isCorrect);
+  const fb = document.getElementById("feedback");
+  fb.className = "feedback " + (isCorrect ? "good" : "bad");
+  fb.innerHTML = `
+    <div>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</div>
+    <div class="exp">${esc(q.exp)}${!isCorrect ? " Correct answer: " + esc(q.options[q.answer]) + "." : ""}</div>
+    <div class="actions">
+      <button class="btn primary" onclick="nextQuestion()">
+        ${state.index === state.questions.length - 1 ? "Finish 🏁" : "Next ➜"}
+      </button>
+    </div>`;
+}
+
+function updateProgress(id, isCorrect) {
+  progress.attempts[id] = (progress.attempts[id] || 0) + 1;
+  if (isCorrect) {
+    progress.correct[id] = (progress.correct[id] || 0) + 1;
+    progress.wrong = progress.wrong.filter(w => w !== id);
+  } else {
+    if (!progress.wrong.includes(id)) progress.wrong.push(id);
+  }
+  saveProgress();
+}
+
+function nextQuestion() {
+  if (!state.answered) return;
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    state.answered = false;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = state.questions.length;
+  const percent = Math.round((state.correct / total) * 100);
+  let stars = "💪";
+  let msg = "Keep practising! Read the explanations and try again.";
+  if (percent >= 90) { stars = "🌟🌟🌟"; msg = "Excellent!"; }
+  else if (percent >= 75) { stars = "🌟🌟"; msg = "Great job! Review the missed questions."; }
+  else if (percent >= 50) { stars = "🌟"; msg = "Good effort! Focus on the explanations."; }
+
+  const seen = new Set();
+  const unique = state.misses.filter(m => {
+    if (seen.has(m.id)) return false;
+    seen.add(m.id);
+    return true;
+  });
+
+  const reviewHtml = unique.map(miss => {
+    const q = state.questions.find(i => i.id === miss.id);
+    const topic = getTopic(q.topic);
+    return `
+      <div class="review-item">
+        <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+        <div class="review-q">${esc(q.q)}</div>
+        <div class="user-answer">Your answer: ${esc(q.options[miss.selected])}</div>
+        <div class="correct-answer">Correct answer: ${esc(q.options[q.answer])}</div>
+        <div>${esc(q.exp)}</div>
+      </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">Result</div>
+      </div>
+      <div class="card">
+        <h2>${esc(state.title)} Complete!</h2>
+        <div class="result-stars">${stars}</div>
+        <p style="font-weight:900;">You scored ${state.correct}/${total} (${percent}%). ${msg}</p>
+        <div class="actions">
+          <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+          ${unique.length ? '<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>' : ""}
+        </div>
+        <h3>Review</h3>
+        ${unique.length ? reviewHtml : "<p>🎉 Perfect! No wrong questions this round.</p>"}
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function retryWrong() {
+  const ids = [...new Set(state.misses.map(m => m.id))];
+  startQuiz(QUESTIONS.filter(q => ids.includes(q.id)), "Retry Wrong");
+}
+
+function resetProgress() {
+  if (confirm("Reset all P6 Maths progress?")) {
+    progress = { attempts: {}, correct: {}, wrong: [] };
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
