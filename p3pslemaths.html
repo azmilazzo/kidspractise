@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>P3 Maths Full Pack</title>
+<style>
+:root{
+  --bg1:#e0f2fe;
+  --bg2:#fce7f3;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{
+  display:inline-block;
+  background:#e0f2fe;
+  color:#0369a1;
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:.9rem;
+}
+.hero{
+  background:linear-gradient(135deg,#0ea5e9,#ec4899);
+  color:#fff;
+  padding:20px;
+  border-radius:24px;
+  box-shadow:0 14px 34px rgba(14,165,233,.18);
+}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin:14px 0;
+}
+.stat{
+  background:var(--card);
+  border-radius:18px;
+  padding:12px;
+  text-align:center;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{
+  background:var(--card);
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 10px 24px rgba(15,23,42,.08);
+  margin:12px 0;
+}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#f9a8d4}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{
+  height:12px;
+  background:#e2e8f0;
+  border-radius:999px;
+  overflow:hidden;
+  margin:10px 0;
+}
+.progress div{
+  height:100%;
+  background:linear-gradient(90deg,#0ea5e9,#ec4899);
+}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:14px;
+}
+.btn{
+  border:0;
+  border-radius:16px;
+  padding:12px 16px;
+  font-weight:1000;
+  cursor:pointer;
+}
+.primary{
+  background:linear-gradient(135deg,#0ea5e9,#ec4899);
+  color:#fff;
+}
+.secondary{
+  background:#e2e8f0;
+  color:#0f172a;
+}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{
+  border:3px solid #bae6fd;
+  background:#f8fbff;
+  border-radius:18px;
+  padding:14px;
+  font-size:1rem;
+  font-weight:900;
+  text-align:left;
+  cursor:pointer;
+}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{
+  margin-top:14px;
+  padding:14px;
+  border-radius:18px;
+  font-weight:900;
+}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{
+  border:2px solid #e2e8f0;
+  border-radius:18px;
+  padding:12px;
+  margin:10px 0;
+  background:#fbfdff;
+}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{
+  background:#fff1f2;
+  border:2px solid #f43f5e;
+  border-radius:16px;
+  padding:16px;
+  font-weight:700;
+  white-space:pre-wrap;
+  font-family:monospace;
+}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error", function(e){
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = '<div class="container"><div class="error-box">Page error: ' + (e.message || "Unknown error") + '</div></div>';
+  }
+});
+</script>
+
+<script>
+const TOPICS = [
+  {
+    id: "numbers",
+    title: "Numbers to 10,000",
+    emoji: "🔢",
+    blurb: "Place value, reading, comparing, ordering and rounding.",
+    notes: [
+      "Each digit has a place value: ones, tens, hundreds, thousands.",
+      "We compare numbers digit by digit from the left.",
+      "Rounding to the nearest ten, hundred or thousand depends on the next digit."
+    ],
+    qs: [
+      ["What is the place value of 5 in 5,230?", ["Thousands", "Hundreds", "Tens", "Ones"], "5 is in the thousands place."],
+      ["What is the value of the digit 7 in 3,704?", ["700", "7,000", "70", "7"], "7 is in the hundreds place, so its value is 700."],
+      ["Which number is the largest?", ["9,012", "8,999", "9,001", "8,100"], "9,012 is the largest."],
+      ["Which number is the smallest?", ["1,009", "1,090", "1,900", "9,100"], "1,009 is the smallest."],
+      ["Round 4,367 to the nearest hundred.", ["4,400", "4,300", "4,370", "4,000"], "The tens digit is 6, which is 5 or more, so round up."],
+      ["Round 2,843 to the nearest thousand.", ["3,000", "2,000", "2,800", "2,900"], "The hundreds digit is 8, so round up."],
+      ["Round 6,250 to the nearest hundred.", ["6,300", "6,200", "6,000", "6,250"], "The tens digit is 5, so round up."],
+      ["What is 3,000 + 400 + 20 + 7?", ["3,427", "3,047", "3,470", "3,247"], "Add each place value."],
+      ["Which number has 8 in the tens place?", ["4,183", "4,813", "8,413", "4,138"], "In 4,183, the 8 is in the tens place."],
+      ["Arrange from smallest to largest: 5,210; 5,012; 5,120", ["5,012; 5,120; 5,210", "5,210; 5,120; 5,012", "5,012; 5,210; 5,120", "5,120; 5,012; 5,210"], "Compare digit by digit from the left."],
+      ["What is the ones digit in 7,654?", ["4", "5", "6", "7"], "The last digit is the ones digit."],
+      ["Which shows 6,009 in words?", ["Six thousand and nine", "Six thousand nine hundred", "Sixty thousand and nine", "Six hundred and nine"], "6,009 is six thousand and nine."],
+      ["What number is 100 more than 4,567?", ["4,667", "4,467", "5,567", "4,577"], "Add 100 to the hundreds place."],
+      ["What number is 1,000 less than 8,000?", ["7,000", "9,000", "7,900", "8,100"], "Subtract 1,000."],
+      ["In 2,345, which digit is in the hundreds place?", ["3", "2", "4", "5"], "3 is in the hundreds place."],
+      ["Round 9,995 to the nearest ten.", ["10,000", "9,990", "9,900", "10,010"], "The ones digit is 5, so round up. 9,995 rounds to 10,000."],
+      ["Which number is between 3,500 and 3,600?", ["3,550", "3,450", "3,650", "3,400"], "3,550 is between 3,500 and 3,600."],
+      ["What is the place value of 0 in 4,062?", ["Hundreds", "Thousands", "Tens", "Ones"], "0 is in the hundreds place."],
+      ["Which comparison is correct?", ["4,321 < 4,331", "4,321 > 4,331", "4,321 = 4,331", "4,331 < 4,321"], "At the tens place, 2 is less than 3."],
+      ["How many hundreds are there in 5,300?", ["53", "5", "3", "530"], "5,300 divided by 100 is 53."],
+      ["What is 10 less than 1,000?", ["990", "900", "1,010", "999"], "Subtract 10 from 1,000."],
+      ["Which number rounds to 7,000 when rounded to the nearest thousand?", ["6,520", "5,400", "7,600", "8,100"], "6,520 is closer to 7,000."],
+      ["What is the difference between the largest 4-digit number and the smallest 4-digit number?", ["8,999", "9,000", "8,000", "9,999"], "9,999 minus 1,000 equals 8,999."],
+      ["Which digit makes 3,_45 greater than 3,645?", ["7", "5", "6", "4"], "7 in the hundreds place makes 3,745 which is greater than 3,645."],
+      ["What is 2 thousands 5 hundreds 0 tens 8 ones?", ["2,508", "2,058", "2,580", "2,850"], "Add each place value together."]
+    ]
+  },
+  {
+    id: "add-subtract",
+    title: "Addition and Subtraction",
+    emoji: "➕",
+    blurb: "4-digit addition and subtraction with and without regrouping.",
+    notes: [
+      "Line up digits by place value before adding or subtracting.",
+      "Regroup (carry) when a column total is 10 or more.",
+      "Borrow from the next place when subtracting a larger digit from a smaller one."
+    ],
+    qs: [
+      ["What is 3,456 + 2,321?", ["5,777", "5,677", "5,787", "6,777"], "Add each column: 6+1=7, 5+2=7, 4+3=7, 3+2=5."],
+      ["What is 5,000 - 2,347?", ["2,653", "2,753", "3,653", "2,643"], "Borrow across zeros."],
+      ["What is 4,567 + 3,845?", ["8,412", "7,412", "8,312", "8,402"], "Regroup in ones, tens and hundreds."],
+      ["What is 7,003 - 1,998?", ["5,005", "5,105", "6,005", "5,015"], "Borrow across zeros."],
+      ["What is 2,468 + 1,532?", ["4,000", "3,900", "4,100", "3,990"], "Add carefully: 8+2=10, carry 1."],
+      ["What is 6,100 - 2,876?", ["3,224", "3,324", "4,224", "3,234"], "Borrow from hundreds and tens."],
+      ["A shop had 4,250 books. It sold 1,375. How many books are left?", ["2,875", "2,775", "3,875", "2,975"], "Subtract: 4,250 minus 1,375."],
+      ["A factory made 3,680 toys in the morning and 2,540 in the afternoon. How many in total?", ["6,220", "5,220", "6,120", "6,320"], "Add the two amounts."],
+      ["What is 9,000 - 4,567?", ["4,433", "4,533", "5,433", "4,443"], "Borrow across zeros."],
+      ["What is 1,234 + 5,678?", ["6,912", "6,812", "7,912", "6,902"], "Regroup in ones, tens and hundreds."],
+      ["Find the missing number: 3,400 + ___ = 5,000", ["1,600", "1,500", "2,600", "1,400"], "5,000 minus 3,400."],
+      ["Find the missing number: ___ - 2,345 = 1,655", ["4,000", "3,000", "4,100", "3,900"], "Add 2,345 and 1,655."],
+      ["What is 5,555 + 5,555?", ["11,110", "10,110", "11,010", "11,100"], "Add each column and regroup."],
+      ["A runner ran 2,750 m on Monday and 3,480 m on Tuesday. How far in total?", ["6,230", "6,130", "5,230", "6,330"], "Add the two distances."],
+      ["What is 8,001 - 3,999?", ["4,002", "4,012", "5,002", "4,000"], "Borrow across zeros."],
+      ["What is 4,321 + 999?", ["5,320", "5,220", "5,310", "4,320"], "Add 1,000 then subtract 1."],
+      ["Which is the best estimate of 3,892 + 2,105?", ["About 6,000", "About 5,000", "About 7,000", "About 4,000"], "Round to nearest thousand: 4,000 + 2,000."],
+      ["What is 7,654 - 7,654?", ["0", "7,654", "1", "15,308"], "Any number minus itself is 0."],
+      ["A school has 3,200 students. 1,450 are girls. How many are boys?", ["1,750", "1,650", "2,750", "1,850"], "Subtract girls from total."],
+      ["What is 6,789 + 211?", ["7,000", "6,900", "7,100", "6,000"], "Add carefully: 789 + 211 = 1,000."],
+      ["Find the missing number: 2,500 + 1,500 + ___ = 6,000", ["2,000", "1,000", "3,000", "2,500"], "6,000 minus 4,000."],
+      ["What is 10,000 - 1?", ["9,999", "9,990", "10,001", "9,900"], "Subtract 1 from 10,000."],
+      ["A tank has 5,000 mL of water. 2,350 mL is used. How much is left?", ["2,650 mL", "2,750 mL", "3,650 mL", "2,550 mL"], "Subtract: 5,000 minus 2,350."],
+      ["What is 3,333 + 3,333 + 3,333?", ["9,999", "9,990", "10,000", "9,099"], "3,333 times 3."],
+      ["Which addition gives 8,000?", ["4,567 + 3,433", "4,567 + 3,333", "4,567 + 3,533", "4,567 + 4,433"], "4,567 + 3,433 = 8,000."]
+    ]
+  },
+  {
+    id: "multiply-divide",
+    title: "Multiplication and Division",
+    emoji: "✖️",
+    blurb: "Times tables, division, remainders and word problems.",
+    notes: [
+      "Multiplication is repeated addition.",
+      "Division is splitting into equal groups.",
+      "A remainder is what is left over when division is not exact."
+    ],
+    qs: [
+      ["What is 7 × 8?", ["56", "48", "54", "64"], "7 times 8 is 56."],
+      ["What is 9 × 6?", ["54", "56", "45", "63"], "9 times 6 is 54."],
+      ["What is 48 ÷ 6?", ["8", "6", "7", "9"], "48 divided by 6 is 8."],
+      ["What is 63 ÷ 9?", ["7", "6", "8", "9"], "63 divided by 9 is 7."],
+      ["What is 23 ÷ 4?", ["5 remainder 3", "6 remainder 1", "5 remainder 2", "4 remainder 3"], "4 × 5 = 20, remainder is 3."],
+      ["What is 50 ÷ 7?", ["7 remainder 1", "6 remainder 8", "7 remainder 2", "8 remainder 1"], "7 × 7 = 49, remainder is 1."],
+      ["A box holds 6 eggs. How many eggs in 9 boxes?", ["54", "48", "56", "63"], "6 × 9 = 54."],
+      ["36 sweets are shared equally among 4 children. How many does each get?", ["9", "8", "6", "12"], "36 ÷ 4 = 9."],
+      ["What is 8 × 7?", ["56", "48", "63", "54"], "8 times 7 is 56."],
+      ["What is 72 ÷ 8?", ["9", "8", "7", "6"], "72 divided by 8 is 9."],
+      ["A teacher has 35 pencils. She puts 5 in each cup. How many cups does she need?", ["7", "6", "8", "5"], "35 ÷ 5 = 7."],
+      ["What is 4 × 9?", ["36", "32", "45", "40"], "4 times 9 is 36."],
+      ["What is 81 ÷ 9?", ["9", "8", "7", "6"], "81 divided by 9 is 9."],
+      ["What is 100 ÷ 10?", ["10", "100", "1", "0"], "100 divided by 10 is 10."],
+      ["A packet has 8 stickers. How many stickers in 7 packets?", ["56", "48", "64", "54"], "8 × 7 = 56."],
+      ["What is 45 ÷ 6?", ["7 remainder 3", "6 remainder 9", "8 remainder 1", "7 remainder 2"], "6 × 7 = 42, remainder is 3."],
+      ["What is 6 × 0?", ["0", "6", "1", "60"], "Any number multiplied by 0 is 0."],
+      ["What is 0 ÷ 5?", ["0", "5", "1", "50"], "0 divided by any non-zero number is 0."],
+      ["What is 11 × 3?", ["33", "30", "36", "31"], "11 times 3 is 33."],
+      ["A farmer has 8 rows of trees. Each row has 9 trees. How many trees in total?", ["72", "63", "81", "64"], "8 × 9 = 72."],
+      ["What is 90 ÷ 10?", ["9", "10", "90", "0"], "90 divided by 10 is 9."],
+      ["What is 5 × 5 × 2?", ["50", "25", "45", "55"], "5 × 5 = 25, then 25 × 2 = 50."],
+      ["42 children form teams of 6. How many teams?", ["7", "6", "8", "5"], "42 ÷ 6 = 7."],
+      ["What is 8 × 9?", ["72", "63", "81", "64"], "8 times 9 is 72."],
+      ["What is 55 ÷ 8?", ["6 remainder 7", "7 remainder 1", "5 remainder 15", "6 remainder 8"], "8 × 6 = 48, remainder is 7."]
+    ]
+  },
+  {
+    id: "money",
+    title: "Money",
+    emoji: "💰",
+    blurb: "Dollars, cents, addition, subtraction and word problems.",
+    notes: [
+      "1 dollar = 100 cents.",
+      "Line up dollar signs and decimal points when adding or subtracting.",
+      "Always write answers with $ and 2 decimal places."
+    ],
+    qs: [
+      ["How many cents are in $1?", ["100 cents", "10 cents", "1,000 cents", "50 cents"], "1 dollar equals 100 cents."],
+      ["What is $3.50 + $2.25?", ["$5.75", "$5.25", "$6.75", "$5.50"], "Add dollars and cents separately."],
+      ["What is $10.00 - $4.35?", ["$5.65", "$5.35", "$6.65", "$5.75"], "Borrow across the decimal point."],
+      ["A pen costs $1.20 and a ruler costs $0.80. What is the total cost?", ["$2.00", "$1.80", "$2.20", "$1.00"], "Add the two amounts."],
+      ["What is $5.00 - $2.75?", ["$2.25", "$2.75", "$3.25", "$2.35"], "Borrow from dollars."],
+      ["How do you write 350 cents in dollars?", ["$3.50", "$35.00", "$0.35", "$3.05"], "Divide cents by 100."],
+      ["What is $4.60 + $3.40?", ["$8.00", "$7.00", "$8.60", "$7.60"], "Add: 60 + 40 = 100 cents = $1."],
+      ["A book costs $6.50. You pay $10. How much change?", ["$3.50", "$4.50", "$3.00", "$4.00"], "Subtract: $10.00 - $6.50."],
+      ["What is $2.25 × 3?", ["$6.75", "$6.25", "$7.75", "$6.50"], "Multiply dollars and cents."],
+      ["Which is the greatest amount?", ["$3.05", "$3.50", "$2.99", "$3.00"], "Compare dollars first, then cents."],
+      ["What is $7.80 - $3.90?", ["$3.90", "$4.90", "$3.80", "$4.10"], "Borrow from dollars."],
+      ["A snack costs $1.50. How much do 4 snacks cost?", ["$6.00", "$5.00", "$6.50", "$4.50"], "Multiply: $1.50 × 4."],
+      ["How do you write 75 cents in dollars?", ["$0.75", "$7.50", "$75.00", "$0.07"], "75 cents is $0.75."],
+      ["What is $9.99 + $0.01?", ["$10.00", "$9.90", "$10.01", "$9.00"], "99 cents + 1 cent = 100 cents = $1."],
+      ["A toy costs $4.75 and a ball costs $3.25. What is the total?", ["$8.00", "$7.00", "$8.50", "$7.50"], "Add: 75 + 25 = 100 cents = $1."],
+      ["What is $20.00 ÷ 4?", ["$5.00", "$4.00", "$6.00", "$5.50"], "Divide dollars."],
+      ["You have $5.00. You spend $1.35 and $2.40. How much is left?", ["$1.25", "$1.35", "$2.25", "$1.75"], "Subtract total spent from $5.00."],
+      ["What is $0.50 + $0.50 + $0.50?", ["$1.50", "$1.00", "$0.15", "$1.05"], "Three 50-cent coins make $1.50."],
+      ["Which is the smallest amount?", ["$0.09", "$0.90", "$0.19", "$0.99"], "Compare cents: 9 is smallest."],
+      ["A notebook costs $2.30. How much do 5 notebooks cost?", ["$11.50", "$10.50", "$11.00", "$12.50"], "Multiply: $2.30 × 5."],
+      ["What is $8.00 - $3.65?", ["$4.35", "$4.65", "$5.35", "$4.45"], "Borrow from dollars."],
+      ["How many 50-cent coins make $3.00?", ["6", "3", "5", "30"], "300 ÷ 50 = 6."],
+      ["What is $6.45 + $3.55?", ["$10.00", "$9.00", "$10.50", "$9.50"], "45 + 55 = 100 cents = $1."],
+      ["A meal costs $7.80. You pay with $10. What is the change?", ["$2.20", "$2.80", "$3.20", "$2.30"], "Subtract: $10.00 - $7.80."],
+      ["What is $1.10 × 10?", ["$11.00", "$10.10", "$1.10", "$110.00"], "Multiply: $1.10 × 10."]
+    ]
+  },
+  {
+    id: "time",
+    title: "Time",
+    emoji: "🕐",
+    blurb: "Reading clocks, elapsed time, AM/PM and calendar.",
+    notes: [
+      "1 hour = 60 minutes, 1 minute = 60 seconds.",
+      "AM is morning, PM is afternoon and evening.",
+      "Elapsed time is the duration between two times."
+    ],
+    qs: [
+      ["How many minutes are in 1 hour?", ["60", "100", "30", "24"], "1 hour equals 60 minutes."],
+      ["How many seconds are in 1 minute?", ["60", "100", "30", "10"], "1 minute equals 60 seconds."],
+      ["What time is 3:45 PM in 24-hour clock?", ["15:45", "3:45", "13:45", "14:45"], "Add 12 to PM hours."],
+      ["What is 15:30 in 12-hour clock?", ["3:30 PM", "3:30 AM", "15:30 AM", "5:30 PM"], "Subtract 12 from hours after 12."],
+      ["A movie starts at 2:00 PM and lasts 90 minutes. When does it end?", ["3:30 PM", "3:00 PM", "2:90 PM", "3:15 PM"], "90 minutes is 1 hour 30 minutes."],
+      ["How many hours are in 2 days?", ["48", "24", "120", "36"], "2 × 24 = 48 hours."],
+      ["How many days are in a leap year?", ["366", "365", "364", "367"], "A leap year has 366 days."],
+      ["Which month has 28 or 29 days?", ["February", "January", "March", "April"], "February has 28 days, or 29 in a leap year."],
+      ["How many minutes are in 2 hours?", ["120", "100", "90", "200"], "2 × 60 = 120 minutes."],
+      ["A train leaves at 8:15 AM and arrives at 10:45 AM. How long is the journey?", ["2 hours 30 minutes", "2 hours 15 minutes", "3 hours 30 minutes", "2 hours 45 minutes"], "From 8:15 to 10:45 is 2 hours 30 minutes."],
+      ["How many seconds are in 3 minutes?", ["180", "120", "300", "150"], "3 × 60 = 180 seconds."],
+      ["What is half past 7 in the morning?", ["7:30 AM", "7:30 PM", "6:30 AM", "7:00 AM"], "Half past 7 is 7:30."],
+      ["How many weeks are in a year?", ["52", "48", "50", "54"], "A year has about 52 weeks."],
+      ["What time is quarter to 9?", ["8:45", "9:15", "8:15", "9:45"], "Quarter to 9 means 15 minutes before 9."],
+      ["A class starts at 9:00 AM and ends at 10:15 AM. How long is the class?", ["1 hour 15 minutes", "1 hour 25 minutes", "2 hours 15 minutes", "1 hour 5 minutes"], "From 9:00 to 10:15 is 1 hour 15 minutes."],
+      ["How many hours are in half a day?", ["12", "24", "6", "8"], "Half of 24 hours is 12."],
+      ["What is 00:00 in 12-hour clock?", ["12:00 AM (midnight)", "12:00 PM (noon)", "0:00 AM", "1:00 AM"], "00:00 is midnight."],
+      ["How many days are in 3 weeks?", ["21", "14", "28", "30"], "3 × 7 = 21 days."],
+      ["A bus ride takes 45 minutes. You leave at 4:20 PM. When do you arrive?", ["5:05 PM", "4:65 PM", "5:00 PM", "4:55 PM"], "4:20 + 45 minutes = 5:05."],
+      ["How many months have 31 days?", ["7", "6", "5", "8"], "January, March, May, July, August, October, December."],
+      ["What is 12:00 PM called?", ["Noon", "Midnight", "Dawn", "Dusk"], "12:00 PM is noon."],
+      ["How many minutes from 10:50 AM to 11:20 AM?", ["30", "20", "40", "50"], "From 10:50 to 11:20 is 30 minutes."],
+      ["How many seconds are in 1 hour?", ["3,600", "600", "360", "6,000"], "60 × 60 = 3,600 seconds."],
+      ["A lesson lasts 1 hour. It starts at 1:45 PM. When does it end?", ["2:45 PM", "2:15 PM", "1:45 PM", "2:00 PM"], "Add 1 hour to 1:45 PM."],
+      ["Which is the longest?", ["1 week", "5 days", "100 hours", "4 days"], "1 week = 7 days, which is longer than the others."]
+    ]
+  },
+  {
+    id: "measurement",
+    title: "Length, Mass and Volume",
+    emoji: "📏",
+    blurb: "Units, conversion and word problems for length, mass and volume.",
+    notes: [
+      "1 km = 1,000 m, 1 m = 100 cm, 1 cm = 10 mm.",
+      "1 kg = 1,000 g.",
+      "1 L = 1,000 mL."
+    ],
+    qs: [
+      ["How many centimetres are in 1 metre?", ["100", "10", "1,000", "50"], "1 m = 100 cm."],
+      ["How many millimetres are in 1 centimetre?", ["10", "100", "1,000", "5"], "1 cm = 10 mm."],
+      ["How many metres are in 1 kilometre?", ["1,000", "100", "10", "10,000"], "1 km = 1,000 m."],
+      ["How many grams are in 1 kilogram?", ["1,000", "100", "10", "10,000"], "1 kg = 1,000 g."],
+      ["How many millilitres are in 1 litre?", ["1,000", "100", "10", "500"], "1 L = 1,000 mL."],
+      ["Convert 3 m to cm.", ["300 cm", "30 cm", "3,000 cm", "3 cm"], "3 × 100 = 300 cm."],
+      ["Convert 2,500 g to kg.", ["2.5 kg", "25 kg", "0.25 kg", "250 kg"], "2,500 ÷ 1,000 = 2.5 kg."],
+      ["Convert 4 L to mL.", ["4,000 mL", "400 mL", "40 mL", "40,000 mL"], "4 × 1,000 = 4,000 mL."],
+      ["Convert 5 km to m.", ["5,000 m", "500 m", "50 m", "50,000 m"], "5 × 1,000 = 5,000 m."],
+      ["A pencil is about 15 ___ long.", ["cm", "m", "km", "mm"], "A pencil is about 15 cm."],
+      ["The distance from Singapore to Johor is about 30 ___.", ["km", "m", "cm", "mm"], "Long distances use km."],
+      ["A bag of rice has a mass of about 5 ___.", ["kg", "g", "mg", "L"], "A bag of rice is about 5 kg."],
+      ["A spoonful of water is about 5 ___.", ["mL", "L", "kg", "cm"], "A spoonful is about 5 mL."],
+      ["What is 2 m 30 cm in cm?", ["230 cm", "2,030 cm", "203 cm", "2,300 cm"], "200 cm + 30 cm = 230 cm."],
+      ["What is 3 kg 500 g in grams?", ["3,500 g", "3,050 g", "350 g", "35,000 g"], "3,000 g + 500 g = 3,500 g."],
+      ["What is 1 L 250 mL in mL?", ["1,250 mL", "1,025 mL", "125 mL", "12,500 mL"], "1,000 mL + 250 mL = 1,250 mL."],
+      ["Which is longer?", ["2 m", "150 cm", "1 m 80 cm", "190 cm"], "2 m = 200 cm, which is longest."],
+      ["Which is heavier?", ["3 kg", "2,500 g", "2 kg 800 g", "2,900 g"], "3 kg = 3,000 g, which is heaviest."],
+      ["Which holds more?", ["2 L", "1,500 mL", "1 L 800 mL", "1,900 mL"], "2 L = 2,000 mL, which is most."],
+      ["A rope is 4 m long. 150 cm is cut off. How much is left?", ["250 cm", "25 cm", "385 cm", "350 cm"], "400 cm - 150 cm = 250 cm."],
+      ["Convert 7 cm to mm.", ["70 mm", "7 mm", "700 mm", "0.7 mm"], "7 × 10 = 70 mm."],
+      ["Convert 8,000 mL to L.", ["8 L", "80 L", "0.8 L", "800 L"], "8,000 ÷ 1,000 = 8 L."],
+      ["A bottle holds 750 mL. How much more to make 1 L?", ["250 mL", "750 mL", "1,000 mL", "500 mL"], "1,000 mL - 750 mL = 250 mL."],
+      ["Which unit is best to measure the mass of a feather?", ["grams", "kilograms", "litres", "metres"], "A feather is very light, so use grams."],
+      ["What is 1 m 5 cm in cm?", ["105 cm", "150 cm", "15 cm", "1,005 cm"], "100 cm + 5 cm = 105 cm."]
+    ]
+  },
+  {
+    id: "fractions",
+    title: "Fractions",
+    emoji: "🍕",
+    blurb: "Proper, improper, equivalent fractions, comparing and adding.",
+    notes: [
+      "The top number is the numerator, the bottom is the denominator.",
+      "Equivalent fractions have the same value.",
+      "To add like fractions, add the numerators and keep the denominator."
+    ],
+    qs: [
+      ["What is the numerator in 3/7?", ["3", "7", "10", "4"], "The top number is the numerator."],
+      ["What is the denominator in 5/8?", ["8", "5", "3", "13"], "The bottom number is the denominator."],
+      ["Which fraction is equivalent to 1/2?", ["2/4", "1/3", "3/5", "2/3"], "Multiply top and bottom by 2."],
+      ["Which fraction is equivalent to 2/3?", ["4/6", "3/4", "2/6", "3/2"], "Multiply top and bottom by 2."],
+      ["Which is a proper fraction?", ["3/5", "7/4", "5/5", "9/2"], "A proper fraction has numerator less than denominator."],
+      ["Which is an improper fraction?", ["7/4", "2/5", "1/3", "3/8"], "An improper fraction has numerator greater than or equal to denominator."],
+      ["What is 2/7 + 3/7?", ["5/7", "5/14", "6/7", "1/7"], "Add numerators, keep denominator."],
+      ["What is 5/8 - 2/8?", ["3/8", "3/16", "7/8", "2/8"], "Subtract numerators, keep denominator."],
+      ["Which fraction is larger?", ["5/6", "3/6", "2/6", "1/6"], "Same denominator, so compare numerators."],
+      ["Which fraction is larger?", ["1/2", "1/4", "1/5", "1/8"], "Same numerator, so smaller denominator means larger fraction."],
+      ["What is 4/4 as a whole number?", ["1", "4", "0", "2"], "4/4 equals 1 whole."],
+      ["What is 8/8 as a whole number?", ["1", "8", "0", "4"], "8/8 equals 1 whole."],
+      ["Simplify 6/8.", ["3/4", "2/4", "6/4", "4/6"], "Divide top and bottom by 2."],
+      ["Simplify 9/12.", ["3/4", "9/4", "4/9", "6/8"], "Divide top and bottom by 3."],
+      ["What fraction of a whole is shaded if 3 out of 5 parts are shaded?", ["3/5", "5/3", "2/5", "3/8"], "3 out of 5 parts is 3/5."],
+      ["Which is equal to 1?", ["4/4", "3/4", "5/4", "1/4"], "When numerator equals denominator, the fraction is 1."],
+      ["What is 1/3 + 1/3 + 1/3?", ["1", "3/9", "1/9", "3"], "Three thirds make 1 whole."],
+      ["Which fraction is closest to 1?", ["7/8", "1/8", "3/8", "5/8"], "7/8 is closest to 8/8 = 1."],
+      ["What is 5/9 + 2/9?", ["7/9", "7/18", "10/9", "3/9"], "Add numerators, keep denominator."],
+      ["What is 7/10 - 4/10?", ["3/10", "3/20", "11/10", "4/10"], "Subtract numerators, keep denominator."],
+      ["Which shows 2/5 as an equivalent fraction?", ["4/10", "2/10", "5/2", "4/5"], "Multiply top and bottom by 2."],
+      ["A pizza is cut into 8 slices. You eat 3. What fraction did you eat?", ["3/8", "8/3", "3/5", "5/8"], "3 out of 8 slices is 3/8."],
+      ["Which is greater: 2/3 or 2/5?", ["2/3", "2/5", "They are equal", "Cannot tell"], "Same numerator, smaller denominator means larger fraction."],
+      ["What is 3/4 of 20?", ["15", "12", "16", "10"], "20 ÷ 4 = 5, then 5 × 3 = 15."],
+      ["What is 2/5 of 30?", ["12", "15", "10", "6"], "30 ÷ 5 = 6, then 6 × 2 = 12."]
+    ]
+  },
+  {
+    id: "bar-graphs",
+    title: "Bar Graphs and Data",
+    emoji: "📊",
+    blurb: "Reading, interpreting and drawing conclusions from bar graphs.",
+    notes: [
+      "A bar graph uses bars to show data.",
+      "The height of each bar shows the amount.",
+      "Always check the scale on the axis."
+    ],
+    qs: [
+      ["What does a bar graph use to show data?", ["Bars of different heights", "Circles", "Triangles", "Colours only"], "Bar graphs use bars."],
+      ["In a bar graph showing favourite fruits, the tallest bar shows:", ["The most popular fruit", "The least popular fruit", "The total number of fruits", "The price of fruit"], "Taller bar means more people chose it."],
+      ["A bar graph has a scale where each square is 5. A bar is 4 squares tall. What value does it show?", ["20", "4", "5", "9"], "4 × 5 = 20."],
+      ["What should you check first when reading a bar graph?", ["The scale on the axis", "The colour of bars", "The title only", "The width of bars"], "The scale tells you what each mark means."],
+      ["A bar graph shows books read: Ali 6, Ben 4, Cara 8. Who read the most?", ["Cara", "Ali", "Ben", "All equal"], "Cara has the tallest bar."],
+      ["In the same graph, how many more books did Cara read than Ben?", ["4", "2", "6", "8"], "8 - 4 = 4."],
+      ["What is the total number of books read by all three?", ["18", "14", "16", "20"], "6 + 4 + 8 = 18."],
+      ["A bar graph uses a scale of 10. A bar reaches the 7th mark. What is the value?", ["70", "7", "17", "100"], "7 × 10 = 70."],
+      ["Which type of graph is best for comparing amounts?", ["Bar graph", "Pie chart only", "Photograph", "Map"], "Bar graphs compare amounts easily."],
+      ["What is the title of a graph for?", ["It tells what the graph is about", "It makes the graph colourful", "It shows the scale", "It labels the bars"], "The title describes the graph."],
+      ["A bar graph shows: Red 12, Blue 8, Green 15. Which colour is least popular?", ["Blue", "Red", "Green", "All equal"], "Blue has the shortest bar."],
+      ["What does the horizontal axis usually show?", ["Categories", "Numbers only", "Colours only", "Nothing"], "Categories are on the horizontal axis."],
+      ["What does the vertical axis usually show?", ["Numbers or amounts", "Categories", "Names", "Colours"], "Amounts are on the vertical axis."],
+      ["A scale goes 0, 5, 10, 15, 20. A bar is between 10 and 15, closer to 15. About what value?", ["About 14", "About 5", "About 20", "About 1"], "It is between 10 and 15."],
+      ["In a class survey, 15 like cats, 10 like dogs, 5 like fish. How many students were surveyed?", ["30", "15", "25", "20"], "15 + 10 + 5 = 30."],
+      ["A bar graph shows sales: Mon 20, Tue 35, Wed 25. Which day had the highest sales?", ["Tuesday", "Monday", "Wednesday", "All equal"], "Tuesday has the tallest bar."],
+      ["What is the difference between Tuesday and Wednesday sales?", ["10", "15", "5", "25"], "35 - 25 = 10."],
+      ["If each bar unit is 2, and a bar is 6 units tall, what is the value?", ["12", "6", "2", "8"], "6 × 2 = 12."],
+      ["Why are bar graphs useful?", ["They make it easy to compare data", "They make data harder to read", "They only show one number", "They cannot show differences"], "Bar graphs allow easy comparison."],
+      ["A bar graph shows 4 bars of equal height. What does this mean?", ["All categories have the same value", "The graph is wrong", "There is no data", "The scale is missing"], "Equal bars mean equal values."],
+      ["What label should a bar graph for 'Number of pets' have on the vertical axis?", ["Number", "Pet names", "Colours", "Days"], "The vertical axis shows numbers."],
+      ["A graph shows: Apples 25, Oranges 15, Pears 10. What fraction of total are apples?", ["1/2", "1/3", "1/4", "2/3"], "Total is 50, apples are 25, so 25/50 = 1/2."],
+      ["If a bar for 'Rainy days' is 12 and 'Sunny days' is 18, how many more sunny days?", ["6", "30", "12", "18"], "18 - 12 = 6."],
+      ["What does a scale of 0, 10, 20, 30 mean?", ["Each mark increases by 10", "Each mark increases by 1", "Each mark increases by 5", "Each mark increases by 100"], "The intervals are 10."],
+      ["A bar graph has no title. What is the problem?", ["You cannot tell what the graph is about", "The bars will fall", "The numbers are wrong", "Nothing is wrong"], "A title explains the graph."]
+    ]
+  },
+  {
+    id: "angles",
+    title: "Geometry: Angles",
+    emoji: "📐",
+    blurb: "Right angles, measuring angles and types of angles.",
+    notes: [
+      "A right angle is exactly 90 degrees.",
+      "An acute angle is less than 90 degrees.",
+      "An obtuse angle is more than 90 but less than 180 degrees."
+    ],
+    qs: [
+      ["How many degrees is a right angle?", ["90°", "45°", "180°", "360°"], "A right angle is 90 degrees."],
+      ["What is an angle less than 90° called?", ["Acute angle", "Obtuse angle", "Right angle", "Straight angle"], "Less than 90° is acute."],
+      ["What is an angle greater than 90° but less than 180° called?", ["Obtuse angle", "Acute angle", "Right angle", "Reflex angle"], "Between 90° and 180° is obtuse."],
+      ["How many degrees is a straight angle?", ["180°", "90°", "360°", "270°"], "A straight angle is 180 degrees."],
+      ["What tool is used to measure angles?", ["Protractor", "Ruler", "Compass", "Set square only"], "A protractor measures angles."],
+      ["What symbol is used for degrees?", ["°", "cm", "kg", "mL"], "The degree symbol is °."],
+      ["The corner of a square is what type of angle?", ["Right angle", "Acute angle", "Obtuse angle", "Straight angle"], "Square corners are 90°."],
+      ["If an angle measures 45°, what type is it?", ["Acute", "Obtuse", "Right", "Straight"], "45° is less than 90°."],
+      ["If an angle measures 120°, what type is it?", ["Obtuse", "Acute", "Right", "Straight"], "120° is between 90° and 180°."],
+      ["How many right angles make a straight angle?", ["2", "1", "3", "4"], "90° + 90° = 180°."],
+      ["How many degrees in a full turn?", ["360°", "180°", "90°", "270°"], "A full turn is 360 degrees."],
+      ["How many right angles make a full turn?", ["4", "2", "3", "1"], "90° × 4 = 360°."],
+      ["An angle of 90° looks like:", ["The corner of a square", "A straight line", "A very small opening", "A full circle"], "90° is a square corner."],
+      ["Which angle is the smallest?", ["30°", "60°", "89°", "91°"], "30° is the smallest."],
+      ["Which angle is obtuse?", ["135°", "45°", "90°", "80°"], "135° is between 90° and 180°."],
+      ["A clock at 3:00 shows what angle between the hands?", ["90°", "45°", "180°", "60°"], "At 3:00 the hands form a right angle."],
+      ["A clock at 6:00 shows what angle between the hands?", ["180°", "90°", "360°", "45°"], "At 6:00 the hands form a straight angle."],
+      ["A clock at 12:00 shows what angle between the hands?", ["0° (or 360°)", "90°", "180°", "45°"], "Both hands point to 12."],
+      ["What type of angle is 179°?", ["Obtuse", "Acute", "Right", "Straight"], "179° is less than 180° but more than 90°."],
+      ["What type of angle is 1°?", ["Acute", "Obtuse", "Right", "Straight"], "1° is less than 90°."],
+      ["Two right angles together make:", ["180°", "90°", "270°", "360°"], "90° + 90° = 180°."],
+      ["What is half of a right angle?", ["45°", "90°", "180°", "30°"], "90° ÷ 2 = 45°."],
+      ["Which pair adds up to a right angle?", ["30° and 60°", "45° and 55°", "90° and 90°", "100° and 80°"], "30° + 60° = 90°."],
+      ["An angle of exactly 180° is called:", ["Straight angle", "Right angle", "Reflex angle", "Acute angle"], "180° is a straight angle."],
+      ["How many degrees are in 3 right angles?", ["270°", "180°", "360°", "90°"], "3 × 90° = 270°."]
+    ]
+  },
+  {
+    id: "patterns",
+    title: "Patterns",
+    emoji: "🔄",
+    blurb: "Number patterns, shape patterns and finding rules.",
+    notes: [
+      "A pattern follows a rule.",
+      "Look at the difference between numbers to find the rule.",
+      "Shape patterns repeat in a sequence."
+    ],
+    qs: [
+      ["What is the next number: 2, 4, 6, 8, ___?", ["10", "9", "12", "11"], "The pattern adds 2 each time."],
+      ["What is the next number: 5, 10, 15, 20, ___?", ["25", "30", "22", "35"], "The pattern adds 5 each time."],
+      ["What is the next number: 3, 6, 12, 24, ___?", ["48", "36", "30", "42"], "The pattern doubles each time."],
+      ["What is the next number: 100, 90, 80, 70, ___?", ["60", "50", "65", "55"], "The pattern subtracts 10 each time."],
+      ["What is the next number: 1, 4, 9, 16, ___?", ["25", "20", "24", "36"], "These are square numbers: 1², 2², 3², 4², 5²."],
+      ["What is the rule: 7, 14, 21, 28, 35?", ["Add 7", "Add 14", "Multiply by 7", "Add 10"], "Each number increases by 7."],
+      ["What is the next number: 1, 3, 5, 7, ___?", ["9", "8", "10", "11"], "The pattern adds 2 (odd numbers)."],
+      ["What is the next number: 2, 5, 8, 11, ___?", ["14", "13", "12", "15"], "The pattern adds 3 each time."],
+      ["What is the next number: 64, 32, 16, 8, ___?", ["4", "2", "6", "0"], "The pattern halves each time."],
+      ["What is the next number: 1, 2, 4, 8, 16, ___?", ["32", "24", "20", "18"], "The pattern doubles each time."],
+      ["Find the missing number: 4, 8, ___, 16, 20", ["12", "10", "14", "9"], "The pattern adds 4."],
+      ["Find the missing number: 50, 45, ___, 35, 30", ["40", "38", "42", "37"], "The pattern subtracts 5."],
+      ["What is the next shape: circle, square, triangle, circle, square, ___?", ["Triangle", "Circle", "Square", "Pentagon"], "The pattern repeats every 3 shapes."],
+      ["What is the 10th number: 3, 6, 9, 12, ...?", ["30", "27", "33", "36"], "3 × 10 = 30."],
+      ["What is the next number: 11, 22, 33, 44, ___?", ["55", "50", "45", "66"], "The pattern adds 11."],
+      ["What is the rule: 2, 6, 18, 54?", ["Multiply by 3", "Add 4", "Multiply by 2", "Add 12"], "Each number is multiplied by 3."],
+      ["What is the next number: 1, 1, 2, 3, 5, 8, ___?", ["13", "12", "11", "10"], "Each number is the sum of the two before it."],
+      ["Find the missing number: 10, 20, ___, 40, 50", ["30", "25", "35", "15"], "The pattern adds 10."],
+      ["What is the next number: 99, 88, 77, 66, ___?", ["55", "44", "56", "65"], "The pattern subtracts 11."],
+      ["What comes next: red, blue, red, blue, red, ___?", ["Blue", "Red", "Green", "Yellow"], "The pattern alternates."],
+      ["What is the 5th number: 4, 7, 10, 13, ___?", ["16", "15", "17", "14"], "The pattern adds 3."],
+      ["What is the next number: 1, 3, 7, 15, ___?", ["31", "25", "21", "30"], "Double and add 1: 15×2+1=31."],
+      ["Find the missing number: 8, 16, 24, ___, 40", ["32", "28", "36", "30"], "The pattern adds 8."],
+      ["What is the next number: 100, 50, 25, ___?", ["12.5", "15", "10", "20"], "The pattern halves each time."],
+      ["What is the rule: 5, 10, 20, 40, 80?", ["Multiply by 2", "Add 10", "Multiply by 5", "Add 5"], "Each number doubles."]
+    ]
+  }
+];
+
+const QUESTIONS = [];
+TOPICS.forEach(topic => {
+  topic.qs.forEach((item, index) => {
+    QUESTIONS.push({
+      id: topic.id + "-" + (index + 1),
+      topic: topic.id,
+      q: item[0],
+      options: item[1],
+      exp: item[2]
+    });
+  });
+});
+
+const STORAGE_KEY = "p3MathsFullPack";
+const app = document.getElementById("app");
+
+let progress = loadProgress();
+let state = {
+  questions: [],
+  index: 0,
+  correct: 0,
+  answered: false,
+  title: "",
+  misses: []
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: {}, correct: {}, wrong: [] };
+    const data = JSON.parse(raw);
+    return {
+      attempts: data.attempts || {},
+      correct: data.correct || {},
+      wrong: data.wrong || []
+    };
+  } catch (error) {
+    return { attempts: {}, correct: {}, wrong: [] };
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (error) {}
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, char => {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char];
+  });
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function prepareQuestions(list) {
+  return list.map(q => {
+    const optionObjects = q.options.map((text, index) => ({
+      text,
+      correct: index === 0
+    }));
+    const shuffled = shuffle(optionObjects);
+    return {
+      ...q,
+      options: shuffled.map(o => o.text),
+      answer: shuffled.findIndex(o => o.correct)
+    };
+  });
+}
+
+function getTopic(id) {
+  return TOPICS.find(t => t.id === id);
+}
+
+function getQuestionsByTopic(id) {
+  return QUESTIONS.filter(q => q.topic === id);
+}
+
+function getStats() {
+  const attempted = Object.keys(progress.attempts).length;
+  let totalAttempts = 0;
+  let totalCorrect = 0;
+  for (const id in progress.attempts) totalAttempts += progress.attempts[id];
+  for (const id in progress.correct) totalCorrect += progress.correct[id];
+  const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+  return { attempted, accuracy, wrong: progress.wrong.length };
+}
+
+function renderHome() {
+  const stats = getStats();
+  const topicCards = TOPICS.map(topic => {
+    const total = topic.qs.length;
+    const mastered = QUESTIONS.filter(q => q.topic === topic.id && progress.correct[q.id] > 0).length;
+    const percent = total ? Math.round((mastered / total) * 100) : 0;
+    return `
+      <div class="card topic-card" onclick="openTopic('${topic.id}')">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P3</div>
+        </div>
+        <div class="topic-title">${esc(topic.title)}</div>
+        <div class="small">${esc(topic.blurb)}</div>
+        <div class="progress"><div style="width:${percent}%"></div></div>
+        <div class="small">${mastered}/${total} questions correct at least once</div>
+      </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">🔢 P3 Maths Full Pack</div>
+        <div class="chip">250 MCQs</div>
+      </div>
+      <div class="hero">
+        <h1>Primary 3 Maths Practice</h1>
+        <p>10 topics × 25 questions. Definitions, concepts and explanations.</p>
+        <div class="actions">
+          <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+          <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+          <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+          <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="value">${stats.attempted}</div><div class="label">Questions practiced</div></div>
+        <div class="stat"><div class="value">${stats.accuracy}%</div><div class="label">Accuracy</div></div>
+        <div class="stat"><div class="value">${stats.wrong}</div><div class="label">Wrong questions</div></div>
+        <div class="stat"><div class="value">${TOPICS.length}</div><div class="label">Topics</div></div>
+      </div>
+      ${topicCards}
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTopic(id) {
+  const topic = getTopic(id);
+  const notesHtml = topic.notes.map(n => `<li>${esc(n)}</li>`).join("");
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">⬅ Home</button>
+        <div class="chip">P3 Topic</div>
+      </div>
+      <div class="card">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">P3</div>
+        </div>
+        <h2>${esc(topic.title)}</h2>
+        <p style="font-weight:800;">${esc(topic.blurb)}</p>
+        <h3>Key ideas</h3>
+        <ul class="notes">${notesHtml}</ul>
+        <div class="actions">
+          <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 25 Questions</button>
+          <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+        </div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startAllChallenge() {
+  startQuiz(shuffle(QUESTIONS).slice(0, 20), "Random 20 Challenge");
+}
+function startRandomTen() {
+  startQuiz(shuffle(QUESTIONS).slice(0, 10), "Random 10");
+}
+function startWrongAll() {
+  const questions = QUESTIONS.filter(q => progress.wrong.includes(q.id));
+  if (!questions.length) { alert("No wrong questions saved yet."); return; }
+  startQuiz(questions, "Wrong Replay");
+}
+function startTopic(id) {
+  const topic = getTopic(id);
+  startQuiz(getQuestionsByTopic(id), topic.title);
+}
+function startTopicWrong(id) {
+  const topic = getTopic(id);
+  const questions = QUESTIONS.filter(q => q.topic === id && progress.wrong.includes(q.id));
+  if (!questions.length) { alert("No wrong questions in this topic yet."); return; }
+  startQuiz(questions, "Wrong Replay: " + topic.title);
+}
+
+function startQuiz(list, title) {
+  if (!list.length) { alert("No questions available."); return; }
+  state = {
+    questions: prepareQuestions(list),
+    index: 0,
+    correct: 0,
+    answered: false,
+    title,
+    misses: []
+  };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  const topic = getTopic(q.topic);
+  const pct = (state.index / state.questions.length) * 100;
+  const opts = q.options.map((o, i) =>
+    `<button class="option" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${esc(o)}</button>`
+  ).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">${esc(state.title)}</div>
+      </div>
+      <div class="card">
+        <div class="progress"><div style="width:${pct}%"></div></div>
+        <div class="small">Question ${state.index+1} of ${state.questions.length} • Score ${state.correct}</div>
+        <div class="chip" style="margin:10px 0;">${topic.emoji} ${esc(topic.title)}</div>
+        <h2>${esc(q.q)}</h2>
+        <div class="options">${opts}</div>
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function answer(selected) {
+  if (state.answered) return;
+  state.answered = true;
+  const q = state.questions[state.index];
+  const buttons = Array.from(document.querySelectorAll(".option"));
+  buttons.forEach(b => b.disabled = true);
+  buttons[q.answer].classList.add("correct");
+  const isCorrect = selected === q.answer;
+  if (isCorrect) {
+    state.correct++;
+    buttons[selected].classList.add("correct");
+  } else {
+    buttons[selected].classList.add("wrong");
+    state.misses.push({ id: q.id, selected });
+  }
+  updateProgress(q.id, isCorrect);
+  const fb = document.getElementById("feedback");
+  fb.className = "feedback " + (isCorrect ? "good" : "bad");
+  fb.innerHTML = `
+    <div>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</div>
+    <div class="exp">${esc(q.exp)}${!isCorrect ? " Correct answer: " + esc(q.options[q.answer]) + "." : ""}</div>
+    <div class="actions">
+      <button class="btn primary" onclick="nextQuestion()">
+        ${state.index === state.questions.length - 1 ? "Finish 🏁" : "Next ➜"}
+      </button>
+    </div>`;
+}
+
+function updateProgress(id, isCorrect) {
+  progress.attempts[id] = (progress.attempts[id] || 0) + 1;
+  if (isCorrect) {
+    progress.correct[id] = (progress.correct[id] || 0) + 1;
+    progress.wrong = progress.wrong.filter(w => w !== id);
+  } else {
+    if (!progress.wrong.includes(id)) progress.wrong.push(id);
+  }
+  saveProgress();
+}
+
+function nextQuestion() {
+  if (!state.answered) return;
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    state.answered = false;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = state.questions.length;
+  const percent = Math.round((state.correct / total) * 100);
+  let stars = "💪";
+  let msg = "Keep practising! Read the explanations and try again.";
+  if (percent >= 90) { stars = "🌟🌟🌟"; msg = "Excellent!"; }
+  else if (percent >= 75) { stars = "🌟🌟"; msg = "Great job! Review the missed questions."; }
+  else if (percent >= 50) { stars = "🌟"; msg = "Good effort! Focus on the explanations."; }
+
+  const seen = new Set();
+  const unique = state.misses.filter(m => {
+    if (seen.has(m.id)) return false;
+    seen.add(m.id);
+    return true;
+  });
+
+  const reviewHtml = unique.map(miss => {
+    const q = state.questions.find(i => i.id === miss.id);
+    const topic = getTopic(q.topic);
+    return `
+      <div class="review-item">
+        <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+        <div class="review-q">${esc(q.q)}</div>
+        <div class="user-answer">Your answer: ${esc(q.options[miss.selected])}</div>
+        <div class="correct-answer">Correct answer: ${esc(q.options[q.answer])}</div>
+        <div>${esc(q.exp)}</div>
+      </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">Result</div>
+      </div>
+      <div class="card">
+        <h2>${esc(state.title)} Complete!</h2>
+        <div class="result-stars">${stars}</div>
+        <p style="font-weight:900;">You scored ${state.correct}/${total} (${percent}%). ${msg}</p>
+        <div class="actions">
+          <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+          ${unique.length ? '<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>' : ""}
+        </div>
+        <h3>Review</h3>
+        ${unique.length ? reviewHtml : "<p>🎉 Perfect! No wrong questions this round.</p>"}
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function retryWrong() {
+  const ids = [...new Set(state.misses.map(m => m.id))];
+  startQuiz(QUESTIONS.filter(q => ids.includes(q.id)), "Retry Wrong");
+}
+
+function resetProgress() {
+  if (confirm("Reset all P3 Maths progress?")) {
+    progress = { attempts: {}, correct: {}, wrong: [] };
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
