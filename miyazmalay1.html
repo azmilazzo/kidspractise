@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P3 Malay Mastery Lab (50Q Randomized)</title>
+  <style>
+    :root {
+      --bg: #1e1e2e;
+      --card-bg: #2b2b3d;
+      --accent: #74c7ec;
+      --success: #a6e3a1;
+      --error: #f38ba8;
+      --text: #cdd6f4;
+      --subtext: #a6adc8;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 { color: var(--accent); margin-bottom: 5px; text-align: center; }
+    p.subtitle { color: var(--subtext); margin-top: 0; margin-bottom: 20px; text-align: center; }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .nav button {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .nav button.active {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      display: none;
+      box-sizing: border-box;
+    }
+
+    .container.active { display: block; }
+
+    .word-pool, .sentence-target {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-height: 50px;
+      padding: 12px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.2);
+      margin-bottom: 15px;
+    }
+
+    .sentence-target { border: 2px dashed var(--accent); }
+
+    .word-tile {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s;
+    }
+
+    .word-tile:hover { transform: scale(1.05); }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .option-btn {
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.2s;
+    }
+
+    .option-btn:hover {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .btn-action {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .feedback {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      min-height: 25px;
+    }
+
+    .score-display {
+      font-size: 20px;
+      color: var(--success);
+      font-weight: bold;
+      margin-bottom: 15px;
+      text-align: right;
+      width: 100%;
+      max-width: 650px;
+    }
+
+    .progress {
+      font-size: 14px;
+      color: var(--subtext);
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>P3 Malay Mastery Lab</h1>
+  <p class="subtitle">50 Randomized Questions Per Category</p>
+
+  <div class="score-display">Markah: <span id="score">0</span></div>
+
+  <div class="nav">
+    <button id="btn-ba" class="active" onclick="showTab('bina-ayat')">🧩 Bina Ayat</button>
+    <button id="btn-pb" onclick="showTab('penjodoh')">📦 Penjodoh Bilangan</button>
+    <button id="btn-kk" onclick="showTab('kata-kerja')">✏️ Imbuhan & Kata Kerja</button>
+  </div>
+
+  <!-- 1. BINA AYAT -->
+  <div id="bina-ayat" class="container active">
+    <div class="progress" id="ba-progress">Question 1 / 50</div>
+    <h3>Bina Ayat Mengikut Urutan</h3>
+    <p style="color:var(--subtext)" id="ba-english"></p>
+    
+    <div class="sentence-target" id="target-zone"></div>
+    <div class="word-pool" id="pool-zone"></div>
+    
+    <button class="btn-action" onclick="checkSentence()">Semak (Check)</button>
+    <div class="feedback" id="ba-feedback"></div>
+  </div>
+
+  <!-- 2. PENJODOH BILANGAN -->
+  <div id="penjodoh" class="container">
+    <div class="progress" id="pb-progress">Question 1 / 50</div>
+    <h3>Pilih Penjodoh Bilangan yang Betul</h3>
+    <h2 id="pb-item" style="color:var(--accent); text-align: center;">--</h2>
+    <div class="options-grid" id="pb-options"></div>
+    <div class="feedback" id="pb-feedback" style="text-align: center;"></div>
+  </div>
+
+  <!-- 3. IMBUHAN & KATA KERJA -->
+  <div id="kata-kerja" class="container">
+    <div class="progress" id="kk-progress">Question 1 / 50</div>
+    <h3>Pilih Kata Kerja / Imbuhan yang Betul</h3>
+    <p id="kk-sentence" style="font-size: 18px; font-weight: bold; text-align: center; margin: 25px 0;"></p>
+    <p style="color:var(--subtext); text-align: center;" id="kk-english"></p>
+    <div class="options-grid" id="kk-options"></div>
+    <div class="feedback" id="kk-feedback" style="text-align: center;"></div>
+  </div>
+
+  <script>
+    let totalScore = 0;
+
+    function addScore(pts) {
+      totalScore += pts;
+      document.getElementById('score').innerText = totalScore;
+    }
+
+    function speak(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'ms-MY';
+        u.rate = 0.85;
+        window.speechSynthesis.speak(u);
+      }
+    }
+
+    function shuffleArray(array) {
+      let arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    // --- 50 BINA AYAT QUESTIONS ---
+    const rawSentences = [
+      { malay: ["Ahmad", "membaca", "buku", "di", "perpustakaan"], english: "Ahmad is reading a book at the library." },
+      { malay: ["Kucing", "itu", "sedang", "tidur", "di", "bawah", "meja"], english: "That cat is sleeping under the table." },
+      { malay: ["Ibu", "memasak", "nasi", "goreng", "di", "dapur"], english: "Mother is cooking fried rice in the kitchen." },
+      { malay: ["Cikgu", "Siti", "mengajar", "murid", "di", "bilik", "darjah"], english: "Teacher Siti teaches students in the classroom." },
+      { malay: ["Adik", "bermain", "bola", "di", "padang", "sekolah"], english: "Younger sibling plays ball at the school field." },
+      { malay: ["Ayah", "memandu", "kereta", "ke", "pejabat"], english: "Father drives a car to the office." },
+      { malay: ["Kami", "makan", "malam", "pada", "pukul", "tujuh"], english: "We eat dinner at seven o'clock." },
+      { malay: ["Nenek", "menyiram", "pokok", "bunga", "di", "halaman"], english: "Grandmother waters flower plants in the yard." },
+      { malay: ["Mika", "menulis", "surat", "kepada", "kawan"], english: "Mika is writing a letter to a friend." },
+      { malay: ["Mereka", "membersihkan", "taman", "permainan", "bersama-sama"], english: "They clean the playground together." },
+      { malay: ["Abang", "menunggang", "basikal", "di", "taman"], english: "Older brother rides a bicycle at the park." },
+      { malay: ["Kakak", "membeli", "buah", "epal", "di", "pasar"], english: "Older sister buys apples at the market." },
+      { malay: ["Anjing", "itu", "menyalak", "sebab", "takut"], english: "That dog is barking because it is scared." },
+      { malay: ["Budak", "itu", "menangis", "kerana", "terjatuh"], english: "That child is crying because of falling." },
+      { malay: ["Saya", "suka", "minum", "susu", "setiap", "pagi"], english: "I like to drink milk every morning." },
+      { malay: ["Datuk", "membaca", "surat", "khabar", "di", "ruang", "tamu"], english: "Grandfather reads the newspaper in the living room." },
+      { malay: ["Murid-murid", "beratur", "di", "luar", "dewan"], english: "Students queue outside the hall." },
+      { malay: ["Gajah", "itu", "sangat", "besar", "dan", "kuat"], english: "That elephant is very big and strong." },
+      { malay: ["Burung", "terbang", "tinggi", "di", "udara"], english: "Birds fly high in the air." },
+      { malay: ["Kami", "belajar", "Bahasa", "Melayu", "bersama", "guru"], english: "We learn Malay language together with the teacher." },
+      { malay: ["Ali", "mencuci", "tangan", "sebelum", "makan"], english: "Ali washes hands before eating." },
+      { malay: ["Saya", "menggosok", "gigi", "dua", "kali", "sehari"], english: "I brush teeth twice a day." },
+      { malay: ["Ibu", "membeli", "ikan", "dan", "sayur"], english: "Mother buys fish and vegetables." },
+      { malay: ["Adik", "menonton", "kartun", "di", "televisyen"], english: "Younger sibling watches cartoons on television." },
+      { malay: ["Ayah", "membaca", "buku", "sebelum", "tidur"], english: "Father reads a book before sleeping." },
+      { malay: ["Mereka", "berjalan", "kaki", "ke", "sekolah"], english: "They walk on foot to school." },
+      { malay: ["Cikgu", "memberi", "kerja", "rumah", "hari", "ini"], english: "Teacher gives homework today." },
+      { malay: ["Budak-budak", "bermain", "layang-layang", "di", "padang"], english: "Children fly kites at the field." },
+      { malay: ["Ibu", "menyapu", "sampah", "di", "ruang", "tamu"], english: "Mother sweeps rubbish in the living room." },
+      { malay: ["Kami", "melawat", "zoo", "pada", "hujung", "minggu"], english: "We visit the zoo on the weekend." },
+      { malay: ["Kucing", "suka", "makan", "ikan", "goreng"], english: "Cats like to eat fried fish." },
+      { malay: ["Abang", "belajar", "berenang", "di", "kolam"], english: "Older brother learns to swim in the pool." },
+      { malay: ["Kakak", "menolong", "ibu", "di", "dapur"], english: "Older sister helps mother in the kitchen." },
+      { malay: ["Burung", "membuat", "sarang", "di", "atas", "pokok"], english: "Birds make nests on top of trees." },
+      { malay: ["Saya", "simpan", "pensel", "di", "dalam", "kotak"], english: "I keep pencils inside the box." },
+      { malay: ["Kami", "gembira", "bermain", "di", "taman"], english: "We are happy playing at the park." },
+      { malay: ["Ayah", "membaiki", "basikal", "yang", "rosak"], english: "Father repairs the broken bicycle." },
+      { malay: ["Ibu", "membuat", "kek", "coklat", "yang", "sedap"], english: "Mother makes a delicious chocolate cake." },
+      { malay: ["Adik", "memegang", "tangan", "ibu", "semasa", "melintas"], english: "Younger sibling holds mother's hand while crossing." },
+      { malay: ["Murid-murid", "mendengar", "nasihat", "guru"], english: "Students listen to teacher's advice." },
+      { malay: ["Kami", "menjaga", "kebersihan", "bilik", "darjah"], english: "We maintain the cleanliness of the classroom." },
+      { malay: ["Saya", "memakai", "baju", "seragam", "sekolah"], english: "I wear the school uniform." },
+      { malay: ["Bas", "sekolah", "sampai", "pada", "pukul", "tujuh"], english: "The school bus arrives at seven o'clock." },
+      { malay: ["Ayah", "membeli", "buah", "tembikai", "yang", "manis"], english: "Father buys a sweet watermelon." },
+      { malay: ["Kakak", "menyapu", "daun", "kering", "di", "taman"], english: "Older sister sweeps dry leaves in the garden." },
+      { malay: ["Mika", "menolong", "adik", "membuat", "kerja", "rumah"], english: "Mika helps younger brother do homework." },
+      { malay: ["Kelinci", "itu", "melompat", "dengan", "pantas"], english: "That rabbit jumps quickly." },
+      { malay: ["Kami", "menyanyi", "lagu", "bersama-sama"], english: "We sing songs together." },
+      { malay: ["Ibu", "memotong", "bawang", "guna", "pisau"], english: "Mother cuts onions using a knife." },
+      { malay: ["Semua", "murid", "duduk", "di", "kerusi"], english: "All students sit on chairs." }
+    ];
+
+    // --- 50 PENJODOH BILANGAN QUESTIONS ---
+    const rawPenjodoh = [
+      { item: "Dua ___ kucing", correct: "ekor", options: ["ekor", "buah", "batang", "orang"] },
+      { item: "Se___ pensel", correct: "batang", options: ["ekor", "buah", "batang", "keping"] },
+      { item: "Tiga ___ kereta", correct: "buah", options: ["orang", "buah", "ekor", "helai"] },
+      { item: "Se___ baju t-shirt", correct: "helai", options: ["helai", "batang", "buah", "ekor"] },
+      { item: "Dua ___ roti", correct: "keping", options: ["keping", "batang", "ekor", "orang"] },
+      { item: "Se___ epal", correct: "biji", options: ["biji", "helai", "batang", "ekor"] },
+      { item: "Se___ kasut", correct: "pasang", options: ["pasang", "buah", "biji", "keping"] },
+      { item: "Tiga ___ murid", correct: "orang", options: ["orang", "ekor", "buah", "batang"] },
+      { item: "Se___ majalah", correct: "naskhah", options: ["naskhah", "helai", "biji", "pasang"] },
+      { item: "Se___ bunga mawar", correct: "kuntum", options: ["kuntum", "batang", "buah", "helai"] },
+      { item: "Empat ___ burung", correct: "ekor", options: ["ekor", "biji", "orang", "buah"] },
+      { item: "Se___ poket baju", correct: "saku", options: ["saku", "helai", "keping", "batang"] },
+      { item: "Se___ pisau", correct: "bilah", options: ["bilah", "batang", "buah", "keping"] },
+      { item: "Se___ gunting", correct: "bilah", options: ["bilah", "pasang", "buah", "helai"] },
+      { item: "Se___ pokok", correct: "batang", options: ["batang", "buah", "ekor", "biji"] },
+      { item: "Se___ rumah", correct: "buah", options: ["buah", "batang", "keping", "orang"] },
+      { item: "Se___ kertas", correct: "keping", options: ["keping", "helai", "buah", "batang"] },
+      { item: "Se___ daun", correct: "helai", options: ["helai", "keping", "biji", "buah"] },
+      { item: "Dua ___ cermin mata", correct: "pasang", options: ["pasang", "buah", "keping", "biji"] },
+      { item: "Se___ guru", correct: "orang", options: ["orang", "ekor", "buah", "batang"] },
+      { item: "Se___ telur", correct: "biji", options: ["biji", "ekor", "buah", "keping"] },
+      { item: "Se___ limau", correct: "biji", options: ["biji", "buah", "batang", "helai"] },
+      { item: "Se___ sungai", correct: "batang", options: ["batang", "buah", "helai", "keping"] },
+      { item: "Se___ surat", correct: "pucuk", options: ["pucuk", "keping", "helai", "batang"] },
+      { item: "Se___ pistol", correct: "pucuk", options: ["pucuk", "bilah", "batang", "buah"] },
+      { item: "Se___ cincin", correct: "bentuk", options: ["bentuk", "biji", "buah", "pasang"] },
+      { item: "Se___ rantai", correct: "utas", options: ["utas", "bentuk", "batang", "helai"] },
+      { item: "Se___ tali", correct: "utas", options: ["utas", "batang", "helai", "keping"] },
+      { item: "Se___ kek", correct: "potong", options: ["potong", "keping", "biji", "buah"] },
+      { item: "Se___ daging", correct: "potong", options: ["potong", "keping", "ekor", "biji"] },
+      { item: "Se___ payung", correct: "kaki", options: ["kaki", "batang", "buah", "helai"] },
+      { item: "Se___ cendawan", correct: "kaki", options: ["kaki", "kuntum", "biji", "buah"] },
+      { item: "Se___ sikat pisang", correct: "sikat", options: ["sikat", "biji", "buah", "potong"] },
+      { item: "Se___ anggur", correct: "gugus", options: ["gugus", "biji", "buah", "potong"] },
+      { item: "Se___ kunci", correct: "jambak", options: ["jambak", "batang", "buah", "biji"] },
+      { item: "Se___ bunga", correct: "jambak", options: ["jambak", "kuntum", "helai", "biji"] },
+      { item: "Se___ biskut", correct: "keping", options: ["keping", "biji", "potong", "buah"] },
+      { item: "Se___ tikar", correct: "bidang", options: ["bidang", "helai", "keping", "buah"] },
+      { item: "Se___ tanah", correct: "bidang", options: ["bidang", "buah", "keping", "batang"] },
+      { item: "Se___ kain", correct: "kayu", options: ["kayu", "helai", "keping", "bidang"] },
+      { item: "Se___ jarum", correct: "batang", options: ["batang", "bilah", "pucuk", "buah"] },
+      { item: "Se___ tiang", correct: "batang", options: ["batang", "buah", "pucuk", "keping"] },
+      { item: "Se___ pembaris", correct: "batang", options: ["batang", "keping", "buah", "helai"] },
+      { item: "Se___ pemadam", correct: "biji", options: ["biji", "ketul", "buah", "keping"] },
+      { item: "Se___ ais", correct: "ketul", options: ["ketul", "biji", "keping", "potong"] },
+      { item: "Se___ batu", correct: "ketul", options: ["ketul", "biji", "buah", "batang"] },
+      { item: "Se___ sabun", correct: "ketul", options: ["ketul", "biji", "keping", "buah"] },
+      { item: "Se___ stoking", correct: "pasang", options: ["pasang", "helai", "keping", "buah"] },
+      { item: "Se___ kasut sukan", correct: "pasang", options: ["pasang", "buah", "biji", "keping"] },
+      { item: "Se___ nyamuk", correct: "ekor", options: ["ekor", "biji", "buah", "orang"] }
+    ];
+
+    // --- 50 IMBUHAN & KATA KERJA QUESTIONS ---
+    const rawKataKerja = [
+      { sentence: "Abang suka ___ buku cerita.", correct: "membaca", options: ["membaca", "menulis", "menyapu", "memasak"], english: "Older brother likes to read storybooks." },
+      { sentence: "Ibu ___ baju di dalam bilik.", correct: "melipat", options: ["melipat", "memandu", "memotong", "menjual"], english: "Mother folds clothes inside the room." },
+      { sentence: "Adik ___ tangan sebelum makan.", correct: "mencuci", options: ["mencuci", "membuang", "menolak", "menarik"], english: "Younger sibling washes hands before eating." },
+      { sentence: "Ayah sedang ___ kereta di halaman.", correct: "membasuh", options: ["membasuh", "membakar", "memanjat", "memotong"], english: "Father is washing the car in the yard." },
+      { sentence: "Kakak ___ sampah ke dalam tong sampah.", correct: "membuang", options: ["membuang", "membaca", "meminum", "membeli"], english: "Sister throws rubbish into the dustbin." },
+      { sentence: "Budak itu ___ kerana terjatuh.", correct: "menangis", options: ["menangis", "ketawa", "menyanyi", "berlari"], english: "That kid is crying because of falling." },
+      { sentence: "Murid-murid ___ lagu kebangsaan.", correct: "menyanyikan", options: ["menyanyikan", "menuliskan", "memasak", "melukis"], english: "Students sing the national anthem." },
+      { sentence: "Pak Cik Samad ___ sayur di pasar.", correct: "menjual", options: ["menjual", "membeli", "meminjam", "memegang"], english: "Uncle Samad sells vegetables at the market." },
+      { sentence: "Cikgu Mei ___ gambar di papan tulis.", correct: "melukis", options: ["melukis", "memandu", "memancing", "menyapu"], english: "Teacher Mei draws a picture on the board." },
+      { sentence: "Kucing itu ___ pokok dengan cepat.", correct: "memanjat", options: ["memanjat", "berenang", "terbang", "memasak"], english: "That cat climbs the tree quickly." },
+      { sentence: "Ayah ___ surat khabar setiap pagi.", correct: "membaca", options: ["membaca", "menulis", "membeli", "menyimpan"], english: "Father reads the newspaper every morning." },
+      { sentence: "Ibu ___ sup ayam yang sedap.", correct: "memasak", options: ["memasak", "membakar", "potong", "minum"], english: "Mother cooks delicious chicken soup." },
+      { sentence: "Adik ___ air epal yang segar.", correct: "meminum", options: ["meminum", "makan", "membuang", "membeli"], english: "Younger sibling drinks fresh apple juice." },
+      { sentence: "Kami ___ bola di padang.", correct: "bermain", options: ["bermain", "belajar", "berlari", "berjalan"], english: "We play ball at the field." },
+      { sentence: "Murid-murid ___ di atas kerusi.", correct: "duduk", options: ["duduk", "berdiri", "tidur", "berlari"], english: "Students sit on chairs." },
+      { sentence: "Kakak ___ baju baharu di kedai.", correct: "membeli", options: ["membeli", "menjual", "meminjam", "membuang"], english: "Older sister buys new clothes at the shop." },
+      { sentence: "Cikgu ___ soalan kepada murid.", correct: "bertanya", options: ["bertanya", "menjawab", "membaca", "menulis"], english: "Teacher asks questions to students." },
+      { sentence: "Saya ___ kasut sebelum masuk.", correct: "menanggalkan", options: ["menanggalkan", "memakai", "membeli", "mencuci"], english: "I remove shoes before entering." },
+      { sentence: "Abang ___ basikal ke sekolah.", correct: "menunggang", options: ["menunggang", "memandu", "menarik", "menolak"], english: "Older brother rides a bicycle to school." },
+      { sentence: "Kelinci ___ dengan sangat laju.", correct: "melompat", options: ["melompat", "berenang", "terbang", "merangkak"], english: "The rabbit jumps very fast." },
+      { sentence: "Datuk ___ pokok bunga di taman.", correct: "menanam", options: ["menanam", "memotong", "membuang", "membakar"], english: "Grandfather plants flowers in the garden." },
+      { sentence: "Ayah ___ pintu rumah pada waktu malam.", correct: "mengunci", options: ["mengunci", "membuka", "menolak", "menarik"], english: "Father locks the house door at night." },
+      { sentence: "Ibu ___ kek coklat untuk adik.", correct: "bina/membuat", options: ["membuat", "membeli", "memakan", "memotong"], english: "Mother makes a chocolate cake for sibling." },
+      { sentence: "Murid-murid ___ ke sekolah setiap pagi.", correct: "berjalan", options: ["berjalan", "berlari", "berenang", "terbang"], english: "Students walk to school every morning." },
+      { sentence: "Nenek ___ cerita tradisi kepada kami.", correct: "menceritakan", options: ["menceritakan", "membaca", "menulis", "mendengar"], english: "Grandmother tells traditional stories to us." },
+      { sentence: "Saya ___ pensel warna di dalam beg.", correct: "menyimpan", options: ["menyimpan", "membuang", "membeli", "meminjam"], english: "I keep color pencils in the bag." },
+      { sentence: "Burung ___ di udara dengan bebas.", correct: "terbang", options: ["terbang", "berenang", "melompat", "berjalan"], english: "Birds fly freely in the air." },
+      { sentence: "Abang ___ tali kasutnya sendiri.", correct: "mengikat", options: ["mengikat", "memotong", "membuang", "membakar"], english: "Older brother ties his own shoelaces." },
+      { sentence: "Kakak ___ lantai yang kotor.", correct: "menyapu", options: ["menyapu", "mencuci", "memotong", "melipat"], english: "Older sister sweeps the dirty floor." },
+      { sentence: "Budak itu ___ kerana gembira.", correct: "ketawa", options: ["ketawa", "menangis", "marah", "sedih"], english: "That kid laughs because of happiness." },
+      { sentence: "Ibu ___ buah epal menggunakan pisau.", correct: "memotong", options: ["memotong", "memasak", "membakar", "membeli"], english: "Mother cuts apples using a knife." },
+      { sentence: "Ayah ___ bas di stesen bas.", correct: "menunggu", options: ["menunggu", "memandu", "menunggang", "membeli"], english: "Father waits for the bus at the station." },
+      { sentence: "Kami ___ basikal bersama kawan-kawan.", correct: "menunggang", options: ["menunggang", "memandu", "menarik", "menolak"], english: "We ride bicycles with friends." },
+      { sentence: "Mika ___ kerja rumah dengan rajin.", correct: "menyiapkan", options: ["menyiapkan", "membuang", "membaca", "menulis"], english: "Mika completes homework diligently." },
+      { sentence: "Cikgu ___ jawapan yang betul di papan hitam.", correct: "menulis", options: ["menulis", "membaca", "lukis", "padam"], english: "Teacher writes the correct answer on the blackboard." },
+      { sentence: "Murid-murid ___ lagu sekolah.", correct: "menyanyi", options: ["menyanyi", "menari", "membaca", "berlari"], english: "Students sing the school song." },
+      { sentence: "Ibu ___ baju yang telah kering.", correct: "menggosok", options: ["menggosok", "membuat", "membeli", "membuang"], english: "Mother irons the dry clothes." },
+      { sentence: "Adik ___ air di dalam gelas.", correct: "menuang", options: ["menuang", "meminum", "membuang", "mencuci"], english: "Younger sibling pours water into a glass." },
+      { sentence: "Abang ___ pokok kelapa yang tinggi.", correct: "memanjat", options: ["memanjat", "melompat", "berlari", "berenang"], english: "Older brother climbs the tall coconut tree." },
+      { sentence: "Kakak ___ gambar bunga yang cantik.", correct: "warnakan/warnai", options: ["Mewarnai", "Melukis", "Memotong", "Membuang"], english: "Sister colors a beautiful flower picture." },
+      { sentence: "Ayah ___ pokok di halaman rumah.", correct: "menebang", options: ["menebang", "menyiram", "menanam", "memetik"], english: "Father cuts down a tree in the yard." },
+      { sentence: "Nenek ___ sayur di kebun.", correct: "memetik", options: ["memetik", "memotong", "membakar", "membuang"], english: "Grandmother picks vegetables in the garden." },
+      { sentence: "Kami ___ zoo negara pada hari Ahad.", correct: "melawat", options: ["melawat", "melihat", "membeli", "bermain"], english: "We visit the national zoo on Sunday." },
+      { sentence: "Adik ___ bola ke arah gol.", correct: "menendang", options: ["menendang", "memukul", "memegang", "membuang"], english: "Sibling kicks the ball towards the goal." },
+      { sentence: "Pemain itu ___ bola dengan raket.", correct: "memukul", options: ["memukul", "menendang", "menarik", "menolak"], english: "That player hits the ball with a racket." },
+      { sentence: "Saya ___ jawapan yang betul.", correct: "memilih", options: ["memilih", "membaca", "menulis", "padam"], english: "I choose the correct answer." },
+      { sentence: "Guru ___ murid yang rajin.", correct: "memuji", options: ["memuji", "marah", "melihat", "membaca"], english: "Teacher praises hardworking students." },
+      { sentence: "Abang ___ meja yang berat itu.", correct: "menolak", options: ["menolak", "menarik", "membuang", "memukul"], english: "Older brother pushes that heavy table." },
+      { sentence: "Adik ___ pintu untuk masuk.", correct: "menarik", options: ["menarik", "menolak", "mengunci", "memukul"], english: "Younger sibling pulls the door to enter." },
+      { sentence: "Ibu ___ wang di dalam bank.", correct: "menyimpan", options: ["menyimpan", "membuang", "membeli", "meminjam"], english: "Mother saves money in the bank." }
+    ];
+
+    // State Active Arrays
+    let activeSentences = [];
+    let activePenjodoh = [];
+    let activeKataKerja = [];
+
+    let currentBA = 0;
+    let currentPB = 0;
+    let currentKK = 0;
+
+    // TAB MANAGEMENT
+    function showTab(id) {
+      document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+
+      if (id === 'bina-ayat') {
+        document.getElementById('btn-ba').classList.add('active');
+        initBinaAyat();
+      }
+      if (id === 'penjodoh') {
+        document.getElementById('btn-pb').classList.add('active');
+        initPenjodoh();
+      }
+      if (id === 'kata-kerja') {
+        document.getElementById('btn-kk').classList.add('active');
+        initKataKerja();
+      }
+    }
+
+    // --- 1. BINA AYAT LOGIC ---
+    function initBinaAyat() {
+      if (activeSentences.length === 0 || currentBA === 0) {
+        activeSentences = shuffleArray(rawSentences);
+        currentBA = 0;
+      }
+
+      const target = document.getElementById('target-zone');
+      const pool = document.getElementById('pool-zone');
+      const feedback = document.getElementById('ba-feedback');
+      document.getElementById('ba-progress').innerText = `Question ${currentBA + 1} / ${activeSentences.length}`;
+      
+      target.innerHTML = '';
+      pool.innerHTML = '';
+      feedback.innerText = '';
+
+      let data = activeSentences[currentBA];
+      document.getElementById('ba-english').innerText = `English translation: "${data.english}"`;
+
+      let shuffledWords = shuffleArray(data.malay);
+      shuffledWords.forEach(word => {
+        let tile = document.createElement('div');
+        tile.className = 'word-tile';
+        tile.innerText = word;
+        tile.onclick = () => {
+          if (tile.parentElement === pool) {
+            target.appendChild(tile);
+          } else {
+            pool.appendChild(tile);
+          }
+        };
+        pool.appendChild(tile);
+      });
+    }
+
+    function checkSentence() {
+      const targetWords = Array.from(document.getElementById('target-zone').children).map(c => c.innerText);
+      const correctWords = activeSentences[currentBA].malay;
+      const feedback = document.getElementById('ba-feedback');
+
+      if (JSON.stringify(targetWords) === JSON.stringify(correctWords)) {
+        feedback.style.color = 'var(--success)';
+        feedback.innerText = 'Tahniah! Betul! 🎉';
+        speak(correctWords.join(' '));
+        addScore(15);
+        currentBA = (currentBA + 1) % activeSentences.length;
+        setTimeout(initBinaAyat, 1500);
+      } else {
+        feedback.style.color = 'var(--error)';
+        feedback.innerText = 'Cuba lagi! Susun kata mengikut urutan yang betul.';
+      }
+    }
+
+    // --- 2. PENJODOH BILANGAN LOGIC ---
+    function initPenjodoh() {
+      if (activePenjodoh.length === 0 || currentPB === 0) {
+        activePenjodoh = shuffleArray(rawPenjodoh);
+        currentPB = 0;
+      }
+
+      const itemEl = document.getElementById('pb-item');
+      const optsEl = document.getElementById('pb-options');
+      const feedback = document.getElementById('pb-feedback');
+      document.getElementById('pb-progress').innerText = `Question ${currentPB + 1} / ${activePenjodoh.length}`;
+
+      feedback.innerText = '';
+      optsEl.innerHTML = '';
+
+      let current = activePenjodoh[currentPB];
+      itemEl.innerText = current.item;
+
+      let shuffledOpts = shuffleArray(current.options);
+      shuffledOpts.forEach(opt => {
+        let btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => {
+          if (opt === current.correct) {
+            feedback.style.color = 'var(--success)';
+            feedback.innerText = 'Betul! 👍';
+            speak(current.item.replace('___', opt));
+            addScore(10);
+            currentPB = (currentPB + 1) % activePenjodoh.length;
+            setTimeout(initPenjodoh, 1200);
+          } else {
+            feedback.style.color = 'var(--error)';
+            feedback.innerText = 'Salah! Cuba lagi.';
+          }
+        };
+        optsEl.appendChild(btn);
+      });
+    }
+
+    // --- 3. IMBUHAN & KATA KERJA LOGIC ---
+    function initKataKerja() {
+      if (activeKataKerja.length === 0 || currentKK === 0) {
+        activeKataKerja = shuffleArray(rawKataKerja);
+        currentKK = 0;
+      }
+
+      const sentEl = document.getElementById('kk-sentence');
+      const engEl = document.getElementById('kk-english');
+      const optsEl = document.getElementById('kk-options');
+      const feedback = document.getElementById('kk-feedback');
+      document.getElementById('kk-progress').innerText = `Question ${currentKK + 1} / ${activeKataKerja.length}`;
+
+      feedback.innerText = '';
+      optsEl.innerHTML = '';
+
+      let current = activeKataKerja[currentKK];
+      sentEl.innerText = current.sentence;
+      engEl.innerText = `English: "${current.english}"`;
+
+      let shuffledOpts = shuffleArray(current.options);
+      shuffledOpts.forEach(opt => {
+        let btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => {
+          if (opt === current.correct) {
+            feedback.style.color = 'var(--success)';
+            feedback.innerText = 'Betul! 🌟';
+            speak(current.sentence.replace('___', opt));
+            addScore(10);
+            currentKK = (currentKK + 1) % activeKataKerja.length;
+            setTimeout(initKataKerja, 1200);
+          } else {
+            feedback.style.color = 'var(--error)';
+            feedback.innerText = 'Salah! Pilihlah kata kerja yang tepat.';
+          }
+        };
+        optsEl.appendChild(btn);
+      });
+    }
+
+    // Initialize initial tab
+    initBinaAyat();
+  </script>
+</body>
+</html>
