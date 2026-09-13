@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PSLE Maths Challenge Pack 2</title>
+<style>
+:root{
+  --bg1:#dcfce7;
+  --bg2:#e0f2fe;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{display:inline-block;background:#dcfce7;color:#15803d;padding:8px 12px;border-radius:999px;font-weight:900;font-size:.9rem}
+.hero{background:linear-gradient(135deg,#059669,#2563eb);color:#fff;padding:20px;border-radius:24px;box-shadow:0 14px 34px rgba(5,150,105,.18)}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);border-radius:18px;padding:12px;text-align:center;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:0 10px 24px rgba(15,23,42,.08);margin:12px 0}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#86efac}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:10px 0}
+.progress div{height:100%;background:linear-gradient(90deg,#059669,#2563eb)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.btn{border:0;border-radius:16px;padding:12px 16px;font-weight:1000;cursor:pointer}
+.primary{background:linear-gradient(135deg,#059669,#2563eb);color:#fff}
+.secondary{background:#e2e8f0;color:#0f172a}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{border:3px solid #bbf7d0;background:#f7fffb;border-radius:18px;padding:14px;font-size:1rem;font-weight:900;text-align:left;cursor:pointer}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{margin-top:14px;padding:14px;border-radius:18px;font-weight:900}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{border:2px solid #e2e8f0;border-radius:18px;padding:12px;margin:10px 0;background:#fbfdff}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{background:#fff1f2;border:2px solid #f43f5e;border-radius:16px;padding:16px;font-weight:700;white-space:pre-wrap;font-family:monospace}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error", function(e){
+  const app = document.getElementById("app");
+  if (app) {
+    app.innerHTML = '<div class="container"><div class="error-box">Page error: ' + (e.message || "Unknown error") + '</div></div>';
+  }
+});
+</script>
+
+<script>
+const TOPICS = [
+  {
+    id: "advanced-number",
+    title: "Advanced Number Sense",
+    emoji: "🔢",
+    blurb: "Large numbers, rounding, order of operations and number patterns.",
+    notes: [
+      "Check place value carefully.",
+      "Use brackets and order of operations."
+    ],
+    qs: [
+      ["A number rounds to 80,000 to the nearest ten thousand. Which could it be?",["84,999","74,999","85,000","70,000"],"Numbers from 75,000 to 84,999 round to 80,000."],
+      ["What is the value of 6 in 964,025?",["60,000","6,000","600","600,000"],"6 is in the ten-thousands place."],
+      ["How many hundreds are there in 703,200?",["7,032","703","70,320","703,200"],"703,200 ÷ 100 = 7,032."],
+      ["What is the greatest 7-digit number using 5, 0, 8, 1, 9, 3, 7 once?",["9,875,310","9,875,130","9,873,510","9,857,310"],"Arrange digits from largest to smallest."],
+      ["What is the smallest 7-digit number using 5, 0, 8, 1, 9, 3, 7 once?",["1,035,789","1,305,789","1,003,578","1,053,789"],"Start with 1, then 0, then the rest in order."],
+      ["What is 12 × (8 + 4) ÷ 3?",["48","36","72","16"],"Brackets first: 12 × 12 ÷ 3."],
+      ["What is 100 - (25 + 15) × 2?",["20","130","60","80"],"25 + 15 = 40, × 2 = 80, 100 - 80 = 20."],
+      ["A number divided by 12 gives quotient 15 and remainder 7. What is the number?",["187","180","194","175"],"12 × 15 + 7 = 187."],
+      ["Which is the best estimate of 4,950 × 203?",["About 1,000,000","About 100,000","About 5,000","About 10,000"],"5,000 × 200 = 1,000,000."],
+      ["The sum of three consecutive even numbers is 78. What is the largest?",["28","26","24","30"],"Middle number is 26, largest is 28."]
+    ]
+  },
+  {
+    id: "advanced-fractions",
+    title: "Advanced Fractions",
+    emoji: "🍕",
+    blurb: "Mixed numbers, fraction of remainder and multi-step fraction reasoning.",
+    notes: [
+      "Use common denominators.",
+      "For remainder questions, find the remaining part first."
+    ],
+    qs: [
+      ["What is 7/9 of 135?",["105","95","115","135"],"135 ÷ 9 = 15, 15 × 7 = 105."],
+      ["What is 3 3/8 + 2 5/6?",["6 5/24","6 8/14","5 8/14","5 5/24"],"3 9/24 + 2 20/24 = 6 5/24."],
+      ["What is 5 - 2 3/7?",["2 4/7","3 4/7","2 3/7","3 3/7"],"5 = 35/7, 35/7 - 17/7 = 18/7."],
+      ["A tank is 1/3 full. Adding 20 L makes it 1/2 full. What is the capacity?",["120 L","60 L","80 L","100 L"],"1/6 of the tank is 20 L."],
+      ["A girl spends 2/5 of her money, then 1/3 of the remainder. She has $72 left. How much did she have?",["$180","$120","$108","$96"],"2/5 of the original amount is left, so 2/5 = 72."],
+      ["Which fraction is the largest?",["3/4","11/15","7/10","5/8"],"3/4 = 0.75, the largest."],
+      ["If 3/8 of a number is 27, what is the number?",["72","81","64","54"],"27 ÷ 3 = 9, 9 × 8 = 72."],
+      ["How many 3/4 are there in 6?",["8","4","6","12"],"6 ÷ 3/4 = 6 × 4/3 = 8."],
+      ["A ribbon of length 5/6 m is cut into pieces of 1/12 m each. How many pieces?",["10","8","12","5"],"5/6 ÷ 1/12 = 10."],
+      ["Arrange in descending order:",["9/10, 7/8, 5/6, 4/5","9/10, 5/6, 7/8, 4/5","7/8, 9/10, 5/6, 4/5","4/5, 5/6, 7/8, 9/10"],"0.9 > 0.875 > 0.833 > 0.8."]
+    ]
+  },
+  {
+    id: "decimals-percentage-2",
+    title: "Decimals and Percentage 2",
+    emoji: "💯",
+    blurb: "Decimal operations, percentage increase/discount and financial reasoning.",
+    notes: [
+      "Line up decimal points.",
+      "For percentage increase, multiply by 1 + percentage."
+    ],
+    qs: [
+      ["What is 0.048 × 1000?",["48","4.8","480","0.48"],"Move the decimal point three places right."],
+      ["What is 306.5 ÷ 100?",["3.065","30.65","0.3065","3065"],"Move the decimal point two places left."],
+      ["What is 7.05 - 2.685?",["4.365","5.365","4.635","4.565"],"Line up decimals: 7.050 - 2.685."],
+      ["What is 0.375 + 0.625?",["1","0.9","1.025","0.975"],"0.375 + 0.625 = 1.000."],
+      ["What is 3/8 as a decimal?",["0.375","0.38","0.3","0.83"],"3 ÷ 8 = 0.375."],
+      ["What is 18% of 250?",["45","36","54","18"],"0.18 × 250 = 45."],
+      ["A price of $120 is increased by 12.5%. What is the new price?",["$135","$132","$125","$150"],"12.5% = 1/8, increase is $15."],
+      ["After a 10% discount, a bag costs $90. What was the original price?",["$100","$81","$99","$110"],"90 ÷ 0.9 = 100."],
+      ["An 8% tax is added to $45. What is the total?",["$48.60","$53","$45.80","$48.08"],"45 × 1.08 = 48.60."],
+      ["A shop sold 80 items. 35% were pens and the rest pencils. How many pencils?",["52","28","35","48"],"65% of 80 = 52."]
+    ]
+  },
+  {
+    id: "ratio-rate-speed-2",
+    title: "Ratio, Rate and Speed 2",
+    emoji: "🚗",
+    blurb: "Multi-part ratios, unit rate, meeting problems and time calculations.",
+    notes: [
+      "Use parts for ratio questions.",
+      "Distance = Speed × Time."
+    ],
+    qs: [
+      ["Simplify 0.4 : 0.6.",["2:3","3:2","4:6 only","1:2"],"Multiply by 10 then simplify 4:6."],
+      ["Two numbers are in the ratio 5:8. Their total is 104. What is the smaller number?",["40","64","52","30"],"5 + 8 = 13 parts, 104 ÷ 13 = 8, 5 × 8 = 40."],
+      ["A:B = 3:4 and B:C = 4:7. What is A:C?",["3:7","7:3","3:4","4:7"],"B is the same in both ratios."],
+      ["$144 is shared in the ratio 2:3:4. What is the largest share?",["$64","$48","$32","$96"],"2 + 3 + 4 = 9 parts, 144 ÷ 9 = 16, 4 × 16 = 64."],
+      ["The ratio of adults to children is 7:3. There are 28 adults. How many children?",["12","21","9","14"],"28 ÷ 7 = 4, 3 × 4 = 12."],
+      ["A machine prints 360 pages in 12 minutes. How many pages in 45 minutes?",["1350","1200","900","1500"],"Rate = 30 pages/min, 30 × 45 = 1350."],
+      ["A cyclist rides at 18 km/h for 40 minutes. How far does he travel?",["12 km","18 km","9 km","7.2 km"],"40 min = 2/3 h, 18 × 2/3 = 12."],
+      ["Two towns are 180 km apart. Car A travels at 50 km/h and Car B at 40 km/h towards each other. When do they meet?",["After 2 hours","After 3 hours","After 1.5 hours","After 4 hours"],"180 ÷ 90 = 2."],
+      ["A car leaves at 09:30 and travels 200 km at 80 km/h. What time does it arrive?",["12:00","11:30","12:30","10:30"],"Time = 2.5 hours."],
+      ["A tap fills 2.4 L in 3 minutes. How long to fill 10 L?",["12.5 minutes","12 minutes","13 minutes","10 minutes"],"Rate = 0.8 L/min, 10 ÷ 0.8 = 12.5."]
+    ]
+  },
+  {
+    id: "algebra-patterns-2",
+    title: "Algebra and Patterns 2",
+    emoji: "🔤",
+    blurb: "Expressions, equations, sequences and algebraic reasoning.",
+    notes: [
+      "Simplify before solving.",
+      "Look for the rule in a sequence."
+    ],
+    qs: [
+      ["If n = 8, what is 3n² - 4?",["188","184","196","20"],"3 × 64 - 4 = 188."],
+      ["Simplify 5(2x - 3) + 4x.",["14x - 15","10x - 15","14x - 3","9x - 15"],"10x - 15 + 4x = 14x - 15."],
+      ["Solve 2(x + 5) = 26.",["8","13","3","10"],"2x + 10 = 26, 2x = 16."],
+      ["Solve 3x - 7 = 2x + 9.",["16","2","23","9"],"3x - 2x = 9 + 7."],
+      ["What is the next number: 3, 7, 15, 31, ___?",["63","62","47","32"],"Multiply by 2 and add 1."],
+      ["What is the next number: 2, 6, 18, 54, ___?",["162","108","72","216"],"Multiply by 3."],
+      ["The sequence 5, 9, 13, 17 has nth term 4n + 1. What is the 10th term?",["41","40","39","45"],"4 × 10 + 1 = 41."],
+      ["Ali is x years old. His father is 3x + 5 years old. Their total age is 45. How old is Ali?",["10","12","8","15"],"x + 3x + 5 = 45, x = 10."],
+      ["A rectangle has length 2x + 1 and width x. Its perimeter is 44. What is x?",["7","8","6","9"],"2(3x + 1) = 44, x = 7."],
+      ["If a + b = 12 and a - b = 4, what is a?",["8","6","10","4"],"Add the equations: 2a = 16."]
+    ]
+  },
+  {
+    id: "angles-geometry-2",
+    title: "Angles and Geometry 2",
+    emoji: "📐",
+    blurb: "Angle sums, special triangles, quadrilaterals and geometry reasoning.",
+    notes: [
+      "Triangle angles sum to 180°.",
+      "Quadrilateral angles sum to 360°."
+    ],
+    qs: [
+      ["A triangle has one angle twice another and the third angle 30°. What is the largest angle?",["100°","50°","80°","120°"],"x + 2x + 30 = 180, x = 50."],
+      ["An isosceles triangle has perimeter 32 cm. Its equal sides are 12 cm each. What is the base?",["8 cm","20 cm","10 cm","6 cm"],"32 - 24 = 8."],
+      ["Quadrilateral angles are in the ratio 1:2:3:4. What is the largest angle?",["144°","120°","90°","72°"],"360 ÷ 10 = 36, 4 × 36 = 144."],
+      ["Two adjacent angles of a parallelogram are 2x and 3x. What is the smaller angle?",["72°","36°","108°","54°"],"2x + 3x = 180, x = 36."],
+      ["What is the sum of the interior angles of a pentagon?",["540°","360°","720°","450°"],"Pentagon angle sum is 540°."],
+      ["Angles at a point are 2x, 3x, 4x and 90°. What is 2x?",["60°","30°","90°","120°"],"9x + 90 = 360, x = 30."],
+      ["Two exterior angles of a triangle are 110° and 120°. What is the third exterior angle?",["130°","50°","70°","230°"],"Exterior angles sum to 360°."],
+      ["A diagonal of a square forms a triangle. What is one acute angle of that triangle?",["45°","90°","60°","30°"],"Square angles split into 45°."],
+      ["A right triangle has one acute angle of 37°. What is the other acute angle?",["53°","143°","43°","63°"],"90 - 37 = 53."],
+      ["Which quadrilateral has exactly one pair of parallel sides?",["Trapezium","Parallelogram","Rhombus","Rectangle"],"A trapezium has one pair."]
+    ]
+  },
+  {
+    id: "area-perimeter-2",
+    title: "Area, Perimeter and Circles 2",
+    emoji: "🧩",
+    blurb: "Composite figures, paths, semicircles and circle applications. Use π = 3.14.",
+    notes: [
+      "Break shapes into simpler parts.",
+      "Area of circle = πr²."
+    ],
+    qs: [
+      ["A rectangle has area 132 cm² and length 12 cm. What is its perimeter?",["46 cm","22 cm","132 cm","11 cm"],"Width = 11, perimeter = 2 × 23."],
+      ["A square has perimeter 60 cm. What is its area?",["225 cm²","60 cm²","15 cm²","900 cm²"],"Side = 15, area = 225."],
+      ["A triangle has area 84 cm² and base 14 cm. What is its height?",["12 cm","6 cm","24 cm","7 cm"],"84 × 2 ÷ 14 = 12."],
+      ["A shape is made of an 18 cm by 12 cm rectangle and a semicircle attached to the 12 cm side. Total area?",["272.52 cm²","216 cm²","56.52 cm²","329.04 cm²"],"Rectangle 216 + semicircle 56.52."],
+      ["A circle has area 153.86 cm². What is its radius?",["7 cm","49 cm","14 cm","3.5 cm"],"153.86 ÷ 3.14 = 49, radius = 7."],
+      ["What is the circumference of a circle with radius 10 cm?",["62.8 cm","31.4 cm","314 cm","20 cm"],"2 × 3.14 × 10 = 62.8."],
+      ["A square garden has side 20 m. A 2 m wide path is built all around it outside. What is the area of the path?",["176 m²","400 m²","576 m²","84 m²"],"Outer 24 × 24 = 576, inner 400."],
+      ["What is the area of a quarter circle with radius 14 cm?",["153.86 cm²","615.44 cm²","43.96 cm²","307.72 cm²"],"1/4 × 3.14 × 14 × 14."],
+      ["What is the perimeter of a semicircle with radius 7 cm?",["35.98 cm","21.98 cm","43.96 cm","14 cm"],"Arc 21.98 + diameter 14."],
+      ["A circular pond has diameter 30 m. A fence around it costs $5 per metre. What is the cost?",["$471","$94.20","$150","$314"],"Circumference = 94.2, cost = 94.2 × 5."]
+    ]
+  },
+  {
+    id: "volume-2",
+    title: "Volume and Displacement 2",
+    emoji: "📦",
+    blurb: "Cuboids, cubes, capacity, displacement and multi-step volume problems.",
+    notes: [
+      "1 L = 1000 cm³.",
+      "Volume = base area × height."
+    ],
+    qs: [
+      ["A cuboid has volume 720 cm³, length 12 cm and width 8 cm. What is its height?",["7.5 cm","6 cm","8 cm","9 cm"],"720 ÷ 96 = 7.5."],
+      ["A cube has volume 1000 cm³. What is its side?",["10 cm","100 cm","20 cm","5 cm"],"10 × 10 × 10 = 1000."],
+      ["A tank is 60 cm by 40 cm by 35 cm. What is its capacity?",["84 L","8.4 L","840 L","8400 L"],"60 × 40 × 35 = 84,000 cm³."],
+      ["Water level rises from 450 mL to 720 mL when an object is added. What is the volume of the object?",["270 cm³","1170 cm³","450 cm³","720 cm³"],"720 - 450 = 270."],
+      ["How many 5 cm cubes fit into a 20 cm by 15 cm by 10 cm box?",["24","12","48","60"],"4 × 3 × 2 = 24."],
+      ["A container has base area 150 cm² and water height 12 cm. What is the volume of water?",["1800 cm³","162 cm³","180 cm³","18,000 cm³"],"150 × 12 = 1800."],
+      ["Two cubes each have side 9 cm. What is their total volume?",["1458 cm³","729 cm³","81 cm³","2187 cm³"],"Each cube is 729 cm³."],
+      ["What is 2.75 m³ in litres?",["2750 L","275 L","27,500 L","27.5 L"],"1 m³ = 1000 L."],
+      ["A tank has base 25 cm by 16 cm and contains 20 L of water. What is the height of the water?",["50 cm","20 cm","80 cm","25 cm"],"20 L = 20,000 cm³, 20,000 ÷ 400 = 50."],
+      ["An object is placed in a rectangular container 20 cm by 15 cm. The water level rises by 3 cm. What is the volume of the object?",["900 cm³","60 cm³","300 cm³","45 cm³"],"20 × 15 × 3 = 900."]
+    ]
+  },
+  {
+    id: "data-2",
+    title: "Data, Average and Interpretation",
+    emoji: "📊",
+    blurb: "Mean, median, mode, range, pie charts and graph reasoning.",
+    notes: [
+      "Mean = total ÷ number of values.",
+      "Pie chart angles compare parts of 360°."
+    ],
+    qs: [
+      ["What is the mean of 14, 18, 22 and 26?",["20","80","18","22"],"80 ÷ 4 = 20."],
+      ["The mean of five numbers is 24. What is their total?",["120","24","29","100"],"24 × 5 = 120."],
+      ["Four numbers have average 15. A fifth number 25 is added. What is the new average?",["17","16","20","15"],"Total 60 + 25 = 85, 85 ÷ 5 = 17."],
+      ["What is the median of 2.5, 3.1, 4.0, 4.8, 5.2?",["4.0","3.1","4.8","2.5"],"Middle value is 4.0."],
+      ["For the data 2, 4, 4, 5, 6, 4, 7, what are the mode and median?",["Mode 4, median 4","Mode 4, median 5","Mode 5, median 4","Mode 4, median 6"],"4 appears most and is the middle value."],
+      ["What is the range of 0.5, 1.25, 3.75 and 2.5?",["3.25","4.25","2.5","1.25"],"3.75 - 0.5 = 3.25."],
+      ["In a line graph, the steepest upward section means:",["Greatest rate of increase","Highest value only","No change","Smallest value"],"Steepness shows rate of change."],
+      ["A pie chart sector has angle 45°. What fraction of the whole does it represent?",["1/8","1/4","1/6","1/12"],"45 ÷ 360 = 1/8."],
+      ["In a survey of 240 pupils, 37.5% choose science. How many choose science?",["90","37","150","80"],"37.5% = 3/8, 240 × 3/8 = 90."],
+      ["A data set has mean 10. If every value is multiplied by 3, what is the new mean?",["30","10","13","3"],"The mean is also multiplied by 3."]
+    ]
+  },
+  {
+    id: "heuristics-2",
+    title: "Advanced Heuristics Word Problems",
+    emoji: "🧠",
+    blurb: "Working backwards, constants, assumptions, ratio changes and multi-step reasoning.",
+    notes: [
+      "Identify what stays constant.",
+      "Use assumptions for excess/shortage problems."
+    ],
+    qs: [
+      ["A number is doubled, then 7 is subtracted. The result is 19. What is the number?",["13","12","26","6"],"Work backwards: (19 + 7) ÷ 2."],
+      ["A and B have $120 altogether. After A gives B $20, B has twice as much as A. How much did A have at first?",["$60","$40","$80","$50"],"After: A has $40, B has $80."],
+      ["A mother is 5 times as old as her daughter. The difference in their ages is 32. How old is the daughter?",["8","32","40","6"],"5 parts - 1 part = 4 parts = 32."],
+      ["In a quiz, 4 marks are given for each correct answer and 1 mark is deducted for each wrong answer. There are 20 questions. A pupil scores 55 marks. How many answers are correct?",["15","14","16","12"],"5 × correct - 20 = 55."],
+      ["Sweets are put into packets. If 6 sweets are put in each packet, 4 are left. If 8 sweets are put in each packet, 6 more are needed. How many sweets are there?",["34","30","28","40"],"6p + 4 = 8p - 6, p = 5, sweets = 34."],
+      ["The ratio of boys to girls is 3:5. After 6 girls leave, the ratio becomes 3:4. How many boys are there?",["18","24","12","30"],"Let boys 3u and girls 5u. 3u/(5u - 6) = 3/4."],
+      ["Car A travels at 60 km/h. One hour later, Car B travels at 80 km/h on the same road. How long after B starts will B catch A?",["3 hours","2 hours","4 hours","1 hour"],"A has 60 km head start, relative speed 20 km/h."],
+      ["A shop sold 200 shirts. 30% were red. The rest were blue and black in the ratio 3:4. How many black shirts?",["80","60","140","40"],"Remaining 140, black is 4/7 of 140."],
+      ["A rectangle has length x + 3 and width x. Its area is 88 cm². What is its length?",["11 cm","8 cm","14 cm","10 cm"],"x(x + 3) = 88, x = 8."],
+      ["A girl reads 1/5 of a book on day 1 and 1/4 of the remainder on day 2. She has 60 pages left. How many pages are in the book?",["100","80","120","90"],"Day 2 reads 1/5 of the whole, leaving 3/5 = 60."]
+    ]
+  }
+];
+
+const QUESTIONS = [];
+TOPICS.forEach(topic => {
+  topic.qs.forEach((item, index) => {
+    QUESTIONS.push({
+      id: topic.id + "-" + (index + 1),
+      topic: topic.id,
+      q: item[0],
+      options: item[1],
+      exp: item[2]
+    });
+  });
+});
+
+const STORAGE_KEY = "psleMathsChallengePack2";
+const app = document.getElementById("app");
+
+let progress = loadProgress();
+let state = {
+  questions: [],
+  index: 0,
+  correct: 0,
+  answered: false,
+  title: "",
+  misses: []
+};
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { attempts: {}, correct: {}, wrong: [] };
+    const data = JSON.parse(raw);
+    return {
+      attempts: data.attempts || {},
+      correct: data.correct || {},
+      wrong: data.wrong || []
+    };
+  } catch (error) {
+    return { attempts: {}, correct: {}, wrong: [] };
+  }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+  } catch (error) {}
+}
+
+function esc(value) {
+  return String(value).replace(/[&<>"']/g, char => {
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char];
+  });
+}
+
+function shuffle(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function prepareQuestions(list) {
+  return list.map(q => {
+    const optionObjects = q.options.map((text, index) => ({
+      text,
+      correct: index === 0
+    }));
+    const shuffled = shuffle(optionObjects);
+    return {
+      ...q,
+      options: shuffled.map(o => o.text),
+      answer: shuffled.findIndex(o => o.correct)
+    };
+  });
+}
+
+function getTopic(id) {
+  return TOPICS.find(t => t.id === id);
+}
+
+function getQuestionsByTopic(id) {
+  return QUESTIONS.filter(q => q.topic === id);
+}
+
+function getStats() {
+  const attempted = Object.keys(progress.attempts).length;
+  let totalAttempts = 0;
+  let totalCorrect = 0;
+  for (const id in progress.attempts) totalAttempts += progress.attempts[id];
+  for (const id in progress.correct) totalCorrect += progress.correct[id];
+  const accuracy = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+  return { attempted, accuracy, wrong: progress.wrong.length };
+}
+
+function renderHome() {
+  const stats = getStats();
+  const topicCards = TOPICS.map(topic => {
+    const total = topic.qs.length;
+    const mastered = QUESTIONS.filter(q => q.topic === topic.id && progress.correct[q.id] > 0).length;
+    const percent = total ? Math.round((mastered / total) * 100) : 0;
+    return `
+      <div class="card topic-card" onclick="openTopic('${topic.id}')">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">Pack 2</div>
+        </div>
+        <div class="topic-title">${esc(topic.title)}</div>
+        <div class="small">${esc(topic.blurb)}</div>
+        <div class="progress"><div style="width:${percent}%"></div></div>
+        <div class="small">${mastered}/${total} questions correct at least once</div>
+      </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <div class="brand">🏆 PSLE Maths Challenge Pack 2</div>
+        <div class="chip">100 more challenging MCQs</div>
+      </div>
+      <div class="hero">
+        <h1>PSLE-Style Maths Challenge 2</h1>
+        <p>Original challenging MCQs with multi-step reasoning, heuristics and PSLE-style thinking.</p>
+        <div class="actions">
+          <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+          <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+          <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+          <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="value">${stats.attempted}</div><div class="label">Questions practiced</div></div>
+        <div class="stat"><div class="value">${stats.accuracy}%</div><div class="label">Accuracy</div></div>
+        <div class="stat"><div class="value">${stats.wrong}</div><div class="label">Wrong questions</div></div>
+        <div class="stat"><div class="value">${TOPICS.length}</div><div class="label">Challenge areas</div></div>
+      </div>
+      ${topicCards}
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openTopic(id) {
+  const topic = getTopic(id);
+  const notesHtml = topic.notes.map(n => `<li>${esc(n)}</li>`).join("");
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">⬅ Home</button>
+        <div class="chip">Pack 2 Topic</div>
+      </div>
+      <div class="card">
+        <div class="topic-top">
+          <div class="emoji">${topic.emoji}</div>
+          <div class="chip">Pack 2</div>
+        </div>
+        <h2>${esc(topic.title)}</h2>
+        <p style="font-weight:800;">${esc(topic.blurb)}</p>
+        <h3>Focus</h3>
+        <ul class="notes">${notesHtml}</ul>
+        <div class="actions">
+          <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start Topic</button>
+          <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+        </div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function startAllChallenge() {
+  startQuiz(shuffle(QUESTIONS).slice(0, 20), "Random 20 Challenge");
+}
+function startRandomTen() {
+  startQuiz(shuffle(QUESTIONS).slice(0, 10), "Random 10");
+}
+function startWrongAll() {
+  const questions = QUESTIONS.filter(q => progress.wrong.includes(q.id));
+  if (!questions.length) { alert("No wrong questions saved yet."); return; }
+  startQuiz(questions, "Wrong Replay");
+}
+function startTopic(id) {
+  const topic = getTopic(id);
+  startQuiz(getQuestionsByTopic(id), topic.title);
+}
+function startTopicWrong(id) {
+  const topic = getTopic(id);
+  const questions = QUESTIONS.filter(q => q.topic === id && progress.wrong.includes(q.id));
+  if (!questions.length) { alert("No wrong questions in this topic yet."); return; }
+  startQuiz(questions, "Wrong Replay: " + topic.title);
+}
+
+function startQuiz(list, title) {
+  if (!list.length) { alert("No questions available."); return; }
+  state = {
+    questions: prepareQuestions(list),
+    index: 0,
+    correct: 0,
+    answered: false,
+    title,
+    misses: []
+  };
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = state.questions[state.index];
+  const topic = getTopic(q.topic);
+  const pct = (state.index / state.questions.length) * 100;
+  const opts = q.options.map((o, i) =>
+    `<button class="option" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${esc(o)}</button>`
+  ).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">${esc(state.title)}</div>
+      </div>
+      <div class="card">
+        <div class="progress"><div style="width:${pct}%"></div></div>
+        <div class="small">Question ${state.index+1} of ${state.questions.length} • Score ${state.correct}</div>
+        <div class="chip" style="margin:10px 0;">${topic.emoji} ${esc(topic.title)}</div>
+        <h2>${esc(q.q)}</h2>
+        <div class="options">${opts}</div>
+        <div id="feedback" class="feedback hidden"></div>
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function answer(selected) {
+  if (state.answered) return;
+  state.answered = true;
+  const q = state.questions[state.index];
+  const buttons = Array.from(document.querySelectorAll(".option"));
+  buttons.forEach(b => b.disabled = true);
+  buttons[q.answer].classList.add("correct");
+  const isCorrect = selected === q.answer;
+  if (isCorrect) {
+    state.correct++;
+    buttons[selected].classList.add("correct");
+  } else {
+    buttons[selected].classList.add("wrong");
+    state.misses.push({ id: q.id, selected });
+  }
+  updateProgress(q.id, isCorrect);
+  const fb = document.getElementById("feedback");
+  fb.className = "feedback " + (isCorrect ? "good" : "bad");
+  fb.innerHTML = `
+    <div>${isCorrect ? "✅ Correct!" : "❌ Not quite."}</div>
+    <div class="exp">${esc(q.exp)}${!isCorrect ? " Correct answer: " + esc(q.options[q.answer]) + "." : ""}</div>
+    <div class="actions">
+      <button class="btn primary" onclick="nextQuestion()">
+        ${state.index === state.questions.length - 1 ? "Finish 🏁" : "Next ➜"}
+      </button>
+    </div>`;
+}
+
+function updateProgress(id, isCorrect) {
+  progress.attempts[id] = (progress.attempts[id] || 0) + 1;
+  if (isCorrect) {
+    progress.correct[id] = (progress.correct[id] || 0) + 1;
+    progress.wrong = progress.wrong.filter(w => w !== id);
+  } else {
+    if (!progress.wrong.includes(id)) progress.wrong.push(id);
+  }
+  saveProgress();
+}
+
+function nextQuestion() {
+  if (!state.answered) return;
+  if (state.index < state.questions.length - 1) {
+    state.index++;
+    state.answered = false;
+    renderQuestion();
+  } else {
+    finishQuiz();
+  }
+}
+
+function finishQuiz() {
+  const total = state.questions.length;
+  const percent = Math.round((state.correct / total) * 100);
+  let stars = "💪";
+  let msg = "Keep practising! Read the explanations and try again.";
+  if (percent >= 90) { stars = "🌟🌟🌟"; msg = "Excellent PSLE-level reasoning!"; }
+  else if (percent >= 75) { stars = "🌟🌟"; msg = "Strong work. Review the tricky ones."; }
+  else if (percent >= 50) { stars = "🌟"; msg = "Good effort. Focus on the explanations."; }
+
+  const seen = new Set();
+  const unique = state.misses.filter(m => {
+    if (seen.has(m.id)) return false;
+    seen.add(m.id);
+    return true;
+  });
+
+  const reviewHtml = unique.map(miss => {
+    const q = state.questions.find(i => i.id === miss.id);
+    const topic = getTopic(q.topic);
+    return `
+      <div class="review-item">
+        <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+        <div class="review-q">${esc(q.q)}</div>
+        <div class="user-answer">Your answer: ${esc(q.options[miss.selected])}</div>
+        <div class="correct-answer">Correct answer: ${esc(q.options[q.answer])}</div>
+        <div>${esc(q.exp)}</div>
+      </div>`;
+  }).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <div class="topbar">
+        <button class="btn secondary" onclick="renderHome()">🏠 Home</button>
+        <div class="chip">Result</div>
+      </div>
+      <div class="card">
+        <h2>${esc(state.title)} Complete!</h2>
+        <div class="result-stars">${stars}</div>
+        <p style="font-weight:900;">You scored ${state.correct}/${total} (${percent}%). ${msg}</p>
+        <div class="actions">
+          <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+          ${unique.length ? '<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>' : ""}
+        </div>
+        <h3>Review</h3>
+        ${unique.length ? reviewHtml : "<p>🎉 Perfect! No wrong questions this round.</p>"}
+      </div>
+    </div>`;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function retryWrong() {
+  const ids = [...new Set(state.misses.map(m => m.id))];
+  startQuiz(QUESTIONS.filter(q => ids.includes(q.id)), "Retry Wrong");
+}
+
+function resetProgress() {
+  if (confirm("Reset all PSLE Maths Challenge Pack 2 progress?")) {
+    progress = { attempts: {}, correct: {}, wrong: [] };
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
