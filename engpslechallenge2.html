@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PSLE English Challenge Pack 2</title>
+<style>
+:root{
+  --bg1:#d1fae5;
+  --bg2:#cffafe;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{display:inline-block;background:#6ee7b7;color:#065f46;padding:8px 12px;border-radius:999px;font-weight:900;font-size:.9rem}
+.hero{background:linear-gradient(135deg,#059669,#0891b2);color:#fff;padding:20px;border-radius:24px;box-shadow:0 14px 34px rgba(5,150,105,.18)}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);border-radius:18px;padding:12px;text-align:center;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:0 10px 24px rgba(15,23,42,.08);margin:12px 0}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#34d399}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:10px 0}
+.progress div{height:100%;background:linear-gradient(90deg,#059669,#0891b2)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.btn{border:0;border-radius:16px;padding:12px 16px;font-weight:1000;cursor:pointer}
+.primary{background:linear-gradient(135deg,#059669,#0891b2);color:#fff}
+.secondary{background:#e2e8f0;color:#0f172a}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{border:3px solid #6ee7b7;background:#f5fffb;border-radius:18px;padding:14px;font-size:1rem;font-weight:900;text-align:left;cursor:pointer}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{margin-top:14px;padding:14px;border-radius:18px;font-weight:900}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{border:2px solid #e2e8f0;border-radius:18px;padding:12px;margin:10px 0;background:#fbfdff}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{background:#fff1f2;border:2px solid #f43f5e;border-radius:16px;padding:16px;font-weight:700;white-space:pre-wrap;font-family:monospace}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error",function(e){
+  document.getElementById("app").innerHTML='<div class="container"><div class="error-box">Page error: '+(e.message||"Unknown")+'</div></div>';
+});
+</script>
+
+<script>
+const TOPICS=[
+{
+id:"adv-tenses-context",
+title:"Advanced Tenses in Context",
+emoji:"⏳",
+blurb:"PSLE-level mixed tenses tested in contextual passages and situations.",
+notes:["Choose tenses based on context and time markers.","Look for sequence of events and duration."],
+qs:[
+["By the time the fire brigade arrived, the building ___ completely destroyed.",["had been","has been","was","is"],"Past perfect passive for the earlier of two past events."],
+["She ___ the piano for two hours before her guests arrived.",["had been playing","has been playing","is playing","plays"],"Past perfect continuous for duration before a past event."],
+["By next June, she ___ her degree.",["will have completed","will complete","has completed","is completing"],"Future perfect for completion by a future date."],
+["The children ___ in the park when it suddenly started to rain.",["were playing","are playing","have played","play"],"Past continuous for interrupted action."],
+["If it rains tomorrow, we ___ the picnic.",["will cancel","would cancel","will cancelled","cancel"],"First conditional: will + base verb."],
+["I ___ this book for three days and I still have not finished it.",["have been reading","am reading","read","was reading"],"Present perfect continuous for ongoing duration."],
+["He ___ the letter before he realised his mistake.",["had sent","has sent","sends","was sending"],"Past perfect for the earlier action."],
+["By the end of this month, she ___ the project.",["will have finished","will finish","has finished","is finishing"],"Future perfect for completion by a deadline."],
+["She told me that she ___ the movie twice.",["had seen","has seen","sees","saw"],"Reported speech shifts present perfect to past perfect."],
+["By the time you read this letter, I ___ the country.",["will have left","will leave","have left","am leaving"],"Future perfect for an action before a future moment."],
+["The train ___ before we reached the station.",["had left","has left","left","leaves"],"Past perfect for the earlier past action."],
+["I ___ already ___ lunch when he invited me.",["had, eaten","has, eaten","have, eaten","had, ate"],"Past perfect for the earlier action."],
+["By 2030, scientists ___ a cure for the disease.",["will have discovered","will discover","have discovered","are discovering"],"Future perfect for completion by a future date."],
+["After he ___ his homework, he went out to play.",["had finished","has finished","finishes","was finishing"],"Past perfect for the first of two past actions."],
+["She ___ never ___ to Paris before last summer.",["had, been","has, been","have, been","had, went"],"Past perfect: had + past participle."],
+["By tomorrow, they ___ the building.",["will have demolished","will demolish","have demolished","are demolishing"],"Future perfect for completion by tomorrow."],
+["He said he ___ the truth the whole time.",["had been telling","has been telling","was telling","is telling"],"Reported speech: past perfect continuous."],
+["I ___ for two hours before the bus finally came.",["had been waiting","have been waiting","was waiting","am waiting"],"Past perfect continuous for duration before a past event."],
+["By next week, we ___ all the exam papers.",["will have marked","will mark","have marked","are marking"],"Future perfect for completion by next week."],
+["After they ___ the house, they moved in.",["had renovated","have renovated","renovate","were renovating"],"Past perfect for the first of two past actions."],
+["By the end of the year, the company ___ 100 new employees.",["will have hired","will hire","has hired","is hiring"],"Future perfect for completion by year end."],
+["She ___ English for five years before she moved to London.",["had been studying","has been studying","was studying","is studying"],"Past perfect continuous for duration before a past event."],
+["By 6 PM, the chef ___ all the dishes.",["will have prepared","will prepare","has prepared","is preparing"],"Future perfect for completion by a specific time."],
+["The children ___ to bed before the guests arrived.",["had gone","have gone","go","were going"],"Past perfect for the earlier past action."],
+["After she ___ her degree, she travelled the world.",["had obtained","has obtained","obtains","was obtaining"],"Past perfect for the first of two past actions."]
+]
+},
+{
+id:"sv-agree-tricky",
+title:"Tricky Subject-Verb Agreement",
+emoji:"🤝",
+blurb:"PSLE-level tricky subjects, quantifiers and special noun phrases.",
+notes:["Identify the true subject of the sentence.","Ignore phrases between the subject and verb."],
+qs:[
+["The teacher, together with his students, ___ visiting the museum.",["is","are","were","be"],"'Together with' does not change the singular subject."],
+["Neither the manager nor the employees ___ satisfied.",["are","is","was","be"],"With 'nor', verb matches closer subject 'employees'."],
+["The quality of the products ___ improved greatly.",["has","have","had","having"],"'Quality' is the singular subject, not 'products'."],
+["Each of the contestants ___ given a certificate.",["was","were","are","be"],"'Each' is always singular."],
+["The box of chocolates ___ on the table.",["is","are","were","be"],"'Box' is the singular subject."],
+["One of my friends ___ a doctor.",["is","are","were","be"],"'One' is singular."],
+["The news about the accidents ___ shocking.",["is","are","were","be"],"'News' is uncountable singular."],
+["Either the cat or the dogs ___ responsible for the mess.",["are","is","was","be"],"With 'or', verb matches closer subject 'dogs'."],
+["The committee ___ unable to reach a decision.",["was","were","are","be"],"Collective noun acting as one unit is singular."],
+["Many a student ___ failed this examination.",["has","have","had","having"],"'Many a' takes singular verb."],
+["The number of applicants ___ risen sharply.",["has","have","had","having"],"'The number of' is singular."],
+["A number of students ___ absent today.",["are","is","was","be"],"'A number of' means 'several' and is plural."],
+["Bread and butter ___ my favourite breakfast.",["is","are","were","be"],"Two items as one unit take singular."],
+["The police ___ investigating the robbery.",["are","is","was","be"],"'Police' is always plural."],
+["Every man, woman and child ___ evacuated.",["was","were","are","be"],"'Every' makes each noun singular."],
+["The furniture in all the rooms ___ brand new.",["is","are","were","be"],"'Furniture' is uncountable singular."],
+["Ten dollars ___ too much for a cup of coffee.",["is","are","were","be"],"Amounts of money as a unit are singular."],
+["The scissors ___ in the drawer.",["are","is","was","be"],"'Scissors' is always plural."],
+["Neither of the solutions ___ workable.",["is","are","were","be"],"'Neither' is singular."],
+["All the information ___ been verified.",["has","have","had","having"],"'Information' is uncountable singular."],
+["The team ___ divided in their opinions.",["are","is","was","be"],"When members disagree, collective noun can be plural."],
+["Somebody ___ left their umbrella behind.",["has","have","had","having"],"'Somebody' is singular."],
+["The trousers ___ too long for me.",["are","is","was","be"],"'Trousers' is always plural."],
+["There ___ a book and two pens on the desk.",["is","are","were","be"],"Verb matches the first noun after 'there'."],
+["Each boy and each girl ___ given a gift.",["was","were","are","be"],"'Each' before each noun keeps it singular."]
+]
+},
+{
+id:"prep-colloc",
+title:"Advanced Prepositions and Collocations",
+emoji:"🔗",
+blurb:"PSLE-level prepositions, phrasal verbs and collocations.",
+notes:["Prepositions after verbs and adjectives are fixed.","Collocations are words that naturally go together."],
+qs:[
+["She is very fond ___ classical music.",["of","with","about","for"],"We say 'fond of'."],
+["He was accused ___ stealing the money.",["of","for","with","about"],"We say 'accused of'."],
+["I am looking forward ___ the concert.",["to","for","at","with"],"'Look forward to' + noun."],
+["The meeting was called ___ due to bad weather.",["off","out","up","away"],"'Call off' means to cancel."],
+["She came ___ with a brilliant idea.",["up","out","in","along"],"'Come up with' means to think of."],
+["He turned ___ the job offer.",["down","off","out","away"],"'Turn down' means to reject."],
+["The thief broke ___ the house at night.",["into","out","up","away"],"'Break into' means to enter forcibly."],
+["I ran ___ an old friend at the market.",["into","out","away","off"],"'Run into' means to meet by chance."],
+["She gave ___ smoking last year.",["up","in","out","away"],"'Give up' means to quit."],
+["We set ___ early in the morning.",["off","out","up","away"],"'Set off' means to begin a journey."],
+["He made ___ a story to avoid punishment.",["up","out","off","over"],"'Make up' means to invent."],
+["The fire broke ___ in the kitchen.",["out","up","off","away"],"'Break out' means to start suddenly."],
+["I am used ___ waking up early.",["to","for","with","of"],"'Used to' + verb-ing means accustomed."],
+["She is responsible ___ the project.",["for","of","with","about"],"We say 'responsible for'."],
+["He was acquitted ___ all charges.",["of","from","with","for"],"We say 'acquitted of'."],
+["The cat jumped ___ the table.",["onto","into","over","through"],"'Onto' means to a position on top."],
+["He is very proud ___ his achievements.",["of","with","about","for"],"We say 'proud of'."],
+["We must comply ___ the rules.",["with","to","for","of"],"We say 'comply with'."],
+["She is keen ___ learning the piano.",["on","in","at","with"],"We say 'keen on'."],
+["He is tired ___ waiting.",["of","with","from","about"],"We say 'tired of'."],
+["The plane took ___ at 9 AM.",["off","out","up","away"],"'Take off' means to leave the ground."],
+["We need to find ___ what happened.",["out","in","about","into"],"'Find out' means to discover."],
+["Please look ___ the children while I am out.",["after","for","at","into"],"'Look after' means to take care of."],
+["I am looking ___ my keys everywhere.",["for","at","after","into"],"'Look for' means to search."],
+["She is aware ___ the dangers.",["of","with","about","from"],"We say 'aware of'."]
+]
+},
+{
+id:"conj-cohesion-2",
+title:"Advanced Conjunctions and Cohesion 2",
+emoji:"🔀",
+blurb:"Complex conjunctions, discourse markers and cohesive devices.",
+notes:["Choose connectors based on the logical relationship.","Discourse markers show the flow of ideas."],
+qs:[
+["___ the heavy rain, the match continued.",["Despite","Because","Although","Since"],"'Despite' + noun phrase shows contrast."],
+["He studied hard; ___, he failed the exam.",["nevertheless","therefore","furthermore","consequently"],"'Nevertheless' shows unexpected contrast."],
+["___ being tired, she finished the race.",["Despite","Because","Although","So"],"'Despite' + verb-ing shows contrast."],
+["The project was over budget. ___, it was behind schedule.",["Moreover","However","Nevertheless","Consequently"],"'Moreover' adds another negative point."],
+["___, I would like to thank everyone for coming.",["Firstly","However","Therefore","Moreover"],"'Firstly' introduces the first point."],
+["The evidence is compelling. ___, the jury found him guilty.",["Consequently","However","Nevertheless","Furthermore"],"'Consequently' shows the result."],
+["___ the obvious challenges, the team succeeded.",["Given","Because","Although","Therefore"],"'Given' means 'considering'."],
+["The theory is widely accepted. ___, some scientists remain sceptical.",["Nevertheless","Therefore","Furthermore","Consequently"],"'Nevertheless' shows contrast."],
+["He worked hard; ___, he did not succeed.",["however","therefore","furthermore","consequently"],"'However' shows contrast after a semicolon."],
+["___, the results were inconclusive.",["Unfortunately","Fortunately","Furthermore","Consequently"],"'Unfortunately' introduces a negative outcome."],
+["The data supports the hypothesis. ___, further research is needed.",["Nevertheless","Therefore","Furthermore","Fortunately"],"'Nevertheless' adds a caution."],
+["___, I must disagree with your conclusion.",["However","Therefore","Furthermore","Consequently"],"'However' politely introduces disagreement."],
+["The findings are significant. ___, they should be interpreted cautiously.",["However","Therefore","Furthermore","Moreover"],"'However' adds a caution."],
+["___, the government introduced new policies.",["Consequently","However","Furthermore","Nevertheless"],"'Consequently' shows a result."],
+["___, I believe we should proceed with the plan.",["In conclusion","However","Furthermore","Consequently"],"'In conclusion' summarises the final opinion."],
+["The report highlights several issues. ___, it offers practical solutions.",["Furthermore","However","Nevertheless","Consequently"],"'Furthermore' adds a positive point."],
+["The policy has been criticised. ___, it remains in place.",["Nevertheless","Therefore","Furthermore","Consequently"],"'Nevertheless' shows it continues despite criticism."],
+["___, the experiment must be repeated.",["Therefore","However","Furthermore","Nevertheless"],"'Therefore' draws a logical conclusion."],
+["The data is limited. ___, the findings should be treated with caution.",["Accordingly","However","Furthermore","Moreover"],"'Accordingly' means 'for that reason'."],
+["___, I wish to express my gratitude.",["Finally","However","Therefore","Consequently"],"'Finally' introduces the last point."],
+["The results were unexpected. ___, they open new avenues for research.",["Nonetheless","Therefore","Furthermore","Consequently"],"'Nonetheless' shows a positive despite surprise."],
+["___ the circumstances, the team performed admirably.",["Given","Because","Although","Therefore"],"'Given' means 'considering'."],
+["The proposal was rejected. ___, the team revised it.",["Consequently","However","Furthermore","Nevertheless"],"'Consequently' shows the result of rejection."],
+["___, the two studies reached different conclusions.",["Notably","Therefore","Furthermore","Consequently"],"'Notably' draws attention to a key point."],
+["___, the study has several limitations.",["Admittedly","Consequently","Furthermore","Therefore"],"'Admittedly' concedes a point."]
+]
+},
+{
+id:"vocab-idioms",
+title:"PSLE Vocabulary: Idioms and Phrasal Verbs",
+emoji:"📚",
+blurb:"Common idioms, phrasal verbs and their meanings in context.",
+notes:["Idioms have meanings different from their literal words.","Use context to determine the meaning."],
+qs:[
+["'She was walking on air after receiving the award.' What does this mean?",["She was extremely happy.","She was floating.","She was on an airplane.","She was walking above the ground."],"'Walking on air' means extremely happy."],
+["'He was burning the midnight oil to finish the project.' What does this mean?",["He was working very late at night.","He was setting fire to oil.","He was cooking at midnight.","He was wasting time."],"'Burn the midnight oil' means work late into the night."],
+["'She let the cat out of the bag.' What does this idiom mean?",["She revealed a secret.","She released a cat from a bag.","She bought a cat.","She was careless with a bag."],"'Let the cat out of the bag' means reveal a secret."],
+["'He was over the moon when he got the job.' What does this mean?",["He was extremely delighted.","He was on the moon.","He was jumping high.","He was celebrating on a rooftop."],"'Over the moon' means extremely happy."],
+["'The teacher's words fell on deaf ears.' What does this mean?",["The students ignored the teacher.","The teacher was speaking to deaf students.","The teacher was whispering.","The students could not hear."],"'Fall on deaf ears' means ignored."],
+["'She was a fish out of water at the formal dinner.' What does this mean?",["She felt uncomfortable and out of place.","She was eating fish.","She was swimming.","She was at a seafood restaurant."],"'Fish out of water' means feeling out of place."],
+["'He hit the nail on the head with his analysis.' What does this mean?",["He was exactly right.","He was using a hammer.","He was doing carpentry.","He was wrong."],"'Hit the nail on the head' means exactly right."],
+["'The project was a piece of cake.' What does this mean?",["The project was very easy.","The project was about baking.","The project was a dessert.","The project was delicious."],"'Piece of cake' means very easy."],
+["'She was sitting on the fence about the decision.' What does this mean?",["She was undecided.","She was sitting on a physical fence.","She was watching a game.","She was resting."],"'Sit on the fence' means unable to decide."],
+["'He was barking up the wrong tree.' What does this mean?",["He was pursuing the wrong course of action.","He was talking to a tree.","He was lost in a forest.","He was looking for his dog."],"'Bark up the wrong tree' means pursue the wrong lead."],
+["'The early bird catches the worm.' What does this proverb mean?",["Those who start early have an advantage.","Birds eat worms.","Early mornings are good for birdwatching.","Worms are active early."],"'Early bird catches the worm' means early starters succeed."],
+["'She was in hot water after missing the deadline.' What does this mean?",["She was in trouble.","She was in a hot bath.","She was sweating.","She was cooking."],"'In hot water' means in trouble."],
+["'He was the black sheep of the family.' What does this mean?",["He was the odd one out or misfit.","He owned black sheep.","He was a farmer.","He liked dark colours."],"'Black sheep' means the misfit of a group."],
+["'The truth finally came to light.' What does this mean?",["The truth was finally revealed.","The lights were turned on.","The truth was bright.","It became daytime."],"'Come to light' means be revealed."],
+["'She was crying over spilt milk.' What does this mean?",["She was upset about something that could not be changed.","She spilled milk and cried.","She was cleaning up a mess.","She was upset about losing milk."],"'Cry over spilt milk' means regret something irreversible."],
+["'He was in the same boat as everyone else.' What does this mean?",["He was in the same situation as others.","He was on a boat.","He was travelling.","He was a sailor."],"'In the same boat' means in the same situation."],
+["'The offer was too good to be true.' What does this suggest?",["The offer seemed suspiciously excellent.","The offer was excellent.","The offer was genuine.","The offer was average."],"'Too good to be true' suggests suspicion."],
+["'She had a heart of gold.' What does this mean?",["She was extremely kind and generous.","Her heart was made of gold.","She was rich.","She wore gold jewellery."],"'Heart of gold' means very kind."],
+["'He was caught red-handed.' What does this mean?",["He was caught while committing the act.","His hands were red.","He was painting.","He was wearing red gloves."],"'Caught red-handed' means caught in the act."],
+["'The news hit him like a ton of bricks.' What does this suggest?",["The news was extremely shocking.","He was physically hit.","He was carrying bricks.","The news was about construction."],"'Hit like a ton of bricks' means extremely shocking."],
+["'The room was so quiet you could hear a pin drop.' What does this mean?",["The room was extremely silent.","There was a pin on the floor.","Someone dropped a pin.","The room was very small."],"'Hear a pin drop' means extremely quiet."],
+["'He was the apple of his mother's eye.' What does this idiom mean?",["His mother loved him very much.","His mother liked apples.","He looked like an apple.","His mother was a fruit seller."],"'Apple of one's eye' means deeply cherished."],
+["'The once bustling market was now a ghost town.' What does 'ghost town' mean?",["A place that is deserted and empty.","A town with many ghosts.","A scary place.","A town with many markets."],"'Ghost town' is a metaphor for an empty place."],
+["'She slammed the door and stormed out of the room.' What does this suggest?",["She was very angry.","She was in a hurry.","She was happy.","She was tired."],"'Slammed' and 'stormed' indicate anger."],
+["'The old man's hands trembled as he held the letter.' What can be inferred?",["The old man was emotional or nervous.","The old man was cold.","The letter was heavy.","The old man was angry."],"Trembling hands suggest emotion or nervousness."]
+]
+},
+{
+id:"synthesis-2",
+title:"Advanced Synthesis and Transformation 2",
+emoji:"🔄",
+blurb:"PSLE-level synthesis, transformation and paraphrasing.",
+notes:["Combine sentences without changing meaning.","Transform sentences using the given word or structure."],
+qs:[
+["Combine: 'She was tired. She continued working.' Use 'although'.",["Although she was tired, she continued working.","Although she continued working, she was tired.","She was tired although she continued working.","Although tired, continued working she."],"'Although' introduces the concessive clause."],
+["Combine: 'He studied hard. He passed the exam.' Use 'so'.",["He studied hard, so he passed the exam.","He passed the exam, so he studied hard.","So he studied hard, he passed the exam.","He studied hard so, he passed the exam."],"'So' shows result."],
+["Combine: 'It was raining. They played football.' Use 'despite'.",["Despite the rain, they played football.","Despite it was raining, they played football.","They played football despite it was raining.","Despite raining, they played football."],"'Despite' + noun phrase, not clause."],
+["Transform: 'He is too young to drive.' Use 'so...that'.",["He is so young that he cannot drive.","He is so young that he can drive.","He is so young that he drives.","He is so young that he drove."],"'Too...to' becomes 'so...that + cannot'."],
+["Transform: 'The box is so heavy that I cannot lift it.' Use 'too...to'.",["The box is too heavy for me to lift.","The box is too heavy that I cannot lift.","The box is too heavy to me to lift.","The box is too heavy for me to lifting."],"'So...that' becomes 'too...for + to'."],
+["Combine: 'She sings. She dances.' Use 'not only...but also'.",["She not only sings but also dances.","She not only sings but also she dances.","Not only she sings but also dances.","She sings not only but also dances."],"'Not only...but also' connects two parallel elements."],
+["Transform: 'Someone stole my bicycle.' Passive voice.",["My bicycle was stolen.","My bicycle is stolen.","My bicycle has stolen.","My bicycle stole."],"Passive: was + past participle."],
+["Transform: 'They are building a new bridge.' Passive voice.",["A new bridge is being built.","A new bridge is built.","A new bridge was built.","A new bridge has been built."],"Present continuous passive."],
+["Transform: 'She said, \"I will help you.\"' Reported speech.",["She said that she would help me.","She said that she will help me.","She said that she would help you.","She said that she will help you."],"'Will' changes to 'would'; pronouns shift."],
+["Transform: 'He said, \"I have finished.\"' Reported speech.",["He said that he had finished.","He said that he has finished.","He said that he have finished.","He said that he finished."],"Present perfect changes to past perfect."],
+["Combine: 'He is rich. He is not happy.' Use 'although'.",["Although he is rich, he is not happy.","Although he is not happy, he is rich.","He is rich although he is not happy.","Although rich, he is not happy."],"'Although' introduces the concessive clause."],
+["Transform: 'The teacher praised the student.' Passive voice.",["The student was praised by the teacher.","The student is praised by the teacher.","The student has been praised by the teacher.","The student was praising by the teacher."],"Passive: was + past participle + by."],
+["Combine: 'She was sick. She attended the meeting.' Use 'even though'.",["Even though she was sick, she attended the meeting.","Even though she attended the meeting, she was sick.","She was sick even though she attended the meeting.","Even though sick, she attended the meeting."],"'Even though' introduces the concessive clause."],
+["Transform: 'They will announce the results tomorrow.' Passive voice.",["The results will be announced tomorrow.","The results will announce tomorrow.","The results are announced tomorrow.","The results were announced tomorrow."],"Future passive: will be + past participle."],
+["Combine: 'He works hard. He wants to succeed.' Use 'so that'.",["He works hard so that he can succeed.","He works hard so that he succeeds.","He works hard so that he succeeded.","He works hard so that he succeeding."],"'So that' shows purpose."],
+["Transform: 'She asked, \"Are you coming?\"' Reported speech.",["She asked if I was coming.","She asked if I am coming.","She asked if I were coming.","She asked if I be coming."],"Reported yes/no question: 'if' + tense shift."],
+["Combine: 'The movie was boring. We left early.' Use 'because'.",["We left early because the movie was boring.","Because we left early, the movie was boring.","The movie was boring because we left early.","Because the movie was boring, we left early."],"'Because' gives the reason."],
+["Transform: 'He is too weak to walk.' Use 'so...that'.",["He is so weak that he cannot walk.","He is so weak that he can walk.","He is so weak that he walks.","He is so weak that he walked."],"'Too...to' becomes 'so...that + cannot'."],
+["Combine: 'She is intelligent. She is hardworking.' Use 'both...and'.",["She is both intelligent and hardworking.","She is both intelligent but hardworking.","Both she is intelligent and hardworking.","She both is intelligent and hardworking."],"'Both...and' connects two adjectives."],
+["Transform: 'People believe that he is innocent.' Passive with reporting verb.",["He is believed to be innocent.","He was believed to be innocent.","He has been believed to be innocent.","He believes to be innocent."],"Passive with reporting verb: is believed to be."],
+["Combine: 'He was late. He was not punished.' Use 'nevertheless'.",["He was late; nevertheless, he was not punished.","He was late; nevertheless he was not punished.","Nevertheless he was late, he was not punished.","He was late nevertheless, he was not punished."],"'Nevertheless' follows a semicolon and precedes a comma."],
+["Transform: 'They have completed the project.' Passive voice.",["The project has been completed.","The project was completed.","The project is completed.","The project has completed."],"Present perfect passive."],
+["Combine: 'She is a talented musician. She is also a gifted painter.' Use 'not only...but also'.",["She is not only a talented musician but also a gifted painter.","She is not only a talented musician but also she is a gifted painter.","Not only she is a talented musician but also a gifted painter.","She not only is a talented musician but also a gifted painter."],"'Not only...but also' connects parallel noun phrases."],
+["Transform: 'The chef is preparing the meal.' Passive voice.",["The meal is being prepared by the chef.","The meal is prepared by the chef.","The meal was prepared by the chef.","The meal has been prepared by the chef."],"Present continuous passive."],
+["Combine: 'It was very cold. The lake froze.' Use 'so...that'.",["It was so cold that the lake froze.","It was so cold that the lake freezes.","It was so cold that the lake has frozen.","It was so cold that the lake will freeze."],"'So...that' shows result."]
+]
+},
+{
+id:"reported-speech-2",
+title:"Advanced Reported Speech 2",
+emoji:"💬",
+blurb:"PSLE-level reported speech with complex tense shifts and time expressions.",
+notes:["Tenses shift back in reported speech.","Time expressions change: today → that day, tomorrow → the next day."],
+qs:[
+["She said, 'I am happy.' Reported: She said that she ___ happy.",["was","is","am","be"],"'Am' changes to 'was'."],
+["He said, 'I like pizza.' Reported: He said that he ___ pizza.",["liked","likes","like","liking"],"'Like' changes to 'liked'."],
+["She said, 'I will come tomorrow.' Reported: She said she ___ come the next day.",["would","will","will be","shall"],"'Will' changes to 'would'."],
+["He said, 'I can swim.' Reported: He said he ___ swim.",["could","can","could be","can be"],"'Can' changes to 'could'."],
+["She said, 'I have finished.' Reported: She said she ___ finished.",["had","has","have","having"],"'Have' changes to 'had'."],
+["He asked, 'Where do you live?' Reported: He asked where I ___ .",["lived","live","lives","living"],"Reported question: tense shifts back."],
+["She asked, 'Are you hungry?' Reported: She asked if I ___ hungry.",["was","am","is","be"],"Reported yes/no question: use 'if/whether'."],
+["He said, 'I saw the movie.' Reported: He said he ___ the movie.",["had seen","saw","has seen","see"],"Past simple changes to past perfect."],
+["She said, 'I am reading.' Reported: She said she ___ reading.",["was","is","am","be"],"Present continuous changes to past continuous."],
+["He said, 'I will help you.' Reported: He said he would help ___.",["me","you","him","her"],"Pronouns change in reported speech."],
+["She said, 'Don't touch that!' Reported: She told me ___ that.",["not to touch","don't touch","to not touch","not touch"],"Negative imperative: told + not to + verb."],
+["He said, 'Please sit down.' Reported: He asked me ___ down.",["to sit","sit","to please sit","please sit"],"Polite request: asked + to + verb."],
+["She said, 'I bought a new dress.' Reported: She said she ___ a new dress.",["had bought","bought","has bought","buys"],"Past simple changes to past perfect."],
+["He asked, 'What is your name?' Reported: He asked what my name ___ .",["was","is","am","be"],"Reported question: verb moves to end."],
+["She said, 'I can help you.' Reported: She said she ___ help me.",["could","can","could be","can be"],"'Can' changes to 'could'."],
+["He said, 'I am going to the shop.' Reported: He said he was going to the ___.",["shop","shops","shopping","shopped"],"Place words may stay the same."],
+["She said, 'I don't like coffee.' Reported: She said she ___ like coffee.",["didn't","doesn't","don't","not"],"Present simple negative changes to past."],
+["He asked, 'Do you like music?' Reported: He asked if I ___ music.",["liked","like","likes","liking"],"Reported yes/no question with 'if'."],
+["She said, 'I must go now.' Reported: She said she ___ go then.",["had to","must","have to","has to"],"'Must' changes to 'had to'."],
+["He said, 'Close the door.' Reported: He told me ___ the door.",["to close","close","to please close","please close"],"Imperative: told + to + verb."],
+["She asked, 'Why are you late?' Reported: She asked why I ___ late.",["was","am","is","be"],"Reported question: tense shifts back."],
+["He said, 'I have never been to Paris.' Reported: He said he ___ never been to Paris.",["had","has","have","having"],"Present perfect changes to past perfect."],
+["She said, 'I'll call you later.' Reported: She said she ___ call me later.",["would","will","shall","shall be"],"'Will' changes to 'would'."],
+["He said, 'I was sleeping.' Reported: He said he ___ sleeping.",["had been","was","has been","is"],"Past continuous changes to past perfect continuous."],
+["She said, 'I will have finished by noon.' Reported: She said she ___ finished by noon.",["would have","will have","shall have","would"],"'Will have' changes to 'would have'."]
+]
+},
+{
+id:"editing-2",
+title:"Advanced Editing 2",
+emoji:"✏️",
+blurb:"PSLE-level error identification and correction in complex sentences.",
+notes:["Look for subject-verb agreement, tense, word form and preposition errors.","Each sentence contains at most one error."],
+qs:[
+["Which part has an error: 'The team of players are celebrating their victory.'?",["are","team","players","their"],"'Team' is singular, so 'are' should be 'is'."],
+["Which part has an error: 'Each of the students have submitted their assignments.'?",["have","Each","students","their"],"'Each' is singular, so 'have' should be 'has'."],
+["Which part has an error: 'The news about the accidents were shocking.'?",["were","news","accidents","shocking"],"'News' is singular, so 'were' should be 'was'."],
+["Which part has an error: 'Neither the teacher nor the students was informed.'?",["was","Neither","teacher","students"],"With 'nor', verb matches closer subject 'students', so 'was' should be 'were'."],
+["Which part has an error: 'She is more smarter than her brother.'?",["more smarter","is","than","her"],"Comparative uses 'smarter', not 'more smarter'."],
+["Which part has an error: 'He don't know the answer to the question.'?",["don't","He","know","answer"],"'He' takes 'doesn't', not 'don't'."],
+["Which part has an error: 'I am agree with your proposal.'?",["am agree","I","with","your"],"'Agree' is a verb; no 'am' needed."],
+["Which part has an error: 'She has went to the market.'?",["went","has","to","the"],"Present perfect requires 'gone', not 'went'."],
+["Which part has an error: 'The informations provided were inaccurate.'?",["informations","The","provided","were"],"'Information' is uncountable; no plural form."],
+["Which part has an error: 'He gave me an advice about the interview.'?",["an advice","He","gave","about"],"'Advice' is uncountable; use 'some advice' or 'a piece of advice'."],
+["Which part has an error: 'The furnitures in the room are antique.'?",["furnitures","The","room","are"],"'Furniture' is uncountable; no plural form."],
+["Which part has an error: 'She is interested on learning French.'?",["on","is","interested","learning"],"'Interested in' is the correct preposition."],
+["Which part has an error: 'The peoples of this region are very hospitable.'?",["peoples","The","region","are"],"'People' is already plural; no 's' needed."],
+["Which part has an error: 'He is good in Mathematics.'?",["in","is","good","Mathematics"],"'Good at' is the correct preposition."],
+["Which part has an error: 'I am looking forward to see you.'?",["see","am","looking","forward"],"'Look forward to' + verb-ing: 'seeing'."],
+["Which part has an error: 'She is married with a lawyer.'?",["with","is","married","a"],"'Married to' is the correct preposition."],
+["Which part has an error: 'The childrens are playing in the park.'?",["childrens","The","are","playing"],"'Children' is already plural; no 's' needed."],
+["Which part has an error: 'He suggested me to apply for the job.'?",["me to apply","He","suggested","for"],"'Suggest' + that-clause: 'suggested that I apply'."],
+["Which part has an error: 'She has less friends than her sister.'?",["less","has","friends","than"],"'Friends' are countable; use 'fewer'."],
+["Which part has an error: 'The police is investigating the case.'?",["is","The","police","investigating"],"'Police' is plural; use 'are'."],
+["Which part has an error: 'He don't have no money left.'?",["don't have no","He","money","left"],"Double negative; should be 'doesn't have any'."],
+["Which part has an error: 'The equipment are very expensive.'?",["are","The","equipment","very"],"'Equipment' is uncountable; use 'is'."],
+["Which part has an error: 'She is one of the best student in the class.'?",["student","is","one","best"],"'One of the' + plural noun: 'students'."],
+["Which part has an error: 'He was accused for stealing the money.'?",["for","was","accused","stealing"],"'Accused of' is the correct preposition."],
+["Which part has an error: 'The trousers is too long for me.'?",["is","The","trousers","too"],"'Trousers' is plural; use 'are'."]
+]
+},
+{
+id:"comprehension-2",
+title:"Comprehension: Inference and Writer's Craft",
+emoji:"🔍",
+blurb:"Advanced inference, vocabulary in context and understanding writer's techniques.",
+notes:["Inference means reading between the lines.","Writer's craft includes similes, metaphors and personification."],
+qs:[
+["'The wind whispered through the trees.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Whispered' gives human qualities to the wind."],
+["'He was as brave as a lion.' What literary device is used?",["Simile","Metaphor","Personification","Hyperbole"],"'As...as' indicates a simile."],
+["'The classroom was a zoo.' What literary device is used?",["Metaphor","Simile","Personification","Hyperbole"],"'Was a zoo' directly compares without 'like' or 'as'."],
+["'I have told you a million times.' What literary device is used?",["Hyperbole","Simile","Metaphor","Personification"],"'A million times' is an exaggeration."],
+["'The sun smiled down on us.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Smiled' gives human qualities to the sun."],
+["'Her voice was music to his ears.' What literary device is used?",["Metaphor","Simile","Personification","Hyperbole"],"'Was music' directly compares without 'like' or 'as'."],
+["'The stars danced in the night sky.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Danced' gives human qualities to the stars."],
+["'He ran like the wind.' What literary device is used?",["Simile","Metaphor","Personification","Hyperbole"],"'Like the wind' indicates a simile."],
+["'The world is a stage.' What literary device is used?",["Metaphor","Simile","Personification","Hyperbole"],"'Is a stage' directly compares without 'like' or 'as'."],
+["'The thunder roared angrily.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Roared angrily' gives human qualities to thunder."],
+["'She was drowning in a sea of paperwork.' What literary device is used?",["Metaphor","Simile","Personification","Hyperbole"],"'Drowning in a sea' directly compares."],
+["'The flowers nodded in the breeze.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Nodded' gives human qualities to flowers."],
+["'He was a cheetah on the track.' What literary device is used?",["Metaphor","Simile","Personification","Hyperbole"],"'Was a cheetah' directly compares."],
+["'The moon watched over the sleeping village.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Watched over' gives human qualities to the moon."],
+["'Her smile was as bright as the sun.' What literary device is used?",["Simile","Metaphor","Personification","Hyperbole"],"'As...as' indicates a simile."],
+["'The city never sleeps.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Never sleeps' gives human qualities to the city."],
+["'He had a heart of stone.' What literary device is used?",["Metaphor","Simile","Personification","Hyperbole"],"'Heart of stone' directly compares."],
+["'The leaves waved goodbye as autumn approached.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Waved goodbye' gives human qualities to leaves."],
+["'She was as light as a feather.' What literary device is used?",["Simile","Metaphor","Personification","Hyperbole"],"'As...as' indicates a simile."],
+["'The old house groaned in the storm.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Groaned' gives human qualities to the house."],
+["'Time is a thief.' What literary device is used?",["Metaphor","Simile","Personification","Hyperbole"],"'Is a thief' directly compares."],
+["'The river sang as it flowed over the rocks.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Sang' gives human qualities to the river."],
+["'He was as sly as a fox.' What literary device is used?",["Simile","Metaphor","Personification","Hyperbole"],"'As...as' indicates a simile."],
+["'The mountains stood guard over the valley.' What literary device is used?",["Personification","Simile","Metaphor","Hyperbole"],"'Stood guard' gives human qualities to mountains."],
+["'Her laughter was a melody.' What literary device is used?",["Metaphor","Simile","Personification","Hyperbole"],"'Was a melody' directly compares."]
+]
+},
+{
+id:"grammar-cloze-2",
+title:"PSLE Grammar Cloze 2",
+emoji:"🧩",
+blurb:"Advanced grammar cloze testing tense, agreement and structure in extended passages.",
+notes:["Read the full context before choosing.","Look for tense consistency and logical flow."],
+qs:[
+["The team of researchers ___ been working on the vaccine for over two years.",["has","have","had","having"],"'Team' as a unit takes singular 'has'."],
+["By the time the results were published, the data ___ already outdated.",["had become","has become","became","becomes"],"Past perfect for completion before a past event."],
+["Neither the manager nor the employees ___ satisfied with the new policy.",["were","was","is","be"],"With 'nor', verb matches closer subject 'employees'."],
+["Each of the applicants ___ required to submit three references.",["is","are","were","be"],"'Each' is always singular."],
+["The news about the company's bankruptcy ___ spread rapidly.",["has","have","had","having"],"'News' is uncountable singular."],
+["She ___ in this city since she graduated from university.",["has been living","is living","lives","was living"],"Present perfect continuous with 'since'."],
+["The committee ___ divided on whether to approve the proposal.",["was","were","are","be"],"Collective noun acting as one unit is singular."],
+["He ___ to the gym every morning before heading to work.",["goes","go","is going","has gone"],"Simple present for habitual action."],
+["The results of the experiment ___ announced at the conference next week.",["will be","will","are","were"],"Future passive for a planned action."],
+["Each of the students ___ given a unique login credential.",["was","were","are","be"],"'Each' is always singular."],
+["The furniture in the conference room ___ recently replaced.",["was","were","are","be"],"'Furniture' is uncountable singular."],
+["By next month, the construction of the new bridge ___ completed.",["will have been","will be","has been","is being"],"Future perfect passive."],
+["The police ___ investigating the suspicious activity reported by residents.",["are","is","was","be"],"'Police' is always plural."],
+["He ___ the email before he realised he had sent it to the wrong recipient.",["had sent","has sent","sends","was sending"],"Past perfect for the earlier of two past actions."],
+["The number of complaints received this year ___ increased significantly.",["has","have","had","having"],"'The number of' is singular."],
+["She ___ English for ten years by the time she takes her final examination.",["will have been studying","will study","has studied","is studying"],"Future perfect continuous for duration."],
+["Bread and butter ___ the only food available at the shelter.",["was","were","are","be"],"Two items as one unit take singular."],
+["The equipment in the laboratory ___ checked monthly for calibration.",["is","are","were","be"],"'Equipment' is uncountable singular."],
+["A number of students ___ raised concerns about the examination format.",["have","has","had","having"],"'A number of' means 'several' and is plural."],
+["The trousers ___ too long for him to wear without alterations.",["are","is","was","be"],"'Trousers' is always plural."],
+["He ___ the letter before he noticed the spelling errors.",["had typed","has typed","types","was typing"],"Past perfect for the earlier action."],
+["The scissors ___ placed in the top drawer of the desk.",["were","was","is","be"],"'Scissors' is always plural."],
+["Every student in the hall ___ given a complimentary goodie bag.",["was","were","are","be"],"'Every' is singular."],
+["The audience ___ moved to tears by the powerful performance.",["was","were","are","be"],"Audience acting as one unit is singular."],
+["The group of volunteers ___ cleaning up the beach this weekend.",["is","are","were","be"],"'Group' is a singular collective noun."]
+]
+}
+];
+
+const QUESTIONS=[];
+TOPICS.forEach(topic=>{
+  topic.qs.forEach((item,index)=>{
+    QUESTIONS.push({
+      id:topic.id+"-"+(index+1),
+      topic:topic.id,
+      q:item[0],
+      options:item[1],
+      exp:item[2]
+    });
+  });
+});
+
+const STORAGE_KEY="psleEnglishChallengePack2";
+const app=document.getElementById("app");
+let progress=loadProgress();
+let state={questions:[],index:0,correct:0,answered:false,title:"",misses:[]};
+
+function loadProgress(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw)return{attempts:{},correct:{},wrong:[]};
+    const data=JSON.parse(raw);
+    return{attempts:data.attempts||{},correct:data.correct||{},wrong:data.wrong||[]};
+  }catch(e){return{attempts:{},correct:{},wrong:[]};}
+}
+function saveProgress(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(progress));}catch(e){}}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function shuffle(a){const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;}
+function prepareQuestions(list){
+  return list.map(q=>{
+    const opts=q.options.map((t,i)=>({text:t,correct:i===0}));
+    const s=shuffle(opts);
+    return{...q,options:s.map(o=>o.text),answer:s.findIndex(o=>o.correct)};
+  });
+}
+function getTopic(id){return TOPICS.find(t=>t.id===id);}
+function getQuestionsByTopic(id){return QUESTIONS.filter(q=>q.topic===id);}
+function getStats(){
+  const attempted=Object.keys(progress.attempts).length;
+  let tA=0,tC=0;
+  for(const id in progress.attempts)tA+=progress.attempts[id];
+  for(const id in progress.correct)tC+=progress.correct[id];
+  return{attempted,accuracy:tA?Math.round((tC/tA)*100):0,wrong:progress.wrong.length};
+}
+
+function renderHome(){
+  const stats=getStats();
+  const cards=TOPICS.map(topic=>{
+    const total=topic.qs.length;
+    const mastered=QUESTIONS.filter(q=>q.topic===topic.id&&progress.correct[q.id]>0).length;
+    const pct=total?Math.round((mastered/total)*100):0;
+    return`<div class="card topic-card" onclick="openTopic('${topic.id}')">
+      <div class="topic-top"><div class="emoji">${topic.emoji}</div><div class="chip">PSLE</div></div>
+      <div class="topic-title">${esc(topic.title)}</div>
+      <div class="small">${esc(topic.blurb)}</div>
+      <div class="progress"><div style="width:${pct}%"></div></div>
+      <div class="small">${mastered}/${total} correct at least once</div>
+    </div>`;
+  }).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><div class="brand">🏆 PSLE English Challenge Pack 2</div><div class="chip">250 MCQs</div></div>
+    <div class="hero">
+      <h1>PSLE English Challenge Pack 2</h1>
+      <p>10 topics × 25 questions covering advanced tenses, idioms, synthesis, reported speech, editing and comprehension.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+        <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+        <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+        <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="value">${stats.attempted}</div><div class="label">Questions practiced</div></div>
+      <div class="stat"><div class="value">${stats.accuracy}%</div><div class="label">Accuracy</div></div>
+      <div class="stat"><div class="value">${stats.wrong}</div><div class="label">Wrong questions</div></div>
+      <div class="stat"><div class="value">${TOPICS.length}</div><div class="label">Challenge areas</div></div>
+    </div>
+    ${cards}
+  </div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function openTopic(id){
+  const topic=getTopic(id);
+  const notesHtml=topic.notes.map(n=>`<li>${esc(n)}</li>`).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><button class="btn secondary" onclick="renderHome()">⬅ Home</button><div class="chip">PSLE Topic</div></div>
+    <div class="card">
+      <div class="topic-top"><div class="emoji">${topic.emoji}</div><div class="chip">PSLE</div></div>
+      <h2>${esc(topic.title)}</h2>
+      <p style="font-weight:800;">${esc(topic.blurb)}</p>
+      <h3>Focus</h3><ul class="notes">${notesHtml}</ul>
+      <div class="actions">
+        <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 25 Questions</button>
+        <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+      </div>
+    </div>
+  </div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function startAllChallenge(){startQuiz(shuffle(QUESTIONS).slice(0,20),"Random 20 Challenge");}
+function startRandomTen(){startQuiz(shuffle(QUESTIONS).slice(0,10),"Random 10");}
+function startWrongAll(){
+  const qs=QUESTIONS.filter(q=>progress.wrong.includes(q.id));
+  if(!qs.length){alert("No wrong questions saved yet.");return;}
+  startQuiz(qs,"Wrong Replay");
+}
+function startTopic(id){startQuiz(getQuestionsByTopic(id),getTopic(id).title);}
+function startTopicWrong(id){
+  const topic=getTopic(id);
+  const qs=QUESTIONS.filter(q=>q.topic===id&&progress.wrong.includes(q.id));
+  if(!qs.length){alert("No wrong questions in this topic yet.");return;}
+  startQuiz(qs,"Wrong Replay: "+topic.title);
+}
+
+function startQuiz(list,title){
+  if(!list.length){alert("No questions available.");return;}
+  state={questions:prepareQuestions(list),index:0,correct:0,answered:false,title,misses:[]};
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=state.questions[state.index];
+  const topic=getTopic(q.topic);
+  const pct=(state.index/state.questions.length)*100;
+  const opts=q.options.map((o,i)=>
+    `<button class="option" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${esc(o)}</button>`
+  ).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><button class="btn secondary" onclick="renderHome()">🏠 Home</button><div class="chip">${esc(state.title)}</div></div>
+    <div class="card">
+      <div class="progress"><div style="width:${pct}%"></div></div>
+      <div class="small">Question ${state.index+1} of ${state.questions.length} • Score ${state.correct}</div>
+      <div class="chip" style="margin:10px 0;">${topic.emoji} ${esc(topic.title)}</div>
+      <h2>${esc(q.q)}</h2>
+      <div class="options">${opts}</div>
+      <div id="feedback" class="feedback hidden"></div>
+    </div>
+  </div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function answer(selected){
+  if(state.answered)return;
+  state.answered=true;
+  const q=state.questions[state.index];
+  const buttons=Array.from(document.querySelectorAll(".option"));
+  buttons.forEach(b=>b.disabled=true);
+  buttons[q.answer].classList.add("correct");
+  const isCorrect=selected===q.answer;
+  if(isCorrect){state.correct++;buttons[selected].classList.add("correct");}
+  else{buttons[selected].classList.add("wrong");state.misses.push({id:q.id,selected});}
+  updateProgress(q.id,isCorrect);
+  const fb=document.getElementById("feedback");
+  fb.className="feedback "+(isCorrect?"good":"bad");
+  fb.innerHTML=`<div>${isCorrect?"✅ Correct!":"❌ Not quite."}</div>
+    <div class="exp">${esc(q.exp)}${!isCorrect?" Correct answer: "+esc(q.options[q.answer])+".":""}</div>
+    <div class="actions"><button class="btn primary" onclick="nextQuestion()">
+      ${state.index===state.questions.length-1?"Finish 🏁":"Next ➜"}
+    </button></div>`;
+}
+
+function updateProgress(id,isCorrect){
+  progress.attempts[id]=(progress.attempts[id]||0)+1;
+  if(isCorrect){progress.correct[id]=(progress.correct[id]||0)+1;progress.wrong=progress.wrong.filter(w=>w!==id);}
+  else{if(!progress.wrong.includes(id))progress.wrong.push(id);}
+  saveProgress();
+}
+
+function nextQuestion(){
+  if(!state.answered)return;
+  if(state.index<state.questions.length-1){state.index++;state.answered=false;renderQuestion();}
+  else finishQuiz();
+}
+
+function finishQuiz(){
+  const total=state.questions.length;
+  const percent=Math.round((state.correct/total)*100);
+  let stars="💪",msg="Keep practising! Read the explanations and try again.";
+  if(percent>=90){stars="🌟🌟🌟";msg="Excellent!";}
+  else if(percent>=75){stars="🌟🌟";msg="Great job! Review the missed questions.";}
+  else if(percent>=50){stars="🌟";msg="Good effort! Focus on the explanations.";}
+  const seen=new Set();
+  const unique=state.misses.filter(m=>{if(seen.has(m.id))return false;seen.add(m.id);return true;});
+  const reviewHtml=unique.map(miss=>{
+    const q=state.questions.find(i=>i.id===miss.id);
+    const topic=getTopic(q.topic);
+    return`<div class="review-item">
+      <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+      <div class="review-q">${esc(q.q)}</div>
+      <div class="user-answer">Your answer: ${esc(q.options[miss.selected])}</div>
+      <div class="correct-answer">Correct answer: ${esc(q.options[q.answer])}</div>
+      <div>${esc(q.exp)}</div>
+    </div>`;
+  }).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><button class="btn secondary" onclick="renderHome()">🏠 Home</button><div class="chip">Result</div></div>
+    <div class="card">
+      <h2>${esc(state.title)} Complete!</h2>
+      <div class="result-stars">${stars}</div>
+      <p style="font-weight:900;">You scored ${state.correct}/${total} (${percent}%). ${msg}</p>
+      <div class="actions">
+        <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+        ${unique.length?'<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>':""}
+      </div>
+      <h3>Review</h3>
+      ${unique.length?reviewHtml:"<p>🎉 Perfect! No wrong questions this round.</p>"}
+    </div>
+  </div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function retryWrong(){
+  const ids=[...new Set(state.misses.map(m=>m.id))];
+  startQuiz(QUESTIONS.filter(q=>ids.includes(q.id)),"Retry Wrong");
+}
+
+function resetProgress(){
+  if(confirm("Reset all PSLE English Challenge Pack 2 progress?")){
+    progress={attempts:{},correct:{},wrong:[]};
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
