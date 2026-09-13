@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>P5 English Full Pack</title>
+<style>
+:root{
+  --bg1:#fff7ed;
+  --bg2:#fef3c7;
+  --card:#fff;
+  --ink:#0f172a;
+  --muted:#475569;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito","Comic Sans MS",sans-serif;
+  background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  color:var(--ink);
+  line-height:1.45;
+}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.brand{font-weight:1000;font-size:1.2rem}
+.chip{display:inline-block;background:#fed7aa;color:#c2410c;padding:8px 12px;border-radius:999px;font-weight:900;font-size:.9rem}
+.hero{background:linear-gradient(135deg,#ea580c,#d97706);color:#fff;padding:20px;border-radius:24px;box-shadow:0 14px 34px rgba(234,88,12,.18)}
+.hero h1{margin:0 0 8px;font-size:1.5rem}
+.hero p{margin:0;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);border-radius:18px;padding:12px;text-align:center;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.9rem}
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:0 10px 24px rgba(15,23,42,.08);margin:12px 0}
+.topic-card{cursor:pointer;border:3px solid transparent;transition:.15s}
+.topic-card:active{transform:scale(.99)}
+.topic-card:hover{border-color:#fdba74}
+.topic-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.emoji{font-size:2rem}
+.topic-title{font-weight:1000;margin:8px 0 4px}
+.small{color:var(--muted);font-weight:800;font-size:.9rem}
+.progress{height:12px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin:10px 0}
+.progress div{height:100%;background:linear-gradient(90deg,#ea580c,#d97706)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.btn{border:0;border-radius:16px;padding:12px 16px;font-weight:1000;cursor:pointer}
+.primary{background:linear-gradient(135deg,#ea580c,#d97706);color:#fff}
+.secondary{background:#e2e8f0;color:#0f172a}
+.notes{padding-left:20px;margin:10px 0}
+.notes li{margin:6px 0;font-weight:700}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{border:3px solid #fed7aa;background:#fffbf5;border-radius:18px;padding:14px;font-size:1rem;font-weight:900;text-align:left;cursor:pointer}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{margin-top:14px;padding:14px;border-radius:18px;font-weight:900}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600}
+.review-item{border:2px solid #e2e8f0;border-radius:18px;padding:12px;margin:10px 0;background:#fbfdff}
+.review-q{font-weight:1000;margin-bottom:6px}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none !important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{background:#fff1f2;border:2px solid #f43f5e;border-radius:16px;padding:16px;font-weight:700;white-space:pre-wrap;font-family:monospace}
+</style>
+</head>
+<body>
+<main id="app"></main>
+
+<script>
+window.addEventListener("error",function(e){
+  document.getElementById("app").innerHTML='<div class="container"><div class="error-box">Page error: '+(e.message||"Unknown")+'</div></div>';
+});
+</script>
+
+<script>
+const TOPICS=[
+{
+id:"adv-tenses",
+title:"Advanced Tenses",
+emoji:"⏳",
+blurb:"Past perfect, future perfect, and mixed tense situations.",
+notes:["Past Perfect: had + past participle.","Future Perfect: will have + past participle.","Choose tenses based on the sequence of events."],
+qs:[
+["By the time we arrived, the concert ___ already started.",["had","has","have","having"],"Past perfect for an action completed before another past action."],
+["She ___ the book before she watched the movie.",["had read","has read","read","reads"],"Past perfect shows the earlier of two past actions."],
+["By next year, I ___ here for ten years.",["will have worked","will work","have worked","am working"],"Future perfect: will have + past participle."],
+["They ___ dinner by the time we get there.",["will have finished","will finish","have finished","are finishing"],"Future perfect for completion before a future time."],
+["After he ___ his homework, he went out to play.",["had finished","has finished","finishes","was finishing"],"Past perfect for the first of two past actions."],
+["She ___ never ___ to Paris before last summer.",["had, been","has, been","have, been","had, went"],"Past perfect: had + past participle."],
+["By 2030, scientists ___ a cure for the disease.",["will have discovered","will discover","have discovered","are discovering"],"Future perfect for completion by a future date."],
+["I ___ already ___ lunch when he invited me.",["had, eaten","has, eaten","have, eaten","had, ate"],"Past perfect for the earlier action."],
+["The train ___ before we reached the station.",["had left","has left","left","leaves"],"Past perfect for the earlier past action."],
+["By the end of this month, she ___ the project.",["will have completed","will complete","has completed","is completing"],"Future perfect for completion by a deadline."],
+["He ___ the letter before he realised his mistake.",["had sent","has sent","sends","was sending"],"Past perfect for the earlier action."],
+["By tomorrow, they ___ the building.",["will have demolished","will demolish","have demolished","are demolishing"],"Future perfect for completion by tomorrow."],
+["She told me that she ___ the movie twice.",["had seen","has seen","sees","saw"],"Reported speech shifts present perfect to past perfect."],
+["By the time the ambulance arrived, the man ___ already ___ .",["had, died","has, died","have, died","had, dead"],"Past perfect for the earlier event."],
+["I ___ for two hours before the bus finally came.",["had been waiting","have been waiting","was waiting","am waiting"],"Past perfect continuous for duration before a past event."],
+["By next week, we ___ all the exam papers.",["will have marked","will mark","have marked","are marking"],"Future perfect for completion by next week."],
+["After they ___ the house, they moved in.",["had renovated","have renovated","renovate","were renovating"],"Past perfect for the first of two past actions."],
+["He said he ___ the truth the whole time.",["had been telling","has been telling","was telling","is telling"],"Reported speech: past perfect continuous."],
+["By the time you read this letter, I ___ the country.",["will have left","will leave","have left","am leaving"],"Future perfect for an action before a future moment."],
+["She ___ English for five years before she moved to London.",["had been studying","has been studying","was studying","is studying"],"Past perfect continuous for duration before a past event."],
+["By 6 PM, the chef ___ all the dishes.",["will have prepared","will prepare","has prepared","is preparing"],"Future perfect for completion by a specific time."],
+["The children ___ to bed before the guests arrived.",["had gone","have gone","go","were going"],"Past perfect for the earlier past action."],
+["I ___ the report by Friday, so I can relax this weekend.",["will have finished","will finish","have finished","am finishing"],"Future perfect for completion before Friday."],
+["After she ___ her degree, she travelled the world.",["had obtained","has obtained","obtains","was obtaining"],"Past perfect for the first of two past actions."],
+["By the end of the year, the company ___ 100 new employees.",["will have hired","will hire","has hired","is hiring"],"Future perfect for completion by year end."]
+]
+},
+{
+id:"sv-agree-adv2",
+title:"Advanced Subject-Verb Agreement 2",
+emoji:"🤝",
+blurb:"Complex subjects, quantifiers and special noun phrases.",
+notes:["Phrases like 'as well as' do not make the subject plural.","'The number of' is singular; 'a number of' is plural."],
+qs:[
+["The teacher, together with his students, ___ visiting the museum.",["is","are","were","be"],"'Together with' does not change the singular subject."],
+["Neither the manager nor the employees ___ satisfied.",["are","is","was","be"],"With 'nor', verb matches the closer subject 'employees'."],
+["The quality of the products ___ improved greatly.",["has","have","had","having"],"'Quality' is the singular subject, not 'products'."],
+["Each of the contestants ___ given a certificate.",["was","were","are","be"],"'Each' is always singular."],
+["The box of chocolates ___ on the table.",["is","are","were","be"],"'Box' is the singular subject."],
+["One of my friends ___ a doctor.",["is","are","were","be"],"'One' is singular."],
+["The news about the accidents ___ shocking.",["is","are","were","be"],"'News' is uncountable singular."],
+["Either the cat or the dogs ___ responsible for the mess.",["are","is","was","be"],"With 'or', verb matches closer subject 'dogs'."],
+["The committee ___ unable to reach a decision.",["was","were","are","be"],"Collective noun acting as one unit is singular."],
+["Many a student ___ failed this examination.",["has","have","had","having"],"'Many a' takes singular verb."],
+["The number of applicants ___ risen sharply.",["has","have","had","having"],"'The number of' is singular."],
+["A number of students ___ absent today.",["are","is","was","be"],"'A number of' means 'several' and is plural."],
+["Bread and butter ___ my favourite breakfast.",["is","are","were","be"],"Two items as one unit take singular."],
+["The police ___ investigating the robbery.",["are","is","was","be"],"'Police' is always plural."],
+["Every man, woman and child ___ evacuated.",["was","were","are","be"],"'Every' makes each noun singular."],
+["The furniture in all the rooms ___ brand new.",["is","are","were","be"],"'Furniture' is uncountable singular."],
+["Ten dollars ___ too much for a cup of coffee.",["is","are","were","be"],"Amounts of money as a unit are singular."],
+["The scissors ___ in the drawer.",["are","is","was","be"],"'Scissors' is always plural."],
+["Neither of the solutions ___ workable.",["is","are","were","be"],"'Neither' is singular."],
+["All the information ___ been verified.",["has","have","had","having"],"'Information' is uncountable singular."],
+["The team ___ divided in their opinions.",["are","is","was","be"],"When members disagree, collective noun can be plural."],
+["Somebody ___ left their umbrella behind.",["has","have","had","having"],"'Somebody' is singular."],
+["The trousers ___ too long for me.",["are","is","was","be"],"'Trousers' is always plural."],
+["There ___ a book and two pens on the desk.",["is","are","were","be"],"Verb matches the first noun after 'there'."],
+["Each boy and each girl ___ given a gift.",["was","were","are","be"],"'Each' before each noun keeps it singular."]
+]
+},
+{
+id:"prep-phrasal-adv",
+title:"Advanced Prepositions and Phrasal Verbs",
+emoji:"🔗",
+blurb:"Complex prepositions and multi-word phrasal verbs.",
+notes:["Some phrasal verbs are separable, some are not.","Prepositions after adjectives and verbs are fixed."],
+qs:[
+["He was acquitted ___ all charges.",["of","from","with","for"],"We say 'acquitted of'."],
+["She abstained ___ voting.",["from","of","with","about"],"We say 'abstained from'."],
+["The company complied ___ all regulations.",["with","to","for","of"],"We say 'comply with'."],
+["He was oblivious ___ the danger.",["to","of","with","about"],"We say 'oblivious to'."],
+["She was adamant ___ her decision.",["about","of","with","for"],"We say 'adamant about'."],
+["The project was fraught ___ difficulties.",["with","of","by","from"],"We say 'fraught with'."],
+["He was deprived ___ sleep for three days.",["of","from","with","about"],"We say 'deprived of'."],
+["She was indignant ___ the accusation.",["at","of","with","about"],"We say 'indignant at'."],
+["The results were indicative ___ a trend.",["of","with","for","about"],"We say 'indicative of'."],
+["He was proficient ___ three languages.",["in","at","with","of"],"We say 'proficient in'."],
+["The doctor advised him to refrain ___ smoking.",["from","of","with","about"],"We say 'refrain from'."],
+["She was elated ___ the news.",["at","of","with","about"],"We say 'elated at'."],
+["The theory is tantamount ___ an admission of guilt.",["to","of","with","for"],"We say 'tantamount to'."],
+["He was bereaved ___ his closest friend.",["of","from","with","about"],"We say 'bereaved of'."],
+["The area is devoid ___ any vegetation.",["of","from","with","about"],"We say 'devoid of'."],
+["She was conversant ___ the latest research.",["with","of","about","for"],"We say 'conversant with'."],
+["He was impervious ___ criticism.",["to","of","with","about"],"We say 'impervious to'."],
+["The policy is detrimental ___ small businesses.",["to","of","with","for"],"We say 'detrimental to'."],
+["She was apprehensive ___ the interview.",["about","of","with","for"],"We say 'apprehensive about'."],
+["He was instrumental ___ bringing about the change.",["in","at","with","for"],"We say 'instrumental in'."],
+["The evidence was conclusive ___ the matter.",["of","with","for","about"],"We say 'conclusive of'."],
+["She was averse ___ taking risks.",["to","of","with","about"],"We say 'averse to'."],
+["He was susceptible ___ flattery.",["to","of","with","about"],"We say 'susceptible to'."],
+["The decision was tantamount ___ a declaration of war.",["to","of","with","for"],"We say 'tantamount to'."],
+["She was cognisant ___ the risks involved.",["of","with","about","for"],"We say 'cognisant of'."]
+]
+},
+{
+id:"discourse",
+title:"Discourse Markers and Connectors",
+emoji:"🔀",
+blurb:"Formal connectors, transition words and logical linkers.",
+notes:["Discourse markers show relationships between ideas.","Choose the right marker for the logical relationship."],
+qs:[
+["___, I would like to thank everyone for coming.",["Firstly","However","Therefore","Moreover"],"'Firstly' introduces the first point."],
+["He was tired. ___, he continued working.",["Nevertheless","Therefore","Furthermore","Consequently"],"'Nevertheless' shows contrast despite a difficulty."],
+["The experiment failed. ___, we learned a great deal.",["However","Therefore","Furthermore","Consequently"],"'However' introduces a contrasting positive point."],
+["___, the results were inconclusive.",["Unfortunately","Fortunately","Furthermore","Consequently"],"'Unfortunately' introduces a negative outcome."],
+["The data supports the hypothesis. ___, further research is needed.",["Nevertheless","Therefore","Furthermore","Fortunately"],"'Nevertheless' adds a caution despite positive results."],
+["___, I must disagree with your conclusion.",["However","Therefore","Furthermore","Consequently"],"'However' politely introduces disagreement."],
+["The project was over budget. ___, it was behind schedule.",["Moreover","However","Nevertheless","Consequently"],"'Moreover' adds another negative point."],
+["___ the obvious challenges, the team succeeded.",["Despite","Because","Although","Therefore"],"'Despite' + noun phrase shows contrast."],
+["The findings are significant. ___, they should be interpreted cautiously.",["However","Therefore","Furthermore","Moreover"],"'However' adds a caution."],
+["___, the government introduced new policies.",["Consequently","However","Furthermore","Nevertheless"],"'Consequently' shows a result."],
+["The theory is widely accepted. ___, some scientists remain sceptical.",["Nevertheless","Therefore","Furthermore","Consequently"],"'Nevertheless' shows contrast."],
+["___, the study has several limitations.",["Admittedly","Consequently","Furthermore","Therefore"],"'Admittedly' concedes a point."],
+["The evidence is compelling. ___, the jury found him guilty.",["Consequently","However","Nevertheless","Furthermore"],"'Consequently' shows the result."],
+["___ being expensive, the product is also unreliable.",["Apart from","Because","Although","Therefore"],"'Apart from' adds an additional negative point."],
+["The initial results were promising. ___, the final outcome was disappointing.",["However","Therefore","Furthermore","Moreover"],"'However' introduces a contrasting outcome."],
+["___, I believe we should proceed with the plan.",["In conclusion","However","Furthermore","Consequently"],"'In conclusion' summarises the final opinion."],
+["The report highlights several issues. ___, it offers practical solutions.",["Furthermore","However","Nevertheless","Consequently"],"'Furthermore' adds a positive point."],
+["___ the circumstances, the team performed admirably.",["Given","Because","Although","Therefore"],"'Given' means 'considering'."],
+["The proposal was rejected. ___, the team revised it.",["Consequently","However","Furthermore","Nevertheless"],"'Consequently' shows the result of rejection."],
+["___, the two studies reached different conclusions.",["Notably","Therefore","Furthermore","Consequently"],"'Notably' draws attention to a key point."],
+["The policy has been criticised. ___, it remains in place.",["Nevertheless","Therefore","Furthermore","Consequently"],"'Nevertheless' shows it continues despite criticism."],
+["___, the experiment must be repeated.",["Therefore","However","Furthermore","Nevertheless"],"'Therefore' draws a logical conclusion."],
+["The data is limited. ___, the findings should be treated with caution.",["Accordingly","However","Furthermore","Moreover"],"'Accordingly' means 'for that reason'."],
+["___, I wish to express my gratitude.",["Finally","However","Therefore","Consequently"],"'Finally' introduces the last point."],
+["The results were unexpected. ___, they open new avenues for research.",["Nonetheless","Therefore","Furthermore","Consequently"],"'Nonetheless' shows a positive despite surprise."]
+]
+},
+{
+id:"adj-adv-adv",
+title:"Advanced Adjectives and Adverbs",
+emoji:"🎨",
+blurb:"Participial adjectives, adverb placement and degree modifiers.",
+notes:["-ed adjectives describe feelings; -ing adjectives describe causes.","Adverb position can change meaning."],
+qs:[
+["The movie was very ___. I almost fell asleep.",["boring","bored","bore","boringly"],"'Boring' describes the movie causing boredom."],
+["I was ___ by the complicated instructions.",["confused","confusing","confuse","confusedly"],"'Confused' describes how I felt."],
+["The news was quite ___. Everyone was shocked.",["shocking","shocked","shock","shockingly"],"'Shocking' describes the news causing shock."],
+["She was ___ to hear about the accident.",["devastated","devastating","devastate","devastatingly"],"'Devastated' describes her feeling."],
+["The lecture was extremely ___. Several students left.",["tedious","tediously","tedium","tediousness"],"'Tedious' describes the lecture."],
+["He looked at me ___.",["suspiciously","suspicious","suspicion","suspiciousness"],"Adverb describes how he looked."],
+["The task was surprisingly ___.",["easy","easily","ease","easiness"],"Adjective needed after 'was'."],
+["She spoke ___ about her achievements.",["modestly","modest","modesty","modestness"],"Adverb describes how she spoke."],
+["The instructions were ___ written.",["clearly","clear","clarity","clearness"],"Adverb modifies 'written'."],
+["He was ___ disappointed with the results.",["bitterly","bitter","bitterness","bitterly"],"'Bitterly' emphasizes the degree of disappointment."],
+["The view from the top was absolutely ___.",["breathtaking","breathtakingly","breathe","breathless"],"'Breathtaking' describes the view."],
+["She ___ agreed to the terms.",["reluctantly","reluctant","reluctance","reluctantly"],"Adverb describes how she agreed."],
+["The child was ___ by the loud noise.",["frightened","frightening","frighten","frighteningly"],"'Frightened' describes the child's feeling."],
+["He gave a ___ explanation.",["detailed","detail","details","detailing"],"Adjective describes 'explanation'."],
+["The problem was ___ complex.",["extremely","extreme","extremity","extremeness"],"'Extremely' modifies the adjective 'complex'."],
+["She was ___ aware of the consequences.",["acutely","acute","acuteness","acutely"],"Adverb modifies 'aware'."],
+["The performance was ___ received.",["warmly","warm","warmth","warmer"],"Adverb modifies 'received'."],
+["He was ___ opposed to the idea.",["strongly","strong","strength","stronger"],"Adverb modifies 'opposed'."],
+["The situation became increasingly ___.",["tense","tensely","tension","tenseness"],"Adjective needed after 'became'."],
+["She answered the question ___.",["confidently","confident","confidence","confidentness"],"Adverb describes how she answered."],
+["The documentary was deeply ___.",["moving","moved","move","movably"],"'Moving' describes the documentary causing emotion."],
+["He was ___ injured in the accident.",["seriously","serious","seriousness","seriously"],"Adverb modifies 'injured'."],
+["The results were ___ positive.",["overwhelmingly","overwhelming","overwhelm","overwhelmed"],"Adverb emphasizes the degree."],
+["She looked ___ at the broken vase.",["regretfully","regretful","regret","regrettable"],"Adverb describes how she looked."],
+["The evidence was ___ insufficient.",["woefully","woeful","woe","woefully"],"Adverb emphasizes the degree of insufficiency."]
+]
+},
+{
+id:"nouns-det-adv",
+title:"Advanced Nouns, Pronouns and Determiners",
+emoji:"📝",
+blurb:"Complex noun phrases, advanced quantifiers and pronoun reference.",
+notes:["Some determiners are used only with countable or uncountable nouns.","Pronouns must agree with their antecedents."],
+qs:[
+["___ the information provided was accurate.",["All","Many","Several","Few"],"'All' works with uncountable 'information'."],
+["She has ___ patience for such tasks.",["little","few","many","several"],"'Patience' is uncountable, use 'little'."],
+["___ of the evidence was compelling.",["Much","Many","Several","Few"],"'Evidence' is uncountable, use 'much'."],
+["He gave ___ reasons for his decision.",["several","much","a little","a great deal of"],"'Reasons' are countable, use 'several'."],
+["There was ___ excitement in the air.",["a great deal of","many","several","a few"],"'Excitement' is uncountable."],
+["___ student in the class received a prize.",["Every","All","Many","Few"],"'Every' is used with singular noun."],
+["She has ___ experience in this field.",["considerable","many","several","a few"],"'Experience' is uncountable."],
+["___ of the furniture was damaged.",["Some","Many","Several","Few"],"'Furniture' is uncountable, use 'some'."],
+["He made ___ valid points during the debate.",["several","much","a little","a great deal of"],"'Points' are countable."],
+["___ knowledge is required for this position.",["A certain amount of","Many","Several","A few"],"'Knowledge' is uncountable."],
+["The committee reached ___ decision unanimously.",["a","an","the","no article"], "'Decision' is singular countable, needs 'a'."],
+["___ the data collected was irrelevant.",["Most of","Many of","Several of","Few of"],"'Data' is uncountable, use 'most of'."],
+["She showed ___ interest in the proposal.",["considerable","many","several","a few"],"'Interest' is uncountable."],
+["There were ___ discrepancies in the report.",["numerous","much","a little","a great deal of"],"'Discrepancies' are countable."],
+["He has ___ respect for authority.",["little","few","many","several"],"'Respect' is uncountable, use 'little'."],
+["___ of the equipment was outdated.",["Much","Many","Several","Few"],"'Equipment' is uncountable."],
+["She provided ___ details about the incident.",["ample","much","a little","a great deal of"],"'Details' are countable, use 'ample'."],
+["There is ___ doubt about his honesty.",["no","not","none","any"],"'No' is used before a noun without a verb."],
+["He gave ___ thought before answering.",["considerable","many","several","a few"],"'Thought' is uncountable here."],
+["___ the participants completed the survey.",["All of","Much of","A little of","A great deal of"],"'Participants' are countable."],
+["She has ___ talent for music.",["exceptional","many","several","a few"],"'Talent' is uncountable."],
+["There was ___ confusion about the instructions.",["considerable","many","several","a few"],"'Confusion' is uncountable."],
+["He offered ___ suggestions for improvement.",["several","much","a little","a great deal of"],"'Suggestions' are countable."],
+["___ progress has been made so far.",["Significant","Many","Several","Few"],"'Progress' is uncountable."],
+["The report contained ___ errors.",["numerous","much","a little","a great deal of"],"'Errors' are countable."]
+]
+},
+{
+id:"vocab-context",
+title:"Vocabulary in Context",
+emoji:"📚",
+blurb:"Choosing the correct word based on context and collocation.",
+notes:["Read the full sentence for clues.","Some words only collocate with certain other words."],
+qs:[
+["The government ___ a new policy to reduce pollution.",["implemented","performed","conducted","executed"],"'Implement' collocates with 'policy'."],
+["She ___ a significant contribution to the project.",["made","did","took","gave"],"'Make a contribution' is the correct collocation."],
+["The results ___ our initial predictions.",["confirmed","conformed","performed","informed"],"'Confirm' means to verify."],
+["He ___ full responsibility for the mistake.",["took","made","gave","did"],"'Take responsibility' is the correct collocation."],
+["The company ___ a loss of $2 million last quarter.",["suffered","made","took","gave"],"'Suffer a loss' is the correct collocation."],
+["She ___ a strong resemblance to her mother.",["bears","carries","holds","keeps"],"'Bear a resemblance' is the correct collocation."],
+["The evidence ___ him of the crime.",["acquitted","accused","convicted","charged"],"'Acquit of' means to declare not guilty."],
+["He ___ the opportunity to study abroad.",["seized","caught","grabbed","took"],"'Seize an opportunity' is the correct collocation."],
+["The decision ___ a wave of protests.",["sparked","lit","fired","burned"],"'Spark' means to trigger."],
+["She ___ a brilliant career in medicine.",["pursued","followed","chased","hunted"],"'Pursue a career' is the correct collocation."],
+["The report ___ serious concerns about safety.",["raised","lifted","elevated","hoisted"],"'Raise concerns' is the correct collocation."],
+["He ___ his promise to return.",["kept","held","maintained","preserved"],"'Keep a promise' is the correct collocation."],
+["The new law ___ effect next month.",["comes","takes","gets","goes"],"'Come into effect' is the correct phrase."],
+["She ___ a complaint against the company.",["filed","made","did","took"],"'File a complaint' is the correct collocation."],
+["The discovery ___ new possibilities for research.",["opened","closed","shut","locked"],"'Open possibilities' is the correct collocation."],
+["He ___ a fortune in the stock market.",["made","did","took","gave"],"'Make a fortune' is the correct collocation."],
+["The meeting was ___ at short notice.",["called off","put on","set up","brought about"],"'Call off' means to cancel."],
+["She ___ the blame for the accident.",["shouldered","carried","held","kept"],"'Shoulder the blame' is the correct collocation."],
+["The project ___ completion ahead of schedule.",["reached","arrived","got","came"],"'Reach completion' is the correct collocation."],
+["He ___ a deep understanding of the subject.",["demonstrated","showed","displayed","exhibited"],"'Demonstrate understanding' is formal and correct."],
+["The scandal ___ his reputation.",["ruined","destroyed","damaged","harmed"],"'Ruin' implies complete destruction of reputation."],
+["She ___ the consequences of her actions.",["faced","met","encountered","confronted"],"'Face the consequences' is the correct collocation."],
+["The discovery ___ light on the mystery.",["shed","threw","cast","put"],"'Shed light on' is the correct idiom."],
+["He ___ a high price for his mistake.",["paid","gave","took","made"],"'Pay a price' is the correct collocation."],
+["The policy ___ widespread criticism.",["drew","pulled","attracted","dragged"],"'Draw criticism' is the correct collocation."]
+]
+},
+{
+id:"sentence-transform-adv",
+title:"Advanced Sentence Transformation",
+emoji:"🔄",
+blurb:"Complex passive, reported speech and conditional transformations.",
+notes:["Passive voice changes the focus of the sentence.","Reported speech shifts tenses back."],
+qs:[
+["'They are building a new hospital.' Passive: A new hospital ___ .",["is being built","is built","was built","has been built"],"Present continuous passive."],
+["'Someone has stolen my wallet.' Passive: My wallet ___ .",["has been stolen","was stolen","is stolen","has stolen"],"Present perfect passive."],
+["'They will announce the results tomorrow.' Passive: The results ___ tomorrow.",["will be announced","are announced","will announce","are announcing"],"Future passive."],
+["'The chef is preparing the meal.' Passive: The meal ___ by the chef.",["is being prepared","is prepared","was prepared","has been prepared"],"Present continuous passive."],
+["'They have completed the project.' Passive: The project ___ .",["has been completed","was completed","is completed","has completed"],"Present perfect passive."],
+["'They were renovating the house.' Passive: The house ___ .",["was being renovated","was renovated","is renovated","has been renovated"],"Past continuous passive."],
+["'People believe that he is innocent.' Passive: He ___ to be innocent.",["is believed","was believed","has been believed","believes"],"Passive with reporting verb."],
+["'They say that she is a genius.' Passive: She ___ to be a genius.",["is said","was said","has been said","says"],"Passive with reporting verb."],
+["'It is expected that the prices will rise.' Passive: The prices ___ to rise.",["are expected","were expected","have been expected","expect"],"Passive with reporting verb."],
+["'They consider him a hero.' Passive: He ___ a hero.",["is considered","was considered","has been considered","considers"],"Passive with reporting verb."],
+["'She said, \"I will help you.\"' Reported: She said she ___ help me.",["would","will","shall","should"],"'Will' changes to 'would' in reported speech."],
+["'He said, \"I have finished.\"' Reported: He said he ___ finished.",["had","has","have","having"],"Present perfect changes to past perfect."],
+["'She asked, \"Are you coming?\"' Reported: She asked if I ___ coming.",["was","am","is","be"],"Present continuous changes to past continuous."],
+["'He said, \"I can swim.\"' Reported: He said he ___ swim.",["could","can","could be","can be"],"'Can' changes to 'could'."],
+["'She said, \"I must leave.\"' Reported: She said she ___ leave.",["had to","must","have to","has to"],"'Must' changes to 'had to'."],
+["'He said, \"I saw her yesterday.\"' Reported: He said he ___ her the day before.",["had seen","saw","has seen","sees"],"Past simple changes to past perfect."],
+["'She said, \"I am reading.\"' Reported: She said she ___ reading.",["was","is","am","be"],"Present continuous changes to past continuous."],
+["'He asked, \"Where do you live?\"' Reported: He asked where I ___ .",["lived","live","lives","living"],"Reported question: tense shifts back."],
+["'She said, \"Don't be late.\"' Reported: She told me ___ late.",["not to be","don't be","to not be","not be"],"Negative imperative in reported speech."],
+["'He said, \"Please wait here.\"' Reported: He asked me ___ there.",["to wait","wait","to please wait","please wait"],"Polite request: asked + to + verb."],
+["If I were rich, I would travel the world. This means: I ___ rich.",["am not","was not","were not","have not been"],"Second conditional implies the opposite is true."],
+["If she had studied harder, she would have passed. This means: She ___ harder.",["did not study","does not study","had not studied","was not studying"],"Third conditional implies she did not study harder."],
+["Unless you hurry, you will be late. This means: If you ___ hurry, you will be late.",["do not","does not","did not","have not"],"'Unless' means 'if not'."],
+["He is too young to drive. This means: He is ___ young ___ drive.",["so, that he cannot","such, that he cannot","enough, to","too, for him to"],"'Too...to' can be rewritten with 'so...that'."],
+["The box is so heavy that I cannot lift it. This means: The box is ___ heavy ___ lift.",["too, for me to","so, that I can","enough, to","such, that I can"],"'So...that' can be rewritten with 'too...to'."]
+]
+},
+{
+id:"grammar-context",
+title:"Grammar in Context",
+emoji:"🧩",
+blurb:"Applying grammar rules in extended passages and situations.",
+notes:["Read the full context before choosing.","Look for tense consistency and subject-verb agreement."],
+qs:[
+["The team ___ working on the project for three months now.",["has been","have been","is","are"],"'Team' as a unit takes singular 'has been'."],
+["By the time the report is published, the data ___ outdated.",["will have become","will become","has become","becomes"],"Future perfect for completion before a future event."],
+["Neither the students nor the teacher ___ aware of the change.",["was","were","are","be"],"Verb matches closer subject 'teacher' (singular)."],
+["The evidence ___ that the suspect was at the scene.",["suggests","suggest","suggesting","suggested"],"'Evidence' is uncountable singular."],
+["She ___ the piano since she was five.",["has been playing","is playing","plays","was playing"],"Present perfect continuous for duration from past to present."],
+["The committee ___ divided on the issue.",["is","are","was","be"],"Collective noun acting as one unit is singular."],
+["He ___ to the gym every morning before work.",["goes","go","going","gone"],"Simple present for habitual action."],
+["The results ___ announced by the end of the week.",["will be","will","are","were"],"Future passive for a planned action."],
+["Each of the participants ___ required to submit a form.",["is","are","were","be"],"'Each' is always singular."],
+["The news ___ spread quickly through the office.",["has","have","had","having"],"'News' is uncountable singular."],
+["She ___ never ___ to a live concert before.",["had, been","has, been","have, been","had, went"],"Past perfect for experience before a past time."],
+["The furniture in the lobby ___ recently replaced.",["was","were","are","be"],"'Furniture' is uncountable singular."],
+["By next month, the construction ___ completed.",["will have been","will be","has been","is being"],"Future perfect passive."],
+["The police ___ investigating the incident.",["are","is","was","be"],"'Police' is always plural."],
+["He ___ the book before the movie was released.",["had read","has read","reads","was reading"],"Past perfect for the earlier action."],
+["The number of applicants ___ increased this year.",["has","have","had","having"],"'The number of' is singular."],
+["She ___ English for ten years by the time she graduates.",["will have been studying","will study","has studied","is studying"],"Future perfect continuous for duration."],
+["Bread and butter ___ served at breakfast.",["is","are","were","be"],"Two items as one unit take singular."],
+["The equipment ___ checked regularly.",["is","are","were","be"],"'Equipment' is uncountable singular."],
+["A number of students ___ complained about the food.",["have","has","had","having"],"'A number of' means 'several' and is plural."],
+["The trousers ___ too tight around the waist.",["are","is","was","be"],"'Trousers' is always plural."],
+["He ___ the letter before he realised the error.",["had sent","has sent","sends","was sending"],"Past perfect for the earlier action."],
+["The scissors ___ on the kitchen counter.",["are","is","was","be"],"'Scissors' is always plural."],
+["Every student ___ given a unique ID number.",["was","were","are","be"],"'Every' is singular."],
+["The audience ___ moved to tears by the performance.",["was","were","are","be"],"Audience acting as one unit is singular."]
+]
+},
+{
+id:"editing",
+title:"Editing and Error Correction",
+emoji:"✏️",
+blurb:"Identifying and correcting grammatical errors in sentences.",
+notes:["Look for subject-verb agreement errors.","Check tense consistency and word form."],
+qs:[
+["Which sentence is correct?",["She don't like coffee.","She doesn't like coffee.","She not like coffee.","She doesn't likes coffee."],"Singular 'she' takes 'doesn't' + base verb."],
+["Which sentence is correct?",["The children is playing.","The children are playing.","The children am playing.","The children be playing."],"'Children' is plural, takes 'are'."],
+["Which sentence is correct?",["He go to school every day.","He goes to school every day.","He going to school every day.","He gone to school every day."],"Singular 'he' takes 'goes'."],
+["Which sentence is correct?",["I have saw that movie.","I have seen that movie.","I have see that movie.","I have seed that movie."],"Present perfect: have + past participle 'seen'."],
+["Which sentence is correct?",["She is more taller than me.","She is taller than me.","She is most taller than me.","She is tall than me."],"Comparative uses '-er', not 'more + -er'."],
+["Which sentence is correct?",["They was happy.","They were happy.","They is happy.","They am happy."],"'They' is plural, takes 'were'."],
+["Which sentence is correct?",["He don't know the answer.","He doesn't know the answer.","He not know the answer.","He doesn't knows the answer."],"Singular 'he' takes 'doesn't' + base verb."],
+["Which sentence is correct?",["I am agree with you.","I agree with you.","I am agreeing with you always.","I agrees with you."],"'Agree' is a verb, no 'am' needed."],
+["Which sentence is correct?",["She has went home.","She has gone home.","She has go home.","She has going home."],"Present perfect: has + past participle 'gone'."],
+["Which sentence is correct?",["The informations are correct.","The information is correct.","The information are correct.","The informations is correct."],"'Information' is uncountable, no plural."],
+["Which sentence is correct?",["He gave me an advice.","He gave me some advice.","He gave me many advices.","He gave me an advices."],"'Advice' is uncountable."],
+["Which sentence is correct?",["The news are shocking.","The news is shocking.","The news were shocking.","The news be shocking."],"'News' is uncountable singular."],
+["Which sentence is correct?",["She is more smarter.","She is smarter.","She is most smarter.","She is smart than."],"Comparative uses '-er', not 'more + -er'."],
+["Which sentence is correct?",["I have been there yesterday.","I was there yesterday.","I have went there yesterday.","I am there yesterday."],"Specific past time uses simple past."],
+["Which sentence is correct?",["He is one of the best student.","He is one of the best students.","He is one of the best studentses.","He is one of the best student's."],"'One of the' + plural noun."],
+["Which sentence is correct?",["The furniture are new.","The furniture is new.","The furniture are news.","The furniture were new."],"'Furniture' is uncountable singular."],
+["Which sentence is correct?",["She don't have no money.","She doesn't have any money.","She doesn't has any money.","She not have any money."],"Avoid double negatives; 'doesn't' + 'any'."],
+["Which sentence is correct?",["He is interested on art.","He is interested in art.","He is interested at art.","He is interested for art."],"'Interested in' is the correct preposition."],
+["Which sentence is correct?",["The peoples are waiting.","The people are waiting.","The people is waiting.","The peoples is waiting."],"'People' is already plural."],
+["Which sentence is correct?",["She is good in Maths.","She is good at Maths.","She is good on Maths.","She is good for Maths."],"'Good at' is the correct preposition."],
+["Which sentence is correct?",["I am looking forward to see you.","I am looking forward to seeing you.","I am looking forward for see you.","I am looking forward at seeing you."],"'Look forward to' + verb-ing."],
+["Which sentence is correct?",["He is married with a doctor.","He is married to a doctor.","He is married for a doctor.","He is married at a doctor."],"'Married to' is the correct preposition."],
+["Which sentence is correct?",["The childrens are playing.","The children are playing.","The children is playing.","The childrens is playing."],"'Children' is already plural."],
+["Which sentence is correct?",["She has less friends than me.","She has fewer friends than me.","She has less friend than me.","She has fewer friend than me."],"'Friends' are countable, use 'fewer'."],
+["Which sentence is correct?",["He suggested me to go.","He suggested that I go.","He suggested to me go.","He suggested me go."],"'Suggest' + that-clause, not object + to-infinitive."]
+]
+}
+];
+
+const QUESTIONS=[];
+TOPICS.forEach(topic=>{
+  topic.qs.forEach((item,index)=>{
+    QUESTIONS.push({
+      id:topic.id+"-"+(index+1),
+      topic:topic.id,
+      q:item[0],
+      options:item[1],
+      exp:item[2]
+    });
+  });
+});
+
+const STORAGE_KEY="p5EnglishFullPack";
+const app=document.getElementById("app");
+let progress=loadProgress();
+let state={questions:[],index:0,correct:0,answered:false,title:"",misses:[]};
+
+function loadProgress(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw)return{attempts:{},correct:{},wrong:[]};
+    const data=JSON.parse(raw);
+    return{attempts:data.attempts||{},correct:data.correct||{},wrong:data.wrong||[]};
+  }catch(e){return{attempts:{},correct:{},wrong:[]};}
+}
+function saveProgress(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(progress));}catch(e){}}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function shuffle(a){const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;}
+function prepareQuestions(list){
+  return list.map(q=>{
+    const opts=q.options.map((t,i)=>({text:t,correct:i===0}));
+    const s=shuffle(opts);
+    return{...q,options:s.map(o=>o.text),answer:s.findIndex(o=>o.correct)};
+  });
+}
+function getTopic(id){return TOPICS.find(t=>t.id===id);}
+function getQuestionsByTopic(id){return QUESTIONS.filter(q=>q.topic===id);}
+function getStats(){
+  const attempted=Object.keys(progress.attempts).length;
+  let tA=0,tC=0;
+  for(const id in progress.attempts)tA+=progress.attempts[id];
+  for(const id in progress.correct)tC+=progress.correct[id];
+  return{attempted,accuracy:tA?Math.round((tC/tA)*100):0,wrong:progress.wrong.length};
+}
+
+function renderHome(){
+  const stats=getStats();
+  const cards=TOPICS.map(topic=>{
+    const total=topic.qs.length;
+    const mastered=QUESTIONS.filter(q=>q.topic===topic.id&&progress.correct[q.id]>0).length;
+    const pct=total?Math.round((mastered/total)*100):0;
+    return`<div class="card topic-card" onclick="openTopic('${topic.id}')">
+      <div class="topic-top"><div class="emoji">${topic.emoji}</div><div class="chip">P5</div></div>
+      <div class="topic-title">${esc(topic.title)}</div>
+      <div class="small">${esc(topic.blurb)}</div>
+      <div class="progress"><div style="width:${pct}%"></div></div>
+      <div class="small">${mastered}/${total} correct at least once</div>
+    </div>`;
+  }).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><div class="brand">📙 P5 English Full Pack</div><div class="chip">250 MCQs</div></div>
+    <div class="hero">
+      <h1>Primary 5 English Practice</h1>
+      <p>10 topics × 25 questions covering advanced grammar, vocabulary, tenses and editing.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="startAllChallenge()">🌟 Random 20</button>
+        <button class="btn primary" onclick="startRandomTen()">🎲 Random 10</button>
+        <button class="btn primary" onclick="startWrongAll()">❌ Wrong Replay</button>
+        <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="value">${stats.attempted}</div><div class="label">Questions practiced</div></div>
+      <div class="stat"><div class="value">${stats.accuracy}%</div><div class="label">Accuracy</div></div>
+      <div class="stat"><div class="value">${stats.wrong}</div><div class="label">Wrong questions</div></div>
+      <div class="stat"><div class="value">${TOPICS.length}</div><div class="label">Topics</div></div>
+    </div>
+    ${cards}
+  </div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function openTopic(id){
+  const topic=getTopic(id);
+  const notesHtml=topic.notes.map(n=>`<li>${esc(n)}</li>`).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><button class="btn secondary" onclick="renderHome()">⬅ Home</button><div class="chip">P5 Topic</div></div>
+    <div class="card">
+      <div class="topic-top"><div class="emoji">${topic.emoji}</div><div class="chip">P5</div></div>
+      <h2>${esc(topic.title)}</h2>
+      <p style="font-weight:800;">${esc(topic.blurb)}</p>
+      <h3>Key ideas</h3><ul class="notes">${notesHtml}</ul>
+      <div class="actions">
+        <button class="btn primary" onclick="startTopic('${topic.id}')">▶️ Start 25 Questions</button>
+        <button class="btn secondary" onclick="startTopicWrong('${topic.id}')">❌ Wrong in Topic</button>
+      </div>
+    </div>
+  </div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function startAllChallenge(){startQuiz(shuffle(QUESTIONS).slice(0,20),"Random 20 Challenge");}
+function startRandomTen(){startQuiz(shuffle(QUESTIONS).slice(0,10),"Random 10");}
+function startWrongAll(){
+  const qs=QUESTIONS.filter(q=>progress.wrong.includes(q.id));
+  if(!qs.length){alert("No wrong questions saved yet.");return;}
+  startQuiz(qs,"Wrong Replay");
+}
+function startTopic(id){startQuiz(getQuestionsByTopic(id),getTopic(id).title);}
+function startTopicWrong(id){
+  const topic=getTopic(id);
+  const qs=QUESTIONS.filter(q=>q.topic===id&&progress.wrong.includes(q.id));
+  if(!qs.length){alert("No wrong questions in this topic yet.");return;}
+  startQuiz(qs,"Wrong Replay: "+topic.title);
+}
+
+function startQuiz(list,title){
+  if(!list.length){alert("No questions available.");return;}
+  state={questions:prepareQuestions(list),index:0,correct:0,answered:false,title,misses:[]};
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=state.questions[state.index];
+  const topic=getTopic(q.topic);
+  const pct=(state.index/state.questions.length)*100;
+  const opts=q.options.map((o,i)=>
+    `<button class="option" onclick="answer(${i})">${String.fromCharCode(65+i)}. ${esc(o)}</button>`
+  ).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><button class="btn secondary" onclick="renderHome()">🏠 Home</button><div class="chip">${esc(state.title)}</div></div>
+    <div class="card">
+      <div class="progress"><div style="width:${pct}%"></div></div>
+      <div class="small">Question ${state.index+1} of ${state.questions.length} • Score ${state.correct}</div>
+      <div class="chip" style="margin:10px 0;">${topic.emoji} ${esc(topic.title)}</div>
+      <h2>${esc(q.q)}</h2>
+      <div class="options">${opts}</div>
+      <div id="feedback" class="feedback hidden"></div>
+    </div>
+  </div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function answer(selected){
+  if(state.answered)return;
+  state.answered=true;
+  const q=state.questions[state.index];
+  const buttons=Array.from(document.querySelectorAll(".option"));
+  buttons.forEach(b=>b.disabled=true);
+  buttons[q.answer].classList.add("correct");
+  const isCorrect=selected===q.answer;
+  if(isCorrect){state.correct++;buttons[selected].classList.add("correct");}
+  else{buttons[selected].classList.add("wrong");state.misses.push({id:q.id,selected});}
+  updateProgress(q.id,isCorrect);
+  const fb=document.getElementById("feedback");
+  fb.className="feedback "+(isCorrect?"good":"bad");
+  fb.innerHTML=`<div>${isCorrect?"✅ Correct!":"❌ Not quite."}</div>
+    <div class="exp">${esc(q.exp)}${!isCorrect?" Correct answer: "+esc(q.options[q.answer])+".":""}</div>
+    <div class="actions"><button class="btn primary" onclick="nextQuestion()">
+      ${state.index===state.questions.length-1?"Finish 🏁":"Next ➜"}
+    </button></div>`;
+}
+
+function updateProgress(id,isCorrect){
+  progress.attempts[id]=(progress.attempts[id]||0)+1;
+  if(isCorrect){progress.correct[id]=(progress.correct[id]||0)+1;progress.wrong=progress.wrong.filter(w=>w!==id);}
+  else{if(!progress.wrong.includes(id))progress.wrong.push(id);}
+  saveProgress();
+}
+
+function nextQuestion(){
+  if(!state.answered)return;
+  if(state.index<state.questions.length-1){state.index++;state.answered=false;renderQuestion();}
+  else finishQuiz();
+}
+
+function finishQuiz(){
+  const total=state.questions.length;
+  const percent=Math.round((state.correct/total)*100);
+  let stars="💪",msg="Keep practising! Read the explanations and try again.";
+  if(percent>=90){stars="🌟🌟🌟";msg="Excellent!";}
+  else if(percent>=75){stars="🌟🌟";msg="Great job! Review the missed questions.";}
+  else if(percent>=50){stars="🌟";msg="Good effort! Focus on the explanations.";}
+  const seen=new Set();
+  const unique=state.misses.filter(m=>{if(seen.has(m.id))return false;seen.add(m.id);return true;});
+  const reviewHtml=unique.map(miss=>{
+    const q=state.questions.find(i=>i.id===miss.id);
+    const topic=getTopic(q.topic);
+    return`<div class="review-item">
+      <div class="small">${topic.emoji} ${esc(topic.title)}</div>
+      <div class="review-q">${esc(q.q)}</div>
+      <div class="user-answer">Your answer: ${esc(q.options[miss.selected])}</div>
+      <div class="correct-answer">Correct answer: ${esc(q.options[q.answer])}</div>
+      <div>${esc(q.exp)}</div>
+    </div>`;
+  }).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><button class="btn secondary" onclick="renderHome()">🏠 Home</button><div class="chip">Result</div></div>
+    <div class="card">
+      <h2>${esc(state.title)} Complete!</h2>
+      <div class="result-stars">${stars}</div>
+      <p style="font-weight:900;">You scored ${state.correct}/${total} (${percent}%). ${msg}</p>
+      <div class="actions">
+        <button class="btn primary" onclick="renderHome()">🏠 Home</button>
+        ${unique.length?'<button class="btn secondary" onclick="retryWrong()">❌ Retry Wrong</button>':""}
+      </div>
+      <h3>Review</h3>
+      ${unique.length?reviewHtml:"<p>🎉 Perfect! No wrong questions this round.</p>"}
+    </div>
+  </div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function retryWrong(){
+  const ids=[...new Set(state.misses.map(m=>m.id))];
+  startQuiz(QUESTIONS.filter(q=>ids.includes(q.id)),"Retry Wrong");
+}
+
+function resetProgress(){
+  if(confirm("Reset all P5 English progress?")){
+    progress={attempts:{},correct:{},wrong:[]};
+    saveProgress();
+    renderHome();
+  }
+}
+
+renderHome();
+</script>
+</body>
+</html>
