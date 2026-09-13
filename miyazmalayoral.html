@@ -180,7 +180,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      min-height: 45px;
+      min-height: 55px;
       padding: 10px;
       border-radius: 8px;
       background: rgba(255,255,255,0.05);
@@ -192,12 +192,26 @@
     .word-tile {
       background: var(--accent);
       color: var(--bg);
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
       font-weight: bold;
-      font-size: 13px;
       cursor: pointer;
       user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .word-ms {
+      font-size: 13px;
+    }
+
+    .word-en {
+      font-size: 10px;
+      font-weight: normal;
+      opacity: 0.85;
+      margin-top: 1px;
     }
 
     .btn-action {
@@ -300,7 +314,7 @@
       </button>
       <button class="img-tab-btn" id="tab-img6" onclick="switchImage(5)">
         <span>6. Kolong Blok</span>
-        <span class="tab-mark-indicator" id="mark-tag-6">0/10m</span>
+        <span class="tab-mark-indicator" id="mark-tag-5">0/10m</span>
       </button>
       <button class="img-tab-btn" id="tab-img7" onclick="switchImage(6)">
         <span>7. Rekreasi</span>
@@ -369,7 +383,17 @@
             title: "Pengenalan: Tempat dan Suasana",
             marks: 2,
             english: "This picture shows a busy scene at a shopping mall.",
-            malay: ["Gambar", "ini", "menunjukkan", "suasana", "ramai", "orang", "di", "pusat", "membeli-belah"],
+            malay: [
+              { ms: "Gambar", en: "Picture" },
+              { ms: "ini", en: "this" },
+              { ms: "menunjukkan", en: "shows" },
+              { ms: "suasana", en: "atmosphere" },
+              { ms: "ramai", en: "crowded" },
+              { ms: "orang", en: "people" },
+              { ms: "di", en: "at" },
+              { ms: "pusat", en: "centre" },
+              { ms: "membeli-belah", en: "shopping" }
+            ],
             q1: "Di manakah lokasi gambar ini?",
             a1: "Gambar ini menunjukkan suasana ramai orang di pusat membeli-belah.",
             q2: "Adakah kamu suka pergi ke pusat membeli-belah pada hujung minggu? Mengapa?",
@@ -380,7 +404,16 @@
             title: "Bahagian 1: Memilih Aiskrim",
             marks: 2,
             english: "A mother and her child are looking at the ice cream flavors.",
-            malay: ["Seorang", "ibu", "dan", "anaknya", "sedang", "memilih", "perisa", "aiskrim"],
+            malay: [
+              { ms: "Seorang", en: "A" },
+              { ms: "ibu", en: "mother" },
+              { ms: "dan", en: "and" },
+              { ms: "anaknya", en: "her child" },
+              { ms: "sedang", en: "currently" },
+              { ms: "memilih", en: "choosing" },
+              { ms: "perisa", en: "flavour" },
+              { ms: "aiskrim", en: "ice cream" }
+            ],
             q1: "Apakah yang sedang dilakukan oleh ibu dan anak itu?",
             a1: "Ibu dan anaknya sedang memilih perisa aiskrim di kaunter.",
             q2: "Apakah perisa aiskrim kegemaran kamu?",
@@ -391,7 +424,16 @@
             title: "Bahagian 2: Beratur Kemas",
             marks: 2,
             english: "The customers queue up neatly behind the barrier to buy food.",
-            malay: ["Para", "pembeli", "beratur", "dengan", "kemas", "untuk", "membeli", "aiskrim"],
+            malay: [
+              { ms: "Para", en: "The" },
+              { ms: "pembeli", en: "buyers" },
+              { ms: "beratur", en: "queue up" },
+              { ms: "dengan", en: "with" },
+              { ms: "kemas", en: "neatly" },
+              { ms: "untuk", en: "to" },
+              { ms: "membeli", en: "buy" },
+              { ms: "aiskrim", en: "ice cream" }
+            ],
             q1: "Bagaimanakah keadaan para pembeli semasa membeli aiskrim?",
             a1: "Para pembeli sedang beratur dengan kemas di belakang tali penghalang.",
             q2: "Mengapakah kita mesti beratur apabila berada di tempat awam?",
@@ -402,7 +444,16 @@
             title: "Bahagian 3: Badut & Belon",
             marks: 2,
             english: "Children gather around the clown to buy colorful balloons.",
-            malay: ["Kanak-kanak", "berkumpul", "di", "sekeliling", "badut", "untuk", "membeli", "belon"],
+            malay: [
+              { ms: "Kanak-kanak", en: "Children" },
+              { ms: "berkumpul", en: "gather" },
+              { ms: "di", en: "at" },
+              { ms: "sekeliling", en: "around" },
+              { ms: "badut", en: "clown" },
+              { ms: "untuk", en: "to" },
+              { ms: "membeli", en: "buy" },
+              { ms: "belon", en: "balloons" }
+            ],
             q1: "Apakah yang dibuat oleh kanak-kanak di sekeliling badut?",
             a1: "Kanak-kanak berkumpul di sekeliling badut untuk mengambil belon pelbagai warna.",
             q2: "Apakah perasaan kamu apabila melihat badut?",
@@ -413,7 +464,16 @@
             title: "Bahagian 4: Kebersihan Awam",
             marks: 2,
             english: "A trash bin is placed near the entrance to keep the floor clean.",
-            malay: ["Tong", "sampah", "disediakan", "supaya", "orang", "ramai", "menjaga", "kebersihan"],
+            malay: [
+              { ms: "Tong", en: "Bin" },
+              { ms: "sampah", en: "trash" },
+              { ms: "disediakan", en: "provided" },
+              { ms: "supaya", en: "so that" },
+              { ms: "orang", en: "people" },
+              { ms: "ramai", en: "public" },
+              { ms: "menjaga", en: "maintain" },
+              { ms: "kebersihan", en: "cleanliness" }
+            ],
             q1: "Apakah yang diletakkan di tepi tiang?",
             a1: "Sebuah tong sampah diletakkan di tepi tiang untuk kegunaan orang ramai.",
             q2: "Apakah yang patut kamu lakukan selepas selesai makan di tempat awam?",
@@ -431,7 +491,17 @@
             title: "Pengenalan: Suasana Taman Permainan",
             marks: 2,
             english: "This picture shows children and families having fun at a park.",
-            malay: ["Gambar", "ini", "menunjukkan", "suasana", "riang", "di", "taman", "permainan", "awam"],
+            malay: [
+              { ms: "Gambar", en: "Picture" },
+              { ms: "ini", en: "this" },
+              { ms: "menunjukkan", en: "shows" },
+              { ms: "suasana", en: "atmosphere" },
+              { ms: "riang", en: "joyful" },
+              { ms: "di", en: "at" },
+              { ms: "taman", en: "park" },
+              { ms: "permainan", en: "playground" },
+              { ms: "awam", en: "public" }
+            ],
             q1: "Di manakah lokasi aktiviti dalam gambar ini?",
             a1: "Gambar ini berlokasi di taman permainan awam kawasan kejiranan.",
             q2: "Mengapakah orang ramai suka datang ke taman permainan?",
@@ -442,7 +512,16 @@
             title: "Bahagian 1: Bermain Buaian",
             marks: 2,
             english: "Two girls are happily swinging side by side.",
-            malay: ["Dua", "orang", "budak", "perempuan", "bermain", "buaian", "dengan", "gembira"],
+            malay: [
+              { ms: "Dua", en: "Two" },
+              { ms: "orang", en: "people" },
+              { ms: "budak", en: "kids" },
+              { ms: "perempuan", en: "girl" },
+              { ms: "bermain", en: "playing" },
+              { ms: "buaian", en: "swings" },
+              { ms: "dengan", en: "with" },
+              { ms: "gembira", en: "joy" }
+            ],
             q1: "Apakah yang dilakukan oleh dua orang budak perempuan itu?",
             a1: "Dua orang budak perempuan sedang bermain buaian bersama-sama.",
             q2: "Bagaimanakah cara bermain buaian dengan selamat?",
@@ -453,9 +532,18 @@
             title: "Bahagian 2: Menunggang Basikal",
             marks: 2,
             english: "A young girl is riding her bicycle along the paved path.",
-            malay: ["Seorang", "budak", "perempuan", "menunggang", "basikal", "di", "laluan", "taman"],
+            malay: [
+              { ms: "Seorang", en: "A" },
+              { ms: "budak", en: "child" },
+              { ms: "perempuan", en: "girl" },
+              { ms: "menunggang", en: "riding" },
+              { ms: "basikal", en: "bicycle" },
+              { ms: "di", en: "on" },
+              { ms: "laluan", en: "path" },
+              { ms: "taman", en: "park" }
+            ],
             q1: "Siapakah yang sedang menunggang basikal di laluan taman?",
-            a1: "Seorang budak perempuan sedang menunggang basikal kecik di laluan khas.",
+            a1: "Seorang budak perempuan sedang menunggang basikal kecil di laluan khas.",
             q2: "Apakah alatan keselamatan yang wajar dipakai semasa menunggang basikal?",
             a2: "Kita patut memakai topi keledar dan pelindung lutut untuk mengelakkan kecederaan."
           },
@@ -464,7 +552,17 @@
             title: "Bahagian 3: Bersenam dan Berlari",
             marks: 2,
             english: "People are jogging and doing exercise to stay healthy.",
-            malay: ["Orang", "ramai", "bersenam", "dan", "berlari", "untuk", "menjaga", "kesihatan", "badan"],
+            malay: [
+              { ms: "Orang", en: "People" },
+              { ms: "ramai", en: "many" },
+              { ms: "bersenam", en: "exercising" },
+              { ms: "dan", en: "and" },
+              { ms: "berlari", en: "running" },
+              { ms: "untuk", en: "to" },
+              { ms: "menjaga", en: "maintain" },
+              { ms: "kesihatan", en: "health" },
+              { ms: "badan", en: "body" }
+            ],
             q1: "Apakah tujuan orang ramai bersenam di taman?",
             a1: "Orang ramai bersenam untuk menjaga kesihatan dan kecergasan badan.",
             q2: "Berapa kalikah seminggu kamu bersenam?",
@@ -475,7 +573,14 @@
             title: "Bahagian 4: Papan Enjut",
             marks: 2,
             english: "Children take turns playing on the seesaw.",
-            malay: ["Kanak-kanak", "bermain", "papan", "enjut", "secara", "gilir-gilir"],
+            malay: [
+              { ms: "Kanak-kanak", en: "Children" },
+              { ms: "bermain", en: "play" },
+              { ms: "papan", en: "board" },
+              { ms: "enjut", en: "seesaw" },
+              { ms: "secara", en: "by" },
+              { ms: "gilir-gilir", en: "taking turns" }
+            ],
             q1: "Apakah alat permainan yang sedang digunakan oleh kanak-kanak tersebut?",
             a1: "Kanak-kanak tersebut sedang bermain papan enjut secara bergiliran.",
             q2: "Mengapakah amalan bertolak ansur penting di taman permainan?",
@@ -493,7 +598,18 @@
             title: "Pengenalan: Suasana Gerabak MRT",
             marks: 2,
             english: "This picture shows passengers inside an MRT train cabin.",
-            malay: ["Gambar", "ini", "menunjukkan", "suasana", "di", "dalam", "gerabak", "kereta", "api", "MRT"],
+            malay: [
+              { ms: "Gambar", en: "Picture" },
+              { ms: "ini", en: "this" },
+              { ms: "menunjukkan", en: "shows" },
+              { ms: "suasana", en: "atmosphere" },
+              { ms: "di", en: "at" },
+              { ms: "dalam", en: "inside" },
+              { ms: "gerabak", en: "cabin" },
+              { ms: "kereta", en: "car" },
+              { ms: "api", en: "fire (train)" },
+              { ms: "MRT", en: "MRT" }
+            ],
             q1: "Apakah situasi yang ditunjukkan dalam gambar?",
             a1: "Gambar menunjukkan suasana penumpang di dalam gerabak kereta api MRT.",
             q2: "Adakah kamu sering naik MRT? Ke manakah tujuan kamu?",
@@ -504,7 +620,17 @@
             title: "Bahagian 1: Anak Menjatuhkan Barang",
             marks: 2,
             english: "A child drops items on the train floor while mother is on the phone.",
-            malay: ["Seorang", "anak", "menjatuhkan", "barang", "semasa", "ibunya", "bercakap", "di", "telefon"],
+            malay: [
+              { ms: "Seorang", en: "A" },
+              { ms: "anak", en: "child" },
+              { ms: "menjatuhkan", en: "dropping" },
+              { ms: "barang", en: "items" },
+              { ms: "semasa", en: "while" },
+              { ms: "ibunya", en: "his mother" },
+              { ms: "bercakap", en: "talking" },
+              { ms: "di", en: "on" },
+              { ms: "telefon", en: "phone" }
+            ],
             q1: "Apakah yang berlaku kepada barang budak itu?",
             a1: "Barang budak itu terjatuh ke lantai semasa ibunya leka bercakap di telefon.",
             q2: "Apakah nasehat kamu kepada ibu tersebut?",
@@ -515,7 +641,17 @@
             title: "Bahagian 3: Membaca Surat Khabar",
             marks: 2,
             english: "A passenger is sitting on the bench reading the newspaper.",
-            malay: ["Seorang", "penumpang", "duduk", "sambil", "membaca", "surat", "khabar", "dengan", "senang"],
+            malay: [
+              { ms: "Seorang", en: "A" },
+              { ms: "penumpang", en: "passenger" },
+              { ms: "duduk", "en": "sitting" },
+              { ms: "sambil", en: "while" },
+              { ms: "membaca", en: "reading" },
+              { ms: "surat", en: "letter" },
+              { ms: "khabar", en: "news" },
+              { ms: "dengan", en: "with" },
+              { ms: "senang", en: "ease" }
+            ],
             q1: "Apakah yang dilakukan oleh lelaki yang duduk di kerusi?",
             a1: "Lelaki itu sedang duduk sambil membaca surat khabar dengan tenang.",
             q2: "Selain membaca, apakah aktiviti berfaedah lain semasa di dalam MRT?",
@@ -526,7 +662,16 @@
             title: "Bahagian 3: Mendengar Muzik",
             marks: 2,
             english: "A boy is listening to music using headphones.",
-            malay: ["Budak", "lelaki", "itu", "mendengar", "muzik", "menggunakan", "fon", "telinga"],
+            malay: [
+              { ms: "Budak", en: "Boy" },
+              { ms: "lelaki", en: "male" },
+              { ms: "itu", en: "that" },
+              { ms: "mendengar", en: "listens" },
+              { ms: "muzik", en: "music" },
+              { ms: "menggunakan", en: "using" },
+              { ms: "fon", en: "phone" },
+              { ms: "telinga", en: "ear (headphones)" }
+            ],
             q1: "Bagaimanakah budak lelaki itu mendengar muzik di dalam tren?",
             a1: "Dia mendengar muzik menggunakan fon telinga.",
             q2: "Mengapakah kita perlu memakai fon telinga di dalam pengangkutan awam?",
@@ -537,7 +682,16 @@
             title: "Bahagian 4: Larangan Merokok",
             marks: 2,
             english: "A 'No Smoking' sign is clearly displayed inside the train.",
-            malay: ["Tanda", "dilarang", "merokok", "ditampal", "untuk", "peringatan", "semua", "penumpang"],
+            malay: [
+              { ms: "Tanda", en: "Sign" },
+              { ms: "dilarang", en: "forbidden" },
+              { ms: "merokok", en: "smoking" },
+              { ms: "ditampal", en: "pasted" },
+              { ms: "untuk", en: "for" },
+              { ms: "peringatan", en: "reminder" },
+              { ms: "semua", en: "all" },
+              { ms: "penumpang", en: "passengers" }
+            ],
             q1: "Apakah tanda peringatan yang ditampal pada dinding gerabak?",
             a1: "Tanda 'Dilarang Merokok' ditampal pada dinding gerabak.",
             q2: "Mengapakah kita dilarang merokok di dalam kawasan MRT?",
@@ -555,7 +709,17 @@
             title: "Pengenalan: Waktu Pendidikan Jasmani",
             marks: 2,
             english: "This picture shows students engaged in PE activities on the field.",
-            malay: ["Gambar", "ini", "menunjukkan", "suasana", "murid-murid", "bersenam", "di", "padang", "sekolah"],
+            malay: [
+              { ms: "Gambar", en: "Picture" },
+              { ms: "ini", en: "this" },
+              { ms: "menunjukkan", en: "shows" },
+              { ms: "suasana", en: "scene" },
+              { ms: "murid-murid", en: "students" },
+              { ms: "bersenam", en: "exercising" },
+              { ms: "di", en: "at" },
+              { ms: "padang", en: "field" },
+              { ms: "sekolah", en: "school" }
+            ],
             q1: "Apakah aktiviti yang sedang berlangsung dalam gambar?",
             a1: "Murid-murid sedang menjalankan aktiviti Pendidikan Jasmani di padang sekolah.",
             q2: "Adakah kamu menyukai mata pelajaran Pendidikan Jasmani? Mengapa?",
@@ -566,7 +730,16 @@
             title: "Bahagian 1: Bermain Tali Skipping",
             marks: 2,
             english: "A group of girls are happily jumping rope together.",
-            malay: ["Sekumpulan", "murid", "perempuan", "sedang", "bermain", "tali", "skipping", "bersama-sama"],
+            malay: [
+              { ms: "Sekumpulan", en: "A group" },
+              { ms: "murid", en: "students" },
+              { ms: "perempuan", en: "female" },
+              { ms: "sedang", en: "currently" },
+              { ms: "bermain", en: "playing" },
+              { ms: "tali", en: "rope" },
+              { ms: "skipping", en: "skipping" },
+              { ms: "bersama-sama", en: "together" }
+            ],
             q1: "Apakah permainan yang dimainkan oleh kumpulan murid perempuan?",
             a1: "Mereka sedang bermain tali skipping bersama-sama.",
             q2: "Apakah kebaikan bermain lompat tali?",
@@ -577,7 +750,15 @@
             title: "Bahagian 2: Arahan Guru PJ",
             marks: 2,
             english: "The teacher in a headscarf holds a whistle and guides students.",
-            malay: ["Guru", "Pendidikan", "Jasmani", "memberi", "arahan", "kepada", "murid-murid"],
+            malay: [
+              { ms: "Guru", en: "Teacher" },
+              { ms: "Pendidikan", en: "Education" },
+              { ms: "Jasmani", en: "Physical" },
+              { ms: "memberi", en: "gives" },
+              { ms: "arahan", en: "instructions" },
+              { ms: "kepada", en: "to" },
+              { ms: "murid-murid", en: "students" }
+            ],
             q1: "Siapakah yang memegang wisel di tepi padang?",
             a1: "Guru Pendidikan Jasmani sedang memegang wisel dan memberi arahan.",
             q2: "Mengapa penting mendengar arahan guru semasa bersukan?",
@@ -588,7 +769,16 @@
             title: "Bahagian 3: Menggelecek Bola",
             marks: 2,
             english: "A student practices dribbling a ball around traffic cones.",
-            malay: ["Murid", "itu", "menggelecek", "bola", "menerusi", "kon", "dengan", "teliti"],
+            malay: [
+              { ms: "Murid", en: "Student" },
+              { ms: "itu", en: "that" },
+              { ms: "menggelecek", en: "dribbling" },
+              { ms: "bola", en: "ball" },
+              { ms: "menerusi", en: "through" },
+              { ms: "kon", en: "cones" },
+              { ms: "dengan", en: "with" },
+              { ms: "teliti", en: "care" }
+            ],
             q1: "Apakah latihan yang sedang dibuat dengan menggunakan kon?",
             a1: "Murid sedang membuat latihan menggelecek bola menerusi kon.",
             q2: "Kemahiran apakah yang dipelajari daripada latihan ini?",
@@ -599,7 +789,15 @@
             title: "Bahagian 4: Panas Badan",
             marks: 2,
             english: "Students run and warm up before sports.",
-            malay: ["Murid-murid", "berlari", "dan", "memanaskan", "badan", "sebelum", "bersukan"],
+            malay: [
+              { ms: "Murid-murid", en: "Students" },
+              { ms: "berlari", en: "running" },
+              { ms: "dan", en: "and" },
+              { ms: "memanaskan", en: "warming" },
+              { ms: "badan", en: "body" },
+              { ms: "sebelum", en: "before" },
+              { ms: "bersukan", en: "playing sports" }
+            ],
             q1: "Apakah yang dilakukan oleh murid-murid sebelum memulakan permainan utama?",
             a1: "Mereka berlari dan memanaskan badan terlebih dahulu.",
             q2: "Apakah akibat jika kita tidak memanaskan badan sebelum bersukan?",
@@ -617,7 +815,17 @@
             title: "Pengenalan: Majlis Sambutan Hari Ibu",
             marks: 2,
             english: "This picture shows a Mother's Day celebration party.",
-            malay: ["Gambar", "ini", "menunjukkan", "suasana", "sambutan", "Hari", "Ibu", "yang", "meriah"],
+            malay: [
+              { ms: "Gambar", en: "Picture" },
+              { ms: "ini", en: "this" },
+              { ms: "menunjukkan", en: "shows" },
+              { ms: "suasana", en: "atmosphere" },
+              { ms: "sambutan", en: "celebration" },
+              { ms: "Hari", en: "Day" },
+              { ms: "Ibu", en: "Mother" },
+              { ms: "yang", en: "that is" },
+              { ms: "meriah", en: "festive" }
+            ],
             q1: "Apakah majlis khas yang diraikan dalam gambar ini?",
             a1: "Gambar menunjukkan suasana meriah semasa majlis sambutan Hari Ibu.",
             q2: "Bilakah Hari Ibu diraikan di Singapura?",
@@ -628,7 +836,18 @@
             title: "Bahagian 1: Memotong Kek",
             marks: 2,
             english: "Children gather near the cake table under the banner.",
-            malay: ["Kanak-kanak", "berkumpul", "di", "meja", "kek", "dibawah", "sepanduk", "Selamat", "Hari", "Ibu"],
+            malay: [
+              { ms: "Kanak-kanak", en: "Children" },
+              { ms: "berkumpul", en: "gather" },
+              { ms: "di", en: "at" },
+              { ms: "meja", en: "table" },
+              { ms: "kek", en: "cake" },
+              { ms: "dibawah", en: "under" },
+              { ms: "sepanduk", en: "banner" },
+              { ms: "Selamat", en: "Happy" },
+              { ms: "Hari", en: "Day" },
+              { ms: "Ibu", en: "Mother" }
+            ],
             q1: "Apakah yang ada di atas meja sambutan?",
             a1: "Di atas meja ada sebuah kek yang tertera ucapan Selamat Hari Ibu.",
             q2: "Bagaimanakah kamu menghargai jasa ibu kamu?",
@@ -639,7 +858,16 @@
             title: "Bahagian 2: Merakam Gambar",
             marks: 2,
             english: "A man takes a photo of the family using a camera.",
-            malay: ["Seorang", "lelaki", "sedang", "mengambil", "gambar", "menggunakan", "sebuah", "kamera"],
+            malay: [
+              { ms: "Seorang", en: "A" },
+              { ms: "lelaki", en: "man" },
+              { ms: "sedang", en: "is" },
+              { ms: "mengambil", en: "taking" },
+              { ms: "gambar", en: "picture" },
+              { ms: "menggunakan", en: "using" },
+              { ms: "sebuah", en: "a" },
+              { ms: "kamera", en: "camera" }
+            ],
             q1: "Apakah yang dipegang oleh lelaki di sebelah meja?",
             a1: "Lelaki itu memegang sebuah kamera untuk mengambil gambar keluarga.",
             q2: "Mengapakah merakam gambar itu aktiviti yang baik?",
@@ -650,7 +878,16 @@
             title: "Bahagian 3: Hidangan Makanan",
             marks: 2,
             english: "A staff member prepares food at the buffet counter.",
-            malay: ["Petugas", "itu", "menyiapkan", "hidangan", "makanan", "di", "meja", "prasmanan"],
+            malay: [
+              { ms: "Petugas", en: "Staff" },
+              { ms: "itu", en: "that" },
+              { ms: "menyiapkan", en: "prepares" },
+              { ms: "hidangan", en: "dish" },
+              { ms: "makanan", en: "food" },
+              { ms: "di", en: "at" },
+              { ms: "meja", en: "table" },
+              { ms: "prasmanan", en: "buffet" }
+            ],
             q1: "Apakah yang sedang dilakukan oleh petugas di kaunter makanan?",
             a1: "Petugas itu sedang menyiapkan dan menyusun makanan di meja prasmanan.",
             q2: "Apakah adab semasa mengambil makanan prasmanan?",
@@ -661,7 +898,16 @@
             title: "Bahagian 4: Membawa Minuman",
             marks: 2,
             english: "A child carefully carries a tray of cold drinks.",
-            malay: ["Budak", "itu", "membawa", "dulang", "berisi", "minuman", "dengan", "cermat"],
+            malay: [
+              { ms: "Budak", en: "Child" },
+              { ms: "itu", en: "that" },
+              { ms: "membawa", en: "carries" },
+              { ms: "dulang", en: "tray" },
+              { ms: "berisi", en: "containing" },
+              { ms: "minuman", en: "drinks" },
+              { ms: "dengan", en: "with" },
+              { ms: "cermat", en: "care" }
+            ],
             q1: "Apakah yang dibawa oleh budak itu?",
             a1: "Budak itu membawa satu dulang berisi cawan-cawan minuman.",
             q2: "Mengapakah dia perlu berjalan dengan berhati-hati?",
@@ -679,7 +925,17 @@
             title: "Pengenalan: Kawasan Kolong Blok",
             marks: 2,
             english: "This picture shows residents at an HDB void deck.",
-            malay: ["Gambar", "ini", "menunjukkan", "suasana", "di", "kolong", "blok", "perumahan", "awam"],
+            malay: [
+              { ms: "Gambar", en: "Picture" },
+              { ms: "ini", en: "this" },
+              { ms: "menunjukkan", en: "shows" },
+              { ms: "suasana", en: "scene" },
+              { ms: "di", en: "at" },
+              { ms: "kolong", en: "under" },
+              { ms: "blok", en: "block" },
+              { ms: "perumahan", en: "housing" },
+              { ms: "awam", en: "public" }
+            ],
             q1: "Apakah tempat yang digambarkan dalam ilustrasi ini?",
             a1: "Gambar ini menunjukkan kolong blok perumahan awam HDB.",
             q2: "Apakah aktiviti yang biasa kamu lihat di kolong blok kamu?",
@@ -690,7 +946,16 @@
             title: "Bahagian 1: Menunggu Lif & Papan Notis",
             marks: 2,
             english: "A resident presses the lift button while reading notice board.",
-            malay: ["Seorang", "penduduk", "menekan", "butang", "lif", "berhampiran", "papan", "notis"],
+            malay: [
+              { ms: "Seorang", en: "A" },
+              { ms: "penduduk", en: "resident" },
+              { ms: "menekan", en: "pressing" },
+              { ms: "butang", en: "button" },
+              { ms: "lif", en: "lift" },
+              { ms: "berhampiran", en: "near" },
+              { ms: "papan", en: "board" },
+              { ms: "notis", en: "notice" }
+            ],
             q1: "Apakah yang dilakukan oleh lelaki di hadapan lif?",
             a1: "Dia sedang menekan butang lif sambil melihat papan notis.",
             q2: "Apakah maklumat yang ada pada papan notis kejiranan?",
@@ -701,7 +966,16 @@
             title: "Bahagian 2: Bermain Kasut Roda",
             marks: 2,
             english: "Children are roller-skating near a woman with a trolley.",
-            malay: ["Kanak-kanak", "bermain", "kasut", "roda", "di", "kawasan", "kolong", "blok"],
+            malay: [
+              { ms: "Kanak-kanak", en: "Children" },
+              { ms: "bermain", en: "playing" },
+              { ms: "kasut", en: "shoes" },
+              { ms: "roda", en: "wheels (skates)" },
+              { ms: "di", en: "at" },
+              { ms: "kawasan", en: "area" },
+              { ms: "kolong", en: "void" },
+              { ms: "blok", en: "deck" }
+            ],
             q1: "Apakah bahaya bermain kasut roda di kolong blok?",
             a1: "Kanak-kanak boleh terlanggar orang awam yang sedang lalu-lalang.",
             q2: "Di manakah tempat yang lebih selamat untuk bermain kasut roda?",
@@ -712,7 +986,17 @@
             title: "Bahagian 3: Skuter Penghantar Makanan",
             marks: 2,
             english: "A delivery man rides an e-scooter on the footpath.",
-            malay: ["Penghantar", "makanan", "menunggang", "skuter", "elektrik", "di", "laluan", "pejalan", "kaki"],
+            malay: [
+              { ms: "Penghantar", en: "Deliverer" },
+              { ms: "makanan", en: "food" },
+              { ms: "menunggang", en: "riding" },
+              { ms: "skuter", en: "scooter" },
+              { ms: "elektrik", en: "electric" },
+              { ms: "di", en: "on" },
+              { ms: "laluan", en: "path" },
+              { ms: "pejalan", en: "walker" },
+              { ms: "kaki", en: "foot" }
+            ],
             q1: "Siapakah yang menunggang skuter elektrik dalam gambar?",
             a1: "Seorang penghantar makanan sedang menunggang skuter elektrik.",
             q2: "Mengapa kita tidak boleh menunggang skuter laju di laluan pejalan kaki?",
@@ -723,7 +1007,16 @@
             title: "Bahagian 4: Peti Surat & Papan Tanda",
             marks: 2,
             english: "Post boxes are near the wall with a 'No Bicycles' sign.",
-            malay: ["Peti", "surat", "disediakan", "di", "bawah", "blok", "untuk", "penduduk"],
+            malay: [
+              { ms: "Peti", en: "Box" },
+              { ms: "surat", en: "letter (mailbox)" },
+              { ms: "disediakan", en: "provided" },
+              { ms: "di", en: "at" },
+              { ms: "bawah", en: "under" },
+              { ms: "blok", en: "block" },
+              { ms: "untuk", en: "for" },
+              { ms: "penduduk", en: "residents" }
+            ],
             q1: "Apakah tanda larangan yang ada di kawasan peti surat?",
             a1: "Tanda 'Dilarang Meletak Basikal' ada di dinding sebelah peti surat.",
             q2: "Mengapakah kita patut mematuhi papan tanda larangan di bawah blok?",
@@ -741,7 +1034,17 @@
             title: "Pengenalan: Taman Rekreasi Awam",
             marks: 2,
             english: "This picture shows outdoor activities at a recreational park.",
-            malay: ["Gambar", "ini", "menunjukkan", "suasana", "riang", "di", "taman", "rekreasi", "awam"],
+            malay: [
+              { ms: "Gambar", en: "Picture" },
+              { ms: "ini", en: "this" },
+              { ms: "menunjukkan", en: "shows" },
+              { ms: "suasana", en: "atmosphere" },
+              { ms: "riang", en: "joyful" },
+              { ms: "di", en: "at" },
+              { ms: "taman", en: "park" },
+              { ms: "rekreasi", en: "recreation" },
+              { ms: "awam", en: "public" }
+            ],
             q1: "Apakah aktiviti umum yang ditunjukkan dalam gambar ini?",
             a1: "Orang ramai sedang menyewa basikal, bersenam, dan berlari di taman rekreasi.",
             q2: "Mengapakah kamu suka mengunjungi taman rekreasi?",
@@ -752,7 +1055,17 @@
             title: "Bahagian 1: Kios Sewa Basikal",
             marks: 2,
             english: "People rent bikes and roller skates for $15/hour at the kiosk.",
-            malay: ["Orang", "ramai", "menyewa", "basikal", "dan", "kasut", "roda", "di", "kios"],
+            malay: [
+              { ms: "Orang", en: "People" },
+              { ms: "ramai", en: "many" },
+              { ms: "menyewa", en: "renting" },
+              { ms: "basikal", en: "bicycle" },
+              { ms: "dan", en: "and" },
+              { ms: "kasut", en: "shoes" },
+              { ms: "roda", en: "skates" },
+              { ms: "di", en: "at" },
+              { ms: "kios", en: "kiosk" }
+            ],
             q1: "Berapakah kadar sewaan kasut roda di kios tersebut?",
             a1: "Kadar sewaan kasut roda ialah 15 dolar untuk satu jam ($15/jam).",
             q2: "Adakah kadar sewaan itu berpatutan? Mengapa?",
@@ -763,7 +1076,17 @@
             title: "Bahagian 2: Menunggang Basikal Laju",
             marks: 2,
             english: "A boy rides a bicycle quickly along the park track.",
-            malay: ["Seorang", "budak", "lelaki", "menunggang", "basikal", "dengan", "laju", "di", "laluan"],
+            malay: [
+              { ms: "Seorang", en: "A" },
+              { ms: "budak", en: "boy" },
+              { ms: "lelaki", en: "male" },
+              { ms: "menunggang", en: "riding" },
+              { ms: "basikal", en: "bicycle" },
+              { ms: "dengan", en: "with" },
+              { ms: "laju", en: "speed" },
+              { ms: "di", en: "on" },
+              { ms: "laluan", en: "track" }
+            ],
             q1: "Apakah yang berbahaya tentang tindakan budak menunggang basikal itu?",
             a1: "Dia menunggang basikal terlalu laju di laluan awam.",
             q2: "Apakah nasehat kamu kepadanya?",
@@ -774,7 +1097,16 @@
             title: "Bahagian 3: Senaman Beramai-ramai",
             marks: 2,
             english: "A group of people are doing aerobics with music from a radio.",
-            malay: ["Sekumpulan", "orang", "sedang", "melakukan", "senaman", "senamrobik", "dengan", "gembira"],
+            malay: [
+              { ms: "Sekumpulan", en: "A group" },
+              { ms: "orang", en: "people" },
+              { ms: "sedang", en: "currently" },
+              { ms: "melakukan", en: "doing" },
+              { ms: "senaman", en: "exercise" },
+              { ms: "senamrobik", en: "aerobics" },
+              { ms: "dengan", en: "with" },
+              { ms: "gembira", en: "joy" }
+            ],
             q1: "Apakah yang dipasang di atas meja semasa mereka bersenam?",
             a1: "Sebuah radio dipasang di atas meja untuk mengiringi senaman senamrobik.",
             q2: "Apakah kebaikan bersenam secara beramai-ramai?",
@@ -785,7 +1117,17 @@
             title: "Bahagian 4: Berlari & Berteduh",
             marks: 2,
             english: "Three runners jog together near a big tree and shelter.",
-            malay: ["Tiga", "orang", "pemuda", "sedang", "berlari", "joging", "di", "bawah", "pokok"],
+            malay: [
+              { ms: "Tiga", en: "Three" },
+              { ms: "orang", en: "people" },
+              { ms: "pemuda", en: "youths" },
+              { ms: "sedang", en: "currently" },
+              { ms: "berlari", en: "running" },
+              { ms: "joging", en: "jogging" },
+              { ms: "di", en: "at" },
+              { ms: "bawah", en: "under" },
+              { ms: "pokok", en: "tree" }
+            ],
             q1: "Di manakah tiga orang pemuda itu berlari joging?",
             a1: "Mereka berlari joging di laluan di bawah pokok rimbun berdekatan pondok.",
             q2: "Mengapakah pondok berteduh penting di taman rekreasi?",
@@ -870,6 +1212,37 @@
       }
     }
 
+    function createTileElement(item) {
+      let tile = document.createElement('div');
+      tile.className = 'word-tile';
+      
+      let msSpan = document.createElement('span');
+      msSpan.className = 'word-ms';
+      msSpan.innerText = item.ms;
+      
+      let enSpan = document.createElement('span');
+      enSpan.className = 'word-en';
+      enSpan.innerText = item.en;
+
+      tile.appendChild(msSpan);
+      tile.appendChild(enSpan);
+
+      // Attach data object reference
+      tile.wordData = item;
+
+      tile.onclick = () => {
+        const pool = document.getElementById('pool-zone');
+        const target = document.getElementById('target-zone');
+        if (tile.parentElement === pool) {
+          target.appendChild(tile);
+        } else {
+          pool.appendChild(tile);
+        }
+      };
+
+      return tile;
+    }
+
     function resetTiles() {
       const data = dataset[currentImgIdx].steps[currentStepIdx];
       const target = document.getElementById('target-zone');
@@ -881,27 +1254,17 @@
       feedback.innerText = '';
 
       let shuffled = [...data.malay].sort(() => Math.random() - 0.5);
-      shuffled.forEach(word => {
-        let tile = document.createElement('div');
-        tile.className = 'word-tile';
-        tile.innerText = word;
-        tile.onclick = () => {
-          if (tile.parentElement === pool) {
-            target.appendChild(tile);
-          } else {
-            pool.appendChild(tile);
-          }
-        };
-        pool.appendChild(tile);
+      shuffled.forEach(item => {
+        pool.appendChild(createTileElement(item));
       });
     }
 
     function checkSentence() {
-      const selected = Array.from(document.getElementById('target-zone').children).map(c => c.innerText);
-      const target = dataset[currentImgIdx].steps[currentStepIdx].malay;
+      const selectedMs = Array.from(document.getElementById('target-zone').children).map(c => c.wordData.ms);
+      const targetMs = dataset[currentImgIdx].steps[currentStepIdx].malay.map(item => item.ms);
       const feedback = document.getElementById('feedback-text');
 
-      if (JSON.stringify(selected) === JSON.stringify(target)) {
+      if (JSON.stringify(selectedMs) === JSON.stringify(targetMs)) {
         feedback.style.color = 'var(--success)';
         feedback.innerText = 'Syabas! Susunan ayat betul (+1 Markah Susun Ayat & +1 Markah Lisan)! 🌟';
         
