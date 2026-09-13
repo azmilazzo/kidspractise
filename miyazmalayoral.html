@@ -212,6 +212,18 @@
       margin-right: 6px;
     }
 
+    .btn-toggle {
+      background: #45475a;
+      color: var(--text);
+      border: 1px solid var(--subtext);
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
     .oral-box {
       background: rgba(255,255,255,0.05);
       border-left: 4px solid var(--accent);
@@ -224,7 +236,17 @@
       background: rgba(0,0,0,0.3);
       border-radius: 6px;
       padding: 8px 12px;
+      margin-top: 8px;
+    }
+
+    .answer-hidden {
+      display: none;
+      font-style: italic;
+      font-size: 13px;
+      color: var(--success);
       margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(255,255,255,0.1);
     }
 
     .feedback {
@@ -278,7 +300,7 @@
       </button>
       <button class="img-tab-btn" id="tab-img6" onclick="switchImage(5)">
         <span>6. Kolong Blok</span>
-        <span class="tab-mark-indicator" id="mark-tag-5">0/10m</span>
+        <span class="tab-mark-indicator" id="mark-tag-6">0/10m</span>
       </button>
       <button class="img-tab-btn" id="tab-img7" onclick="switchImage(6)">
         <span>7. Rekreasi</span>
@@ -320,15 +342,15 @@
         <div class="question-step-box">
           <div style="font-size:12px; font-weight:bold; color:var(--warning);">Soalan 1 (Fakta/Pemerhatian Direct):</div>
           <div id="q1-text" style="margin:2px 0 6px 0;">--</div>
-          <div style="font-size:12px; font-weight:bold; color:var(--success);">Jawapan Model:</div>
-          <div id="a1-text" style="font-style:italic; font-size:13px;">--</div>
+          <button class="btn-toggle" onclick="toggleAnswer('a1-text', this)">👁️ Lihat Jawapan Model</button>
+          <div id="a1-text" class="answer-hidden">--</div>
         </div>
 
         <div class="question-step-box">
           <div style="font-size:12px; font-weight:bold; color:var(--warning);">Soalan 2 (Pengalaman / Pendapat Peribadi):</div>
           <div id="q2-text" style="margin:2px 0 6px 0;">--</div>
-          <div style="font-size:12px; font-weight:bold; color:var(--success);">Jawapan Model:</div>
-          <div id="a2-text" style="font-style:italic; font-size:13px;">--</div>
+          <button class="btn-toggle" onclick="toggleAnswer('a2-text', this)">👁️ Lihat Jawapan Model</button>
+          <div id="a2-text" class="answer-hidden">--</div>
         </div>
       </div>
     </div>
@@ -826,11 +848,26 @@
       document.getElementById('scene-english').innerText = `Target Meaning: "${data.english}"`;
       
       document.getElementById('q1-text').innerText = data.q1;
-      document.getElementById('a1-text').innerText = `"${data.a1}"`;
+      document.getElementById('a1-text').innerText = `Jawapan Model: "${data.a1}"`;
       document.getElementById('q2-text').innerText = data.q2;
-      document.getElementById('a2-text').innerText = `"${data.a2}"`;
+      document.getElementById('a2-text').innerText = `Jawapan Model: "${data.a2}"`;
+
+      // Reset hidden answer states
+      document.querySelectorAll('.answer-hidden').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.btn-toggle').forEach(btn => btn.innerText = '👁️ Lihat Jawapan Model');
 
       resetTiles();
+    }
+
+    function toggleAnswer(ansId, btn) {
+      const ansDiv = document.getElementById(ansId);
+      if (ansDiv.style.display === 'block') {
+        ansDiv.style.display = 'none';
+        btn.innerText = '👁️ Lihat Jawapan Model';
+      } else {
+        ansDiv.style.display = 'block';
+        btn.innerText = '🙈 Sembunyikan Jawapan';
+      }
     }
 
     function resetTiles() {
