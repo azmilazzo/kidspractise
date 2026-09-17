@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>PSLE 2025 Maths — Full Paper (In Order, figures as printed)</title>
+<style>
+:root{--bg1:#e0e7ff;--bg2:#dbeafe;--card:#fff;--ink:#0f172a;--muted:#475569}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Nunito",sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2));color:var(--ink);line-height:1.45}
+button{font-family:inherit}
+.container{max-width:760px;margin:0 auto;padding:16px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.brand{font-weight:1000;font-size:1.1rem}
+.chip{display:inline-block;background:#c7d2fe;color:#3730a3;padding:8px 12px;border-radius:999px;font-weight:900;font-size:.85rem}
+.hero{background:linear-gradient(135deg,#4f46e5,#2563eb);color:#fff;padding:20px;border-radius:24px}
+.hero h1{margin:0 0 8px;font-size:1.35rem}
+.hero p{margin:0;font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.stat{background:var(--card);border-radius:18px;padding:12px;text-align:center}
+.value{font-size:1.4rem;font-weight:1000}
+.label{color:var(--muted);font-weight:800;font-size:.85rem}
+.card{background:var(--card);border-radius:22px;padding:16px;margin:12px 0;box-shadow:0 10px 24px rgba(15,23,42,.08)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.btn{border:0;border-radius:16px;padding:12px 16px;font-weight:1000;cursor:pointer}
+.primary{background:linear-gradient(135deg,#4f46e5,#2563eb);color:#fff}
+.secondary{background:#e2e8f0;color:#0f172a}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{border:3px solid #c7d2fe;background:#f8f9ff;border-radius:18px;padding:14px;font-size:1rem;font-weight:900;text-align:left;cursor:pointer}
+.option:disabled{opacity:.95}
+.option.correct{background:#ecfdf5;border-color:#10b981}
+.option.wrong{background:#fff1f2;border-color:#f43f5e}
+.feedback{margin-top:14px;padding:14px;border-radius:18px;font-weight:900}
+.feedback.good{background:#ecfdf5;border:2px solid #a7f3d0}
+.feedback.bad{background:#fff1f2;border:2px solid #fecdd3}
+.exp{margin-top:6px;font-weight:600;white-space:pre-wrap}
+.fig{max-width:100%;height:auto;display:block;margin:10px auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:6px}
+.figcap{text-align:center;color:var(--muted);font-weight:800;font-size:.8rem;margin:-4px 0 8px}
+.qtext-style{font-size:1.1rem;font-weight:800;margin:12px 0;white-space:pre-wrap;line-height:1.5}
+.checkitem{background:#fff;border:2px solid #e2e8f0;border-radius:18px;padding:10px;margin:10px 0}
+.checkitem img{max-width:100%;height:auto;display:block;margin:6px auto;border-radius:10px}
+.checkitem .lbl{font-weight:1000;color:#3730a3}
+.checkitem .fn{font-size:.75rem;color:var(--muted);word-break:break-all}
+.review-item{border:2px solid #e2e8f0;border-radius:18px;padding:12px;margin:10px 0;background:#fbfdff}
+.review-q{font-weight:1000;margin-bottom:6px;white-space:pre-wrap}
+.correct-answer{color:#047857;font-weight:1000}
+.user-answer{color:#be123c;font-weight:1000}
+.hidden{display:none!important}
+.result-stars{font-size:2.2rem;margin:8px 0}
+.error-box{background:#fff1f2;border:2px solid #f43f5e;border-radius:16px;padding:16px;font-weight:700;white-space:pre-wrap;font-family:monospace}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+window.addEventListener("error",function(e){document.getElementById("app").innerHTML='<div class="container"><div class="error-box">Page error: '+(e.message||"Unknown")+'</div></div>';});
+</script>
+<script>
+const IMG="https://raw.githubusercontent.com/azmilazzo/kidspractise/main/";
+
+const KNOWNFIG={
+ p1a6:"IMG_20260917_150003.jpg",
+ p1a7:"IMG_20260917_150024.jpg",
+ p1a8:"IMG_20260917_150056.jpg",
+ p1a10:"IMG_20260917_150108.jpg",
+ p1a13:"IMG_20260917_150123.jpg",
+ p1a14:"IMG_20260917_150139.jpg",
+ p1b18:"IMG_20260917_150155.jpg",
+ p1b22:"IMG_20260917_150223.jpg",
+ p1b24:"IMG_20260917_150240.jpg",
+ p1b28:"IMG_20260917_150252.jpg",
+ p1b30:"IMG_20260917_150307.jpg",
+ p2q1:"IMG_20260917_150324.jpg",
+ p2q3:"IMG_20260917_150336.jpg",
+ p2q6:"IMG_20260917_150353.jpg",
+ p2q9:"IMG_20260917_150437.jpg",
+ p2q8:"IMG_20260917_150509.jpg",
+ p2q12:"IMG_20260917_150522.jpg",
+ p2q13:"IMG_20260917_150534.jpg"
+};
+
+const NEWFIGSLOT=["p1a11","p1a12","p2q17"];
+let FIGMAP=Object.assign({},KNOWNFIG);
+
+const QUESTIONS=[
+{id:"p1a1",sec:"P1 Booklet A",n:1,q:"Q1. Which of the following is the same as 6070 cm?",options:["60 m 70 cm","6 m 70 cm","60 m 7 cm","6 m 7 cm"],exp:"6070 cm = 6000 cm + 70 cm = 60 m 70 cm."},
+{id:"p1a2",sec:"P1 Booklet A",n:2,q:"Q2. Which of the following fractions is equal to 5 6/7?",options:["41/7","30/7","35/7","37/7"],exp:"5 6/7 = (5 × 7 + 6) / 7 = 41/7."},
+{id:"p1a3",sec:"P1 Booklet A",n:3,q:"Q3. What is the likely length of a tour bus?",options:["12 m","1.2 cm","120 m","1.2 km"],exp:"A tour bus is about 12 m long."},
+{id:"p1a4",sec:"P1 Booklet A",n:4,q:"Q4. Round off 2.456 to 2 decimal places.",options:["2.46","2.40","2.45","2.50"],exp:"Third decimal place is 6, so round up: 2.46."},
+{id:"p1a5",sec:"P1 Booklet A",n:5,q:"Q5. Which of the following decimals is the smallest?",options:["1.003","1.110","1.200","1.040"],exp:"Comparing the digits: 1.003 is the smallest."},
+{id:"p1a6",sec:"P1 Booklet A",n:6,ans:3,q:"Q6. The figure below is made up of identical triangles. What percentage of the figure is shaded?",options:["10%","15%","40%","60%"],exp:"15 of 25 triangles are shaded = 60%."},
+{id:"p1a7",sec:"P1 Booklet A",n:7,ans:0,q:"Q7. The line graph shows the amount of rainfall over 5 months. The amount of rainfall is not shown on the scale. From which month to the next was the increase in rainfall the greatest?",options:["From Jan to Feb","From Feb to Mar","From Mar to Apr","From Apr to May"],exp:"The steepest upward line is from Jan to Feb."},
+{id:"p1a8",sec:"P1 Booklet A",n:8,ans:1,q:"Q8. The diagram below (not drawn to scale) shows the length of a pencil. What is the length of the pencil?",options:["1.5 cm","7.8 cm","8.2 cm","9.3 cm"],exp:"9.3 − 1.5 = 7.8 cm."},
+{id:"p1a9",sec:"P1 Booklet A",n:9,q:"Q9. William and Xavier started competing in a marathon at 5.20 a.m. William was 20 minutes slower than Xavier who completed the marathon at 9.05 a.m. How long did William take to complete the marathon?",options:["4 h 5 min","3 h 25 min","3 h 55 min","4 h 35 min"],exp:"Xavier took 3 h 45 min; William took 3 h 45 min + 20 min = 4 h 5 min."},
+{id:"p1a10",sec:"P1 Booklet A",n:10,ans:1,q:"Q10. In the diagram below, AB, CD and EF are straight lines. AB is parallel to CD. Which of the following is false?",options:["∠p + ∠q = 180°","∠q = ∠r","∠p + ∠s = 180°","∠q + ∠s = 180°"],exp:"∠q and ∠r lie on line AB, so ∠q + ∠r = 180°. Therefore ∠q = ∠r is false."},
+{id:"p1a11",sec:"P1 Booklet A",n:11,ans:3,q:"Q11. In a kindergarten, the ratio of the number of boys to the number of girls is 1 : 2. The pie charts show the different ways boys and girls go to the kindergarten.\n\nWhat is the ratio of the number of boys who walk to the kindergarten to the number of girls who walk to the kindergarten?",options:["4 : 5","5 : 4","8 : 5","5 : 8"],exp:"Boys walking = 25% of 1 unit = 0.25u. Girls walking = 20% of 2 units = 0.40u. Ratio = 0.25 : 0.40 = 5 : 8."},
+{id:"p1a12",sec:"P1 Booklet A",n:12,ans:2,q:"Q12. The figure below is made of a square and 4 identical semicircles. The perimeter of the figure is 16π cm. What is the perimeter of the square?",options:["8 cm","16 cm","32 cm","64 cm"],exp:"4 semicircle arcs = 2πd = 16π → d = 8 cm. Perimeter of square = 4 × 8 = 32 cm."},
+{id:"p1a13",sec:"P1 Booklet A",n:13,ans:1,q:"Q13. In the figure, ABCD is a square. AD = DF and ∠ADF = 58°. Find ∠BEF.",options:["71°","74°","106°","109°"],exp:"In isosceles △ADF, ∠DAF = ∠DFA = 61°. Since ∠ADB = 45°, ∠BDF = 13°. In △DEF, ∠DEF = 106°. On line BD, ∠BEF = 180° − 106° = 74°."},
+{id:"p1a14",sec:"P1 Booklet A",n:14,ans:0,q:"Q14. The shapes below are drawn on square grids. Which of the following statements is true?",options:["A and B have the same perimeter.","A and B have the same area.","C and D have the same area.","C has a larger area than B."],exp:"Perimeter of A = 12 units, Perimeter of B = 12 units. Option (1) is true."},
+{id:"p1a15",sec:"P1 Booklet A",n:15,q:"Q15. Miss Chan bought some apples and kiwis and packed them into two bags. 3/4 of the fruits were in bag A and the rest in bag B. 4/9 of the fruits in bag A were apples. 1/2 of the fruits bought were kiwis. What fraction of the fruits in bag B were apples?",options:["2/3","1/4","1/6","5/9"],exp:"Apples in Bag A = 4/9 × 3/4 = 1/3 total. Total apples = 1/2. Apples in Bag B = 1/2 − 1/3 = 1/6 total. Bag B has 1/4 total. Fraction of Bag B = (1/6) ÷ (1/4) = 2/3."},
+{id:"p1b16",sec:"P1 Booklet B",n:16,q:"Q16. Write six million, sixty thousand and sixty in numerals.",options:["6060060","6006060","6060600","6600060"],exp:"6,000,000 + 60,000 + 60 = 6,060,060."},
+{id:"p1b17",sec:"P1 Booklet B",n:17,q:"Q17. Find the value of 2.36 × 60.",options:["141.6","14.16","1416","1.416"],exp:"2.36 × 60 = 141.6."},
+{id:"p1b18",sec:"P1 Booklet B",n:18,q:"Q18. Find the area of the right-angled triangle below.",options:["330 cm²","165 cm²","660 cm²","300 cm²"],exp:"Area = 1/2 × 11 × 60 = 330 cm²."},
+{id:"p1b19",sec:"P1 Booklet B",n:19,q:"Q19. Find the value of 1/8 ÷ 14. Give your answer as a fraction in the simplest form.",options:["1/112","1/96","1/22","1/14"],exp:"1/8 ÷ 14 = 1/8 × 1/14 = 1/112."},
+{id:"p1b20",sec:"P1 Booklet B",n:20,q:"Q20. Calculate the average of the following numbers:\n6, 7, 3, 0, 4",options:["4","5","3","20"],exp:"Sum = 20 ÷ 5 = 4."},
+{id:"p1b21",sec:"P1 Booklet B",n:21,q:"Q21. Use all the digits 6, 5, 0, 8 to form:\n(a) the greatest multiple of 5\n(b) the greatest number closest to 6000",options:["(a) 8650, (b) 6058","(a) 8605, (b) 6085","(a) 8650, (b) 6085","(a) 8560, (b) 6058"],exp:"(a) Greatest multiple of 5 ends in 0: 8650.\n(b) Greatest number closest to 6000: 6058."},
+{id:"p1b22",sec:"P1 Booklet B",n:22,q:"Q22. The diagram below shows 2 overlapping squares. Find ∠a.",options:["235°","125°","245°","115°"],exp:"90° − 55° = 35°; 35° + 35° = 70°; 360° − 70° − 55° = 235°."},
+{id:"p1b23",sec:"P1 Booklet B",n:23,q:"Q23. In one minute, Machine A can pack 5 boxes of donuts while Machine B can pack 2 boxes of donuts. Both machines started packing at 12.50 a.m. At what time will both machines pack 175 boxes of donuts in total? Leave your answer in 24-hour clock.",options:["0115","0125","0015","0150"],exp:"7 boxes/min; 175 ÷ 7 = 25 min → 12.50 a.m. + 25 min = 0115."},
+{id:"p1b24",sec:"P1 Booklet B",n:24,q:"Q24. PQST is a parallelogram as shown below. ∠PTS = 75° and ∠TPS = 35°. Find ∠SPR.",options:["55°","70°","15°","105°"],exp:"∠PST = 70°; In right-angled △PQR, ∠QPR = 15°; ∠QPS = 105°; ∠SPR = 105° − 35° − 15° = 55°."},
+{id:"p1b25",sec:"P1 Booklet B",n:25,q:"Q25. The rates for airmail to a country are shown in the table below:\n• First 20 g: ? ¢\n• Every additional 10 g or less: 12 ¢\nBen sent a letter that weighed 33 g. He paid 56 ¢. How much did Ben pay for the first 20 g of the letter?",options:["32¢","24¢","12¢","44¢"],exp:"33 g − 20 g = 13 g extra = 2 units × 12¢ = 24¢; 56¢ − 24¢ = 32¢."},
+{id:"p1b26",sec:"P1 Booklet B",n:26,q:"Q26. After Freda spent 3/5 of her money and Monica spent 4/7 of her money, each of them had $72 left. How much more money did Freda have than Monica at first?",options:["$12","$10","$8","$15"],exp:"Freda = 72 ÷ (2/5) = $180. Monica = 72 ÷ (3/7) = $168. Difference = $180 − $168 = $12."},
+{id:"p1b27",sec:"P1 Booklet B",n:27,q:"Q27. 40 students helped to sell packets of peanuts at a school carnival. Each student was given 6 packets of peanuts to sell. Some students did not turn up, so each student had to sell 2 more packets of peanuts to meet the required sale. How many students did not turn up?",options:["10","8","12","30"],exp:"Total packets = 240. New quota = 8 packets. Present = 240 ÷ 8 = 30. Absent = 40 − 30 = 10."},
+{id:"p1b28",sec:"P1 Booklet B",n:28,q:"Q28. The cuboid below has a square base. The volume of the cuboid is 576 cm³. Find the side of the square base.",options:["8 cm","6 cm","7 cm","9 cm"],exp:"Base area = 576 ÷ 9 = 64 cm². Side = √64 = 8 cm."},
+{id:"p1b29",sec:"P1 Booklet B",n:29,q:"Q29. A bakery had a number of cupcakes for sale. After selling 42 cupcakes in the morning and 4/9 of the remainder in the afternoon, it was left with 1/3 of the cupcakes. How many cupcakes were left?",options:["35","42","105","7"],exp:"42 = 2/5 of total → Total = 105. Cupcakes left = 1/3 × 105 = 35."},
+{id:"p1b30",sec:"P1 Booklet B",n:30,q:"Q30. The figure below shows a square and a rectangle. Both shapes have the same perimeter. What is the value of x?",options:["2","4","6","8"],exp:"Perimeter of square = 24 cm. Rectangle = 4x + 16 = 24 → 4x = 8 → x = 2."},
+{id:"p2q1",sec:"Paper 2",n:1,q:"Q1. The diagram below shows some shapes. What is the ratio of the total number of shapes to the number of squares? Express your answer in the simplest form.",options:["3 : 1","12 : 4","4 : 1","2 : 1"],exp:"12 shapes : 4 squares = 3 : 1."},
+{id:"p2q2",sec:"Paper 2",n:2,q:"Q2. 15 4/5 kg of flour was packed into bags of 5/8 kg each.\n(a) What was the maximum number of bags of flour?\n(b) How much flour was left unpacked?",options:["(a) 25 bags, (b) 7/40 kg","(a) 25 bags, (b) 1/5 kg","(a) 24 bags, (b) 7/40 kg","(a) 25 bags, (b) 7/25 kg"],exp:"(a) 79/5 ÷ 5/8 = 25 7/25 → 25 bags.\n(b) Leftover = 7/25 × 5/8 = 7/40 kg."},
+{id:"p2q3",sec:"Paper 2",n:3,q:"Q3. The ratio of the length of stick A to the length of stick B is 9 : 8. Find the length of stick A.",options:["10.8 cm","9.6 cm","1.2 cm","12 cm"],exp:"Difference = 2.9 − 1.7 = 1.2 cm = 1 unit. Stick A = 9 × 1.2 = 10.8 cm."},
+{id:"p2q4",sec:"Paper 2",n:4,q:"Q4. Emily has a roll of stickers. There is a total of 55 star-shaped and heart-shaped stickers on it. At least 3 star-shaped stickers are found between any 2 heart-shaped stickers. What is the largest possible number of heart-shaped stickers on the roll of stickers?",options:["14","13","12","15"],exp:"Pattern (S-S-S-H) size 4. 55 ÷ 4 = 13 R3 (S-S-S). Add 1 heart at end = 14 hearts."},
+{id:"p2q5",sec:"Paper 2",n:5,q:"Q5. Francis used 1-cm cubes to form a cuboid measuring 45 cm by 30 cm by 20 cm. He painted all the faces of the cuboid. How many of the 1-cm cubes in the cuboid have only 2 of the faces painted?",options:["356","360","340","380"],exp:"Cubes on 12 edges (excluding corners): 4 × (43 + 28 + 18) = 356."},
+{id:"p2q6",sec:"Paper 2",n:6,q:"Q6. EAD is a triangle and BCDE is a parallelogram. AB = BE. Find ∠EAB.",options:["34°","68°","39°","73°"],exp:"∠EBD = 180° − 39° − 73° = 68°. Since △ABE is isosceles with ext ∠ 68°, ∠EAB = 34°."},
+{id:"p2q7",sec:"Paper 2",n:7,q:"Q7. Mr Kong drove at an average speed of 76 km/h from City A to City B which was 209 km away.\n(a) What was the duration of the journey? Express your answer in hours and minutes.\n(b) From City B, he drove for another 2 h 36 min and arrived at City C. The distance between City B and City C was 153.4 km. What was the average speed he drove from City B to City C? Express your answer in km/h.",options:["(a) 2 h 45 min, (b) 59 km/h","(a) 2 h 30 min, (b) 59 km/h","(a) 2 h 45 min, (b) 60 km/h","(a) 3 h, (b) 59 km/h"],exp:"(a) 209 ÷ 76 = 2.75 h = 2 h 45 min.\n(b) 153.4 ÷ 2.6 h = 59 km/h."},
+{id:"p2q8",sec:"Paper 2",n:8,q:"Q8. Mike had 130 cm of string. He used some of it to make the figure as shown [sides: 2p cm, p cm, (p+6) cm, (3p-4) cm].\n(a) How much of the string did Mike use to make the figure? Express your answer in terms of p in simplest form.\n(b) After making the figure, Mike had p cm of wire left. What was the value of p?",options:["(a) (7p + 2) cm, (b) p = 16","(a) (7p - 2) cm, (b) p = 16","(a) (7p + 2) cm, (b) p = 18","(a) (6p + 2) cm, (b) p = 16"],exp:"(a) Perimeter = (7p + 2) cm.\n(b) 7p + 2 + p = 130 → 8p = 128 → p = 16."},
+{id:"p2q9",sec:"Paper 2",n:9,q:"Q9. In the square grid below, CD and DE are straight lines.\n(a) Measure and write down the size of ∠CDE.\n(b) Draw two more straight lines to form a trapezium CDEF where CF = 2 × DE. Label point F.",options:["(a) 91°, (b) [Drawing Step]","(a) 89°, (b) [Drawing Step]","(a) 90°, (b) [Drawing Step]","(a) 81°, (b) [Drawing Step]"],exp:"(a) ∠CDE ≈ 91°. (b) Draw line CF parallel to DE with double length."},
+{id:"p2q10",sec:"Paper 2",n:10,q:"Q10. Elsie spent 2/5 of her money and an additional $50 on a dress. She spent 3/5 of the remainder and an additional $86 on a bag. She spent half of the money that was left on food for $25. How much money did she have at first?",options:["$650","$600","$700","$550"],exp:"Working backwards:\nFood: $25 × 2 = $50.\nBag: ($50 + $86) × 5/2 = $340.\nDress: ($340 + $50) × 5/3 = $650."},
+{id:"p2q11",sec:"Paper 2",n:11,q:"Q11. During a contest, Abby, Britney, and Claudia scored an average of 68.5 points. Elaine joined the game and the average score of the four friends became 70.\n(a) How many points did Elaine score?\n(b) What percentage of the total score did Elaine score? Round your answer to the nearest whole number.",options:["(a) 74.5 points, (b) 27%","(a) 74.5 points, (b) 26%","(a) 70 points, (b) 27%","(a) 74.5 points, (b) 30%"],exp:"(a) Elaine = (4 × 70) − (3 × 68.5) = 280 − 205.5 = 74.5 points.\n(b) (74.5 / 280) × 100% ≈ 26.61% → 27%."},
+{id:"p2q12",sec:"Paper 2",n:12,q:"Q12. The line graph shows the total volume of water collected in a water tank from 12 00 to 17 00.\n(a) During which one-hour interval was there no water flowing into the water tank?\n(b) How much water flowed into the water tank between 13 00 to 14 00?\n(c) What was the average volume of water collected per hour?",options:["(a) 15 00 to 16 00, (b) 16 litres, (c) 16 litres per hour","(a) 14 00 to 15 00, (b) 16 litres, (c) 16 litres per hour","(a) 15 00 to 16 00, (b) 20 litres, (c) 16 litres per hour","(a) 15 00 to 16 00, (b) 16 litres, (c) 20 litres per hour"],exp:"(a) Flat interval: 15 00 to 16 00.\n(b) 36 L − 20 L = 16 L.\n(c) 80 L ÷ 5 hours = 16 L per hour."},
+{id:"p2q13",sec:"Paper 2",n:13,q:"Q13. 9 identical rectangles are combined to form a large rectangle ABCD as shown below. The perimeter of Rectangle ABCD is 138 cm. Find the area of rectangle ABCD.",options:["1134 cm²","1008 cm²","1260 cm²","980 cm²"],exp:"Let width = u, length = 3.5u. Perimeter = 23u = 138 → u = 6 cm. Dimensions = 42 cm by 27 cm. Area = 1134 cm²."},
+{id:"p2q14",sec:"Paper 2",n:14,q:"Q14. Dawn bought ribbons from Shop A, Shop B, Shop C and Shop D. She bought an equal number of ribbons from Shop C and Shop D.\n1/5 of the ribbons were bought from Shop B.\n2/5 of the ribbons were bought from Shop A.\n(a) What fraction of the ribbons was bought from Shop C?\n(b) Dawn bought 133 ribbons from Shop D. What was the total number of ribbons she bought?",options:["(a) 1/5, (b) 665","(a) 1/5, (b) 133","(a) 2/5, (b) 665","(a) 1/5, (b) 600"],exp:"(a) Fraction C + D = 2/5 → C = 1/5.\n(b) 1/5 = 133 → Total = 133 × 5 = 665."},
+{id:"p2q15",sec:"Paper 2",n:15,q:"Q15. Ronald bought a total of 38 small and big boxes of chicken wings. Each small box of chicken wings cost $6.30 while each big box of chicken wings cost $9.75. He paid $287.85 after a discount of $4 for every $50 spent.\n(a) What was the total cost of the boxes of chicken wings before the discount?\n(b) How many small boxes of chicken wings did Ronald buy?",options:["(a) $311.85, (b) 17","(a) $300, (b) 17","(a) $311.85, (b) 21","(a) $287.85, (b) 17"],exp:"(a) 6 tiers of $4 discount ($24 total discount) → Original cost = $287.85 + $24 = $311.85.\n(b) Assumption method: (38 × $9.75 − $311.85) / ($9.75 − $6.30) = $58.65 / $3.45 = 17 small boxes."},
+{id:"p2q16",sec:"Paper 2",n:16,q:"Q16. The ratio of the number of boys to the number of girls who visited an amusement park was in the ratio of 10 : 7. The entrance fee for each person was $12 and a total of $4692 was collected from the children.\n(a) How many boys were there?\nOn that same day, the ratio of the number of males (boys and men) to the number of females (girls and women) who visited the amusement park was 8 : 5. There were 54 more men than women.\n(b) How many women were there?",options:["(a) 230, (b) 90","(a) 230, (b) 54","(a) 200, (b) 90","(a) 230, (b) 144"],exp:"(a) Total children = $4692 ÷ $12 = 391. 17 units = 391 → Boys = 10 × 23 = 230.\n(b) Ratio diff = 3 units = 54 → 1 unit = 18. Women = 5 × 18 = 90."},
+{id:"p2q17",sec:"Paper 2",n:17,q:"Q17. The first three figures of a pattern are shown below.\nThe table below shows the number of white and grey circles used for each figure:\n• Fig 1: 4 white, 2 grey\n• Fig 2: 6 white, 3 grey\n• Fig 3: 9 white, 3 grey\n• Fig 4: 11 white, 4 grey\n(a) Fill in the table for Figure 4.\n(b) What is the total number of white and grey circles in Figure 425?\n(c) In Figure 425, what percentage of the circles are white? Round your answer to 1 decimal place.",options:["(b) 1278, (c) 83.3%","(b) 1275, (c) 83.3%","(b) 1278, (c) 80.0%","(b) 1703, (c) 83.3%"],exp:"(a) Fig 4: 11 white, 4 grey.\n(b) Total circles = (425 + 1) × 3 = 1278.\n(c) White percentage = 1064 / 1278 × 100% ≈ 83.3%."}
+];
+
+const STORAGE_KEY="psle2025MathsFullInOrder";
+const app=document.getElementById("app");
+let progress=loadProgress();
+let state={list:[],index:0,correct:0,answered:false,title:"",misses:[]};
+
+function loadProgress(){try{const r=localStorage.getItem(STORAGE_KEY);if(!r)return{attempts:{},correct:{},wrong:[]};const d=JSON.parse(r);return{attempts:d.attempts||{},correct:d.correct||{},wrong:d.wrong||[]};}catch(e){return{attempts:{},correct:{},wrong:[]};}}
+function saveProgress(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(progress));}catch(e){}}
+function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function shuffle(a){const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;}
+function prepare(list){return list.map(q=>{
+  if(q.ans!==undefined){return Object.assign({},q,{answer:q.ans});}
+  const o=q.options.map((t,i)=>({text:t,correct:i===0}));const s=shuffle(o);
+  return Object.assign({},q,{options:s.map(x=>x.text),answer:s.findIndex(x=>x.correct)});
+});}
+function getStats(){const at=Object.keys(progress.attempts).length;let tA=0,tC=0;for(const k in progress.attempts)tA+=progress.attempts[k];for(const k in progress.correct)tC+=progress.correct[k];return{attempted:at,accuracy:tA?Math.round(tC/tA*100):0,wrong:progress.wrong.length};}
+function applyFigs(){QUESTIONS.forEach(q=>{if(FIGMAP[q.id])q.fig=FIGMAP[q.id];});}
+
+function renderHome(){
+  const s=getStats();
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><div class="brand">📄 PSLE 2025 Maths — Full Paper (In Order)</div><div class="chip">47 Qs</div></div>
+    <div class="hero"><h1>Exact paper sequence + printed figures</h1>
+      <p>P1 Booklet A (1–15) → P1 Booklet B (16–30) → Paper 2 (1–17). Includes complete text and multi-part sub-questions.</p>
+      <div class="actions">
+        <button class="btn primary" onclick="start('all')">▶️ Full Paper (47)</button>
+        <button class="btn primary" onclick="start('P1 Booklet A')">📘 P1 Booklet A</button>
+        <button class="btn primary" onclick="start('P1 Booklet B')">📗 P1 Booklet B</button>
+        <button class="btn primary" onclick="start('Paper 2')">📕 Paper 2</button>
+        <button class="btn secondary" onclick="start('wrong')">❌ Wrong Replay</button>
+        <button class="btn secondary" onclick="figureCheck()">🔍 Figure Check</button>
+        <button class="btn secondary" onclick="resetProgress()">♻️ Reset</button>
+      </div></div>
+    <div class="stats">
+      <div class="stat"><div class="value">${s.attempted}</div><div class="label">Practiced</div></div>
+      <div class="stat"><div class="value">${s.accuracy}%</div><div class="label">Accuracy</div></div>
+      <div class="stat"><div class="value">${s.wrong}</div><div class="label">Wrong</div></div>
+      <div class="stat"><div class="value">${QUESTIONS.length}</div><div class="label">Questions</div></div>
+    </div></div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function figureCheck(){
+  const rows=QUESTIONS.filter(q=>q.fig).map(q=>`
+    <div class="checkitem">
+      <div class="lbl">${esc(q.sec)} — Q${q.n}</div>
+      <img src="${IMG}${q.fig}" alt="figure" onerror="this.outerHTML='<div class=fn>IMAGE FAILED: ${q.fig}</div>'">
+      <div class="fn">${q.fig}</div>
+    </div>`).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><button class="btn secondary" onclick="renderHome()">⬅ Back</button><div class="chip">Figure Check</div></div>
+    <div class="card"><h2>🔍 Figure Check</h2>
+      <p class="small">Confirm each picture matches its question. Report any mismatch by question number.</p>
+      ${rows}
+    </div></div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function start(mode){
+  let list=[];
+  if(mode==="all")list=QUESTIONS;
+  else if(mode==="wrong")list=QUESTIONS.filter(q=>progress.wrong.includes(q.id));
+  else list=QUESTIONS.filter(q=>q.sec===mode);
+  if(!list.length){alert("No questions available.");return;}
+  state={list:prepare(list),index:0,correct:0,answered:false,title:(mode==="all"?"Full Paper":mode==="wrong"?"Wrong Replay":mode),misses:[]};
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q=state.list[state.index];
+  const pct=(state.index/state.list.length)*100;
+  const printed=(q.ans!==undefined);
+  const opts=q.options.map((o,i)=>{
+    const lbl=printed?("("+(i+1)+")"):(String.fromCharCode(65+i)+".");
+    return `<button class="option" onclick="answer(${i})">${lbl} ${esc(o)}</button>`;
+  }).join("");
+  const hasFig=!!q.fig;
+  const fig=hasFig?`<img class="fig" src="${IMG}${q.fig}" alt="Figure for Q${q.n}" onerror="this.style.display='none';var c=document.getElementById('figcap');if(c)c.style.display='none';"><div class="figcap" id="figcap">Printed figure for ${esc(q.sec)} Q${q.n}</div>`:"";
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><button class="btn secondary" onclick="renderHome()">🏠 Home</button><div class="chip">${esc(state.title)}</div></div>
+    <div class="card">
+      <div class="progress"><div style="width:${pct}%"></div></div>
+      <div class="small">${esc(q.sec)} • Question ${state.index+1} of ${state.list.length} • Score ${state.correct}</div>
+      <div class="qtext-style" id="qtext">${esc(q.q)}</div>
+      ${fig}
+      <div class="options">${opts}</div>
+      <div id="feedback" class="feedback hidden"></div>
+    </div></div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function answer(sel){
+  if(state.answered)return;
+  state.answered=true;
+  const q=state.list[state.index];
+  const btns=Array.from(document.querySelectorAll(".option"));
+  btns.forEach(b=>b.disabled=true);
+  btns[q.answer].classList.add("correct");
+  const ok=sel===q.answer;
+  if(ok){state.correct++;btns[sel].classList.add("correct");}
+  else{btns[sel].classList.add("wrong");state.misses.push({id:q.id,selected:sel});}
+  progress.attempts[q.id]=(progress.attempts[q.id]||0)+1;
+  if(ok){progress.correct[q.id]=(progress.correct[q.id]||0)+1;progress.wrong=progress.wrong.filter(w=>w!==q.id);}
+  else if(!progress.wrong.includes(q.id))progress.wrong.push(q.id);
+  saveProgress();
+  const fb=document.getElementById("feedback");
+  fb.className="feedback "+(ok?"good":"bad");
+  fb.innerHTML=`<div>${ok?"✅ Correct!":"❌ Not quite."}</div>
+    <div class="exp">${esc(q.exp)}${ok?"":"\nCorrect answer: "+esc(q.options[q.answer])+"."}</div>
+    <div class="actions"><button class="btn primary" onclick="next()">${state.index===state.list.length-1?"Finish 🏁":"Next ➜"}</button></div>`;
+}
+
+function next(){
+  if(!state.answered)return;
+  if(state.index<state.list.length-1){state.index++;state.answered=false;renderQuestion();}
+  else finish();
+}
+
+function finish(){
+  const total=state.list.length;
+  const pct=Math.round(state.correct/total*100);
+  let stars="💪",msg="Keep practising!";
+  if(pct>=90){stars="🌟🌟";msg="Excellent!";}
+  else if(pct>=75){stars="🌟";msg="Great job!";}
+  else if(pct>=50){stars="🌟";msg="Good effort!";}
+  const seen=new Set();
+  const uniq=state.misses.filter(m=>{if(seen.has(m.id))return false;seen.add(m.id);return true;});
+  const review=uniq.map(m=>{const q=state.list.find(x=>x.id===m.id);return `<div class="review-item">
+      <div class="small">${esc(q.sec)} Q${q.n}</div>
+      <div class="review-q">${esc(q.q)}</div>
+      <div class="user-answer">Your answer: ${esc(q.options[m.selected])}</div>
+      <div class="correct-answer">Correct: ${esc(q.options[q.answer])}</div>
+      <div class="exp">${esc(q.exp)}</div></div>`;}).join("");
+  app.innerHTML=`<div class="container">
+    <div class="topbar"><button class="btn secondary" onclick="renderHome()">🏠 Home</button><div class="chip">Result</div></div>
+    <div class="card"><h2>${esc(state.title)} Complete!</h2>
+      <div class="result-stars">${stars}</div>
+      <p style="font-weight:900">You scored ${state.correct}/${total} (${pct}%). ${msg}</p>
+      <div class="actions"><button class="btn primary" onclick="renderHome()">🏠 Home</button>
+      ${uniq.length?'<button class="btn secondary" onclick="start(\'wrong\')">❌ Retry Wrong</button>':""}</div>
+      <h3>Review</h3>${uniq.length?review:"<p>🎉 Perfect!</p>"}</div></div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function resetProgress(){if(confirm("Reset all progress?")){progress={attempts:{},correct:{},wrong:[]};saveProgress();renderHome();}}
+
+function autoFill(){
+  fetch("https://api.github.com/repos/azmilazzo/kidspractise/contents/")
+    .then(r=>r.json())
+    .then(list=>{
+      const names=list.map(x=>x.name).filter(n=>/^IMG_/.test(n)).sort();
+      const known=new Set(Object.values(KNOWNFIG));
+      const fresh=names.filter(n=>!known.has(n));
+      fresh.forEach((n,i)=>{ if(NEWFIGSLOT[i]) FIGMAP[NEWFIGSLOT[i]]=n; });
+      applyFigs(); renderHome();
+    })
+    .catch(()=>{ applyFigs(); renderHome(); });
+}
+
+applyFigs();
+renderHome();
+autoFill();
+</script>
+</body>
+</html>
