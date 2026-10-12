@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pri 3 End-of-year Revision 2 – Interactive Answer Key</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d2b53; --ink2:#4b5a85; --bg:#eaf2ff; --paper:#ffffff;
+  --blue:#3a6df0; --blue-d:#2a52c0; --sun:#ffcb2f; --sun-d:#d9a400;
+  --mint:#1fb58f; --mint-d:#118267; --coral:#f0566a; --coral-d:#b83446;
+  --grape:#7a5af8; --line:#d3dff5;
+  --r-lg:22px; --r-md:14px; --r-sm:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:150px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito','Trebuchet MS',system-ui,sans-serif;font-size:16px;line-height:1.5}
+h1,h2,h3,.fred{font-family:'Fredoka','Trebuchet MS',system-ui,sans-serif;font-weight:600;letter-spacing:.2px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--grape);outline-offset:2px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff;padding:10px 16px 12px;box-shadow:0 4px 0 rgba(29,43,83,.18)}
+.top-in{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.brand{display:flex;flex-direction:column;line-height:1.1;margin-right:auto}
+.brand b{font-family:'Fredoka',sans-serif;font-size:20px}
+.brand span{font-size:13px;opacity:.75}
+.pods{display:flex;gap:8px}
+.pod{background:rgba(255,255,255,.12);border-radius:12px;padding:5px 12px;text-align:center;min-width:84px}
+.pod strong{display:block;font-family:'Fredoka',sans-serif;font-size:19px;line-height:1.1}
+.pod small{font-size:11.5px;opacity:.8}
+.pod.total{background:var(--sun);color:var(--ink)}
+.bar{max-width:980px;margin:8px auto 0;height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--mint);transition:width .35s}
+
+/* layout */
+main{max-width:980px;margin:0 auto;padding:18px 16px 80px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 16px}
+.tabs{display:flex;gap:8px;margin-right:auto}
+.tab{border:0;background:var(--paper);padding:10px 18px;border-radius:var(--r-md);font-family:'Fredoka',sans-serif;font-size:17px;box-shadow:0 4px 0 var(--line);color:var(--ink2)}
+.tab[aria-selected="true"]{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-d)}
+.tab:active{transform:translateY(2px);box-shadow:0 2px 0 var(--line)}
+.chip{border:2px solid var(--line);background:var(--paper);padding:7px 14px;border-radius:99px;font-weight:700;font-size:14px;color:var(--ink2)}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun-d);color:var(--ink)}
+.chip.reset{border-color:transparent;background:transparent;text-decoration:underline}
+
+/* answer strip */
+.strip{background:var(--paper);border-radius:var(--r-lg);padding:14px;margin-bottom:20px;box-shadow:0 5px 0 var(--line)}
+.strip h2{margin:0 0 4px;font-size:18px}
+.strip p{margin:0 0 10px;font-size:14px;color:var(--ink2)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px}
+.tile{border:2px solid var(--line);background:#f6f9ff;border-radius:var(--r-sm);padding:4px 0 5px;text-align:center;line-height:1.15;text-decoration:none;color:var(--ink)}
+.tile b{display:block;font-family:'Fredoka',sans-serif;font-size:15px}
+.tile span{display:block;font-size:13px;font-weight:800;min-height:1.2em;color:var(--ink2)}
+.tile.ok{background:#d9f6ec;border-color:var(--mint)}
+.tile.ok span{color:var(--mint-d)}
+.tile.bad{background:#ffe3e7;border-color:var(--coral)}
+.tile.bad span{color:var(--coral-d)}
+.tile.peek{background:#fff2c2;border-color:var(--sun-d)}
+.tile.peek span{color:#8a6700}
+.tile.partial{background:#fff2c2;border-color:var(--sun-d)}
+
+/* cards */
+.card{background:var(--paper);border-radius:var(--r-lg);padding:16px 18px 18px;margin-bottom:16px;box-shadow:0 5px 0 var(--line);border:2px solid transparent}
+.card.ok{border-color:var(--mint)}
+.card.bad{border-color:var(--coral)}
+.card-h{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.num{flex:none;width:44px;height:44px;border-radius:14px;background:var(--blue);color:#fff;display:grid;place-items:center;font-family:'Fredoka',sans-serif;font-size:20px;box-shadow:0 3px 0 var(--blue-d)}
+.card.ok .num{background:var(--mint);box-shadow:0 3px 0 var(--mint-d)}
+.card.bad .num{background:var(--coral);box-shadow:0 3px 0 var(--coral-d)}
+.topic{font-family:'Fredoka',sans-serif;font-size:17px;line-height:1.2}
+.topic small{display:block;font-family:'Nunito',sans-serif;font-size:13px;color:var(--ink2);font-weight:600}
+.q{margin:6px 0 12px;max-width:68ch}
+.hint{font-size:13px;color:var(--ink2);margin:-4px 0 12px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:9px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;border:2px solid var(--line);background:#f6f9ff;border-radius:var(--r-md);padding:9px 12px;box-shadow:0 4px 0 var(--line);font-weight:700}
+.opt i{flex:none;font-style:normal;font-family:'Fredoka',sans-serif;width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;font-size:14px}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 var(--line)}
+.opt:disabled{cursor:default}
+.opt.right{background:#d9f6ec;border-color:var(--mint);box-shadow:0 4px 0 var(--mint)}
+.opt.right i{background:var(--mint);border-color:var(--mint);color:#fff}
+.opt.wrong{background:#ffe3e7;border-color:var(--coral);box-shadow:0 4px 0 var(--coral)}
+.opt.wrong i{background:var(--coral);border-color:var(--coral);color:#fff}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+.link{border:0;background:none;color:var(--blue-d);font-weight:800;text-decoration:underline;padding:4px 0}
+.btn{border:0;border-radius:var(--r-md);padding:9px 16px;font-family:'Fredoka',sans-serif;font-size:16px;background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-d)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--blue-d)}
+.btn.ghost{background:var(--paper);color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
+
+/* diagrams */
+.figs{display:flex;flex-direction:column;align-items:center;gap:10px;margin:4px 0 14px;padding:12px;background:#fff;border:2px solid var(--line);border-radius:var(--r-md)}
+.figs img{max-width:100%;max-height:460px;width:auto;height:auto;display:block;cursor:zoom-in}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(29,43,83,.88);display:grid;place-items:center;padding:16px;cursor:zoom-out}
+.zoom img{max-width:100%;max-height:100%;background:#fff;border-radius:12px;padding:10px}
+
+/* explanation */
+.why{margin-top:14px;background:#f3f0ff;border-radius:var(--r-md);padding:12px 14px;border-left:6px solid var(--grape);animation:open .22s ease-out}
+@keyframes open{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.why .verdict{font-family:'Fredoka',sans-serif;font-size:17px;margin-bottom:4px}
+.why p{margin:4px 0}
+.mk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:12px;font-weight:800;color:#fff;margin-right:6px;vertical-align:1px}
+.mk.y{background:var(--mint)} .mk.n{background:var(--coral)}
+.note{font-size:14.5px;color:var(--ink2);background:#fff;border-radius:8px;padding:6px 10px;margin-top:6px}
+.flag{font-size:14px;background:#fff2c2;border-left:5px solid var(--sun-d);border-radius:8px;padding:6px 10px;margin-top:8px}
+
+/* open-ended parts */
+.intro{margin:2px 0 10px;color:var(--ink2);font-size:15px;max-width:68ch}
+.part{border-top:2px dashed var(--line);padding:12px 0 6px}
+.part:first-of-type{border-top:0}
+.part-h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.lab{font-family:'Fredoka',sans-serif;font-size:17px;color:var(--blue-d)}
+.pt{margin-left:auto;font-size:13px;font-weight:800;color:var(--ink2);background:#eef3ff;border-radius:99px;padding:2px 10px}
+.ask{margin:2px 0 6px;max-width:68ch}
+.ans{background:#e9fbf4;border-left:6px solid var(--mint);border-radius:var(--r-md);padding:10px 14px;margin:8px 0;animation:open .22s ease-out}
+.ans p{margin:2px 0}
+.mark-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 2px}
+.mark-row span{font-size:14px;font-weight:700;color:var(--ink2)}
+.mb{border:2px solid var(--line);background:#fff;border-radius:99px;padding:5px 14px;font-weight:800;font-size:14px}
+.mb[aria-pressed="true"].full{background:var(--mint);border-color:var(--mint-d);color:#fff}
+.mb[aria-pressed="true"].half{background:var(--sun);border-color:var(--sun-d)}
+.mb[aria-pressed="true"].none{background:var(--coral);border-color:var(--coral-d);color:#fff}
+.sc{margin-left:auto;font-family:'Fredoka',sans-serif;font-size:16px}
+
+.empty{text-align:center;padding:30px;color:var(--ink2);font-weight:700}
+footer{max-width:980px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:var(--ink2)}
+[hidden]{display:none!important}
+@media (max-width:560px){
+  .pod{min-width:70px;padding:4px 8px}
+  .opts{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><b>Pri 3 Science</b><span>End-of-year Revision 2 · answer key</span></div>
+    <div class="pods" aria-live="polite">
+      <div class="pod"><strong id="sMcq">0</strong><small>MCQ / 56</small></div>
+      <div class="pod"><strong id="sOpen">0</strong><small>Sec. B / 44</small></div>
+      <div class="pod total"><strong id="sAll">0</strong><small>Total / 100</small></div>
+    </div>
+  </div>
+  <div class="bar" aria-hidden="true"><i id="prog"></i></div>
+</header>
+
+<main>
+  <div class="controls">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabM" aria-selected="true">Multiple choice</button>
+      <button class="tab" role="tab" id="tabO" aria-selected="false">Section B</button>
+    </div>
+    <button class="chip" id="showAll" aria-pressed="false">Show all answers</button>
+    <button class="chip" id="onlyTodo" aria-pressed="false">Only unanswered</button>
+    <button class="chip reset" id="reset">Start over</button>
+  </div>
+
+  <noscript><p class="empty">This page needs JavaScript to show the questions.</p></noscript>
+  <section id="paneM">
+    <div class="strip">
+      <h2>Answer grid</h2>
+      <p>Tap a number to jump to it. Green is correct, red is a miss, yellow means you looked at the answer first.</p>
+      <div class="tiles" id="tilesM"></div>
+    </div>
+    <div id="listM"></div>
+  </section>
+
+  <section id="paneO" hidden>
+    <div class="strip">
+      <h2>Section B grid</h2>
+      <p>The open-ended questions are now multiple choice: each part has its own options and keeps its marks from the key.</p>
+      <div class="tiles" id="tilesO"></div>
+    </div>
+    <div id="listO"></div>
+  </section>
+</main>
+
+<footer>
+  Based on the Science Shifu “Pri 3 End-of-year Revision 2” worksheet and answer key. Diagrams, graphs and tables are cropped from the worksheet; tap one to enlarge it.
+  Scores live only on this page and reset when you reload it.
+</footer>
+
+<script>
+/* ---------- DATA ---------- */
+const MCQ = [
+{n:1,a:3,t:`What plants need`,q:`Paul watered his plants and placed them near a closed glass window before going on holiday for four weeks. When he returned, the plants had died. Which statement best explains why?`,
+ o:[`The plants did not receive enough air.`,`The plants did not receive enough food.`,`The plants did not receive enough water.`,`The plants did not receive enough sunlight.`],
+ r:[`Although Paul had watered his plants before he left, the water would be used up by the plants within the four weeks he was away.`]},
+{n:2,a:4,t:`Living and non-living things`,q:`A table ticks the characteristics (moves, needs air, food and water, reproduces, has legs) of objects W, X, Y and Z. Which is most likely to be a non-living thing?`,
+ o:[`W`,`X`,`Y`,`Z`],
+ r:[`Non-living things cannot reproduce and do not need air, food and water.`,`Note: Non-living things, like cars, can move from place to place.`]},
+{n:3,a:4,t:`Characteristics of living things`,q:`Which example cannot be used to show the characteristics of a living thing?`,
+ o:[`A frog eating mosquitoes.`,`A cockroach laying eggs.`,`A boy growing in height.`,`A balloon growing in size as air is pumped into it.`],
+ r:[`✗ (1) Eating shows that living things need food.`,`✗ (2) Laying eggs shows that living things can reproduce.`,`✗ (3) Growing in height shows that living things can grow.`,`✓ (4) A balloon is not a living thing, so it cannot show the characteristics of one.`]},
+{n:4,a:4,t:`Classification flowchart`,q:`The flowchart asks: Is it an animal? Does it breathe through lungs? Does it lay eggs? Which is the correct classification for the living things X, Y and Z?`,
+ o:[`X: plant, Y: bird, Z: fish`,`X: plant, Y: fish, Z: amphibian`,`X: fish, Y: mammal, Z: insect`,`X: fungi, Y: fish, Z: mammal`],
+ r:[`X: plants and fungi are not animals.`,`Y: fish do not breathe through lungs.`,`Z: most mammals do not lay eggs.`]},
+{n:5,a:4,t:`Classification flowchart`,q:`Which letter, A, B, C or D, most likely represents a reptile?`,
+ o:[`A`,`B`,`C`,`D`],
+ r:[`Reptiles lay eggs, have scaly skin and breathe through lungs.`]},
+{n:6,a:2,t:`Classifying leaves`,q:`Amy classified some leaves, A, B and C, based on a common characteristic. Which leaf could she classify together with them?`,
+ o:[`Leaf (1)`,`Leaf (2)`,`Leaf (3)`,`Leaf (4)`],
+ r:[`The common characteristic is a toothed / jagged edge.`]},
+{n:7,a:1,t:`Bacteria and fungi`,q:`Which of these are characteristics of bacteria and fungi? (A reproduce by laying eggs, B need air, food and water, C can be seen only under a microscope)`,
+ o:[`B only`,`A and C only`,`B and C only`,`A, B and C`],
+ r:[`✗ A. Bacteria and fungi do not lay eggs.`,`✓ B. They are living things, so they need air, food and water to survive.`,`✗ C. Bacteria are very small and need a microscope, but fungi are big enough to be seen with the naked eye.`]},
+{n:8,a:3,t:`Grouping plants`,q:`Gavin grouped a rose, a tomato, a mushroom and a bird's nest fern into non-flowering plants and flowering plants. Which one is grouped incorrectly?`,
+ o:[`rose`,`tomato`,`mushroom`,`bird's nest fern`],
+ r:[`The mushroom is not even a plant. It is a fungus.`]},
+{n:9,a:2,t:`Bread mould experiment`,q:`Teresa put similar slices of bread in two airtight bags, A and B, and added water only to the bread in bag B. Mould grew only in bag B. Which conclusion is correct?`,
+ o:[`Bread mould needs air to grow.`,`Bread mould needs water to grow.`,`Bread mould needs air and water to grow.`,`Bread mould needs air, food and water to grow.`],
+ r:[`The bread in bag B has more water in it and mould grew on it, so we can conclude that bread mould needs water to grow.`]},
+{n:10,a:4,t:`Mushroom and mould`,q:`The diagram shows living things X (a mushroom) and Y (mould on bread). Which statements are true? (A both reproduce by spores, B only X does not make its own food, C only Y cannot be seen with the naked eye, D both feed on other organisms, dead or alive)`,
+ o:[`A and B only`,`A and C only`,`B and D only`,`A, C and D only`],
+ r:[`✓ A. Both are fungi and reproduce by spores.`,`✗ B. Neither makes its own food.`,`✓ C. Y is very small and needs a microscope, but X is big enough to be seen with the naked eye.`,`✓ D. Both are fungi that feed on other organisms, dead or alive.`]},
+{n:11,a:3,t:`Roots and germination`,q:`A seed is planted in the soil. Why does part X (the root) need to grow first when the seed germinates? (A make food, B hold the seedling in the soil, C take in water, D take in sunlight)`,
+ o:[`A and C only`,`A and D only`,`B and C only`,`B and D only`],
+ r:[`✗ A. Roots do not make food. The seed leaves provide food for the seedling.`,`✓ B. The roots hold the seedling firmly in the soil so it does not topple easily.`,`✓ C. The roots help to absorb water for the seedling for germination to occur.`,`✗ D. Roots do not take in sunlight. The leaves do that once the seedling grows them.`]},
+{n:12,a:3,t:`Fair test: amount of water`,q:`Kelly wants to find out if the amount of water affects the growth of seeds. Which two of the four set-ups, P, Q, R and S, should she use?`,
+ o:[`P and Q`,`Q and R`,`Q and S`,`R and S`],
+ r:[`Set-ups Q and S have all variables the same except for the amount of water added, so they can be used to find out if the amount of water affects the growth of seeds.`]},
+{n:13,a:1,t:`Reading a growth table`,q:`Victor recorded the shoot length of plants from seeds X and Y over 16 days. Based on the table, what can he conclude?`,
+ o:[`Plant Y grew taller than plant X.`,`Plant Y grew healthier than plant X.`,`The seed of plant X took a longer time to start growing.`,`The seeds of plants X and Y started growing on day 4.`],
+ r:[`✓ (1) At days 4, 7, 10, 13 and 16, plant Y is taller than plant X.`,`✗ (2) We cannot conclude from the table whether plant Y or plant X is healthier.`,`✗ (3) We do not know the exact day plant X and plant Y started growing.`,`✗ (4) We do not know the exact day plant X and plant Y started growing.`]},
+{n:14,a:2,t:`Life cycle of a beetle`,q:`Each letter shows a stage in the life cycle of a beetle. If Y represents the adult stage, which stage does W represent?`,
+ o:[`egg`,`larva`,`pupa`,`nymph`],
+ r:[`Following the arrows: Y (adult), Z (egg), W (larva), X (pupa), then back to adult.`]},
+{n:15,a:2,t:`Moulting`,q:`The young of a cockroach goes through moulting. Which statement is not true of this process?`,
+ o:[`The young moults several times.`,`Both the young and adult go through moulting.`,`The young moults because it is growing bigger.`,`The young sheds its old body covering and grows a new one.`],
+ r:[`Insects only moult when they are in the young stage, so statement (2) is not true.`]},
+{n:16,a:4,t:`Life cycle of a dragonfly`,q:`Statements: A eggs laid in water, B small with no wings, C moults several times as it grows, D wings fully developed and can fly. Which order correctly describes the stages of a dragonfly's life cycle?`,
+ o:[`A, C, D, B`,`B, A, D, C`,`C, A, D, B`,`D, A, B, C`],a:4,
+ r:[`A: egg stage`,`B: nymph stage`,`C: nymph stage`,`D: adult stage`,`Note: A life cycle has no start or end point, so you can start at any stage. Just follow the order egg (A), nymph (B and C), adult (D).`],
+ flag:`The printed key gives option (2), B, A, D, C, but that order does not follow egg → nymph → adult. Option (4), D, A, B, C, does, and matches the key's own explanation, so (4) is used here. Worth confirming with your teacher.`},
+{n:17,a:2,t:`Seed leaves graph`,q:`A graph shows a quantity that falls steeply, then levels off, in the days after seeds germinated. What could the vertical axis represent?`,
+ o:[`Average mass of the seedlings`,`Average mass of the seed leaves`,`Average number of roots of the plant`,`Average number of leaves of the plant`],
+ r:[`Only the mass of the seed leaves decreases over time, as the stored food in the seed leaves is used up.`]},
+{n:18,a:1,t:`Strength of paper bags`,q:`Sally added tomatoes to paper bags A, B, C and D until they broke. Which paper bag was the strongest?`,
+ o:[`A`,`B`,`C`,`D`],
+ r:[`Paper bag A can hold the most tomatoes before breaking.`]},
+{n:19,a:3,t:`Choosing materials: fishbowl`,q:`A table ticks the properties (waterproof, flexible, allows light through) of materials A to D. Which is most suitable for making a fishbowl?`,
+ o:[`A`,`B`,`C`,`D`],
+ r:[`Material C is waterproof, not flexible and allows light to pass through.`]},
+{n:20,a:2,t:`Absorbing water`,q:`Strips of materials A, B, C and D were dipped into blue water for an hour. Which material is most suitable for a hand towel?`,
+ o:[`A`,`B`,`C`,`D`],
+ r:[`B absorbs the most water, so when it is made into a towel, it can dry our hands the best.`]},
+{n:21,a:3,t:`Properties of a kayak`,q:`Material X is used to make a kayak. Which properties make it suitable? (A strong, B waterproof, C floats in water, D does not allow light through)`,
+ o:[`A and D only`,`B and C only`,`A, B and C only`,`A, C and D only`],
+ r:[`The kayak has to be strong to hold a person's weight.`,`It has to be waterproof so that water does not enter the kayak.`,`It also has to float to keep the person above water.`,`Note: Being opaque is not an important property for a kayak to have.`]},
+{n:22,a:2,t:`Transparent, translucent, opaque`,q:`Ali wants nobody to see the coins in his bag (P). Brandi wants customers to see her biscuits clearly (Q). Camy wants privacy but some light in her house (R). What are the properties of P, Q and R?`,
+ o:[`P: no light passes, Q: some light passes, R: most light passes`,`P: no light passes, Q: most light passes, R: some light passes`,`P: some light passes, Q: most light passes, R: no light passes`,`P: most light passes, Q: some light passes, R: no light passes`],
+ r:[`P: It has to be opaque so that people cannot see the coins.`,`Q: It has to be transparent so that people can see the biscuits.`,`R: It has to be translucent to prevent people from getting a clear view of what is inside her house, while light can still enter to keep it bright.`]},
+{n:23,a:3,t:`Strength of materials`,q:`Weights of 1 kg were stacked on materials A, B, C and D until they broke (19, 24, 15 and 30 weights). Which material(s) could hold a weight of up to 20 kg?`,
+ o:[`B only`,`A and C only`,`B and D only`,`C and D only`],
+ r:[`Only materials B and D can hold more than 20 kg before breaking.`]},
+{n:24,a:4,t:`Bar magnets: poles`,q:`Three bar magnets are placed as shown, and B and X repel each other. Which arrangement is possible?`,
+ o:[`Arrangement (1)`,`Arrangement (2)`,`Arrangement (3)`,`Arrangement (4)`],
+ r:[`Let pole A be north. Then B is south, C is south and D is north. Since B and X repel, X is also south and Y is north.`,`Only the arrangement in option (4) has poles that would attract.`]},
+{n:25,a:4,t:`Making an electromagnet stronger`,q:`Keane's electromagnet did not attract the steel and gold pieces. Which changes could help? (A add another battery, B coil the iron rod more times, C move the electromagnet closer to the mixture)`,
+ o:[`A and B only`,`A and C only`,`B and C only`,`A, B and C`],
+ r:[`Adding another battery and coiling the iron rod more times will increase the strength of the electromagnet.`,`Placing the steel rod closer to the mixture will also let the electromagnet pull harder on the steel pieces.`]},
+{n:26,a:2,t:`Magnet or magnetic material?`,q:`Object Y moved towards object X when side A was near it, and away from X when side B was near it. Which statements are definitely correct? (A Y is made of iron, B only X is a magnet, C both X and Y are magnets)`,
+ o:[`A only`,`C only`,`A and B only`,`B and C only`],
+ r:[`Since there is repulsion between X and Y, they are both magnets.`,`Note: Object Y can be made of iron, which is a magnetic material, but it could also be made of other magnetic materials.`]},
+{n:27,a:3,t:`Fair test: strokes`,q:`Noah wants to find out how the number of strokes affects the strength of a magnet made from a rod. Which two set-ups should he use for a fair test?`,
+ o:[`A and B`,`A and D`,`B and C`,`C and D`],
+ r:[`In set-ups B and C, all variables are kept constant except for the number of strokes.`,`Silver and copper are not magnetic materials, so they cannot be magnetised.`]},
+{n:28,a:3,t:`Compass needle`,q:`Three bar magnets and two compasses are set up as shown. Which shows the correct direction of the needle in compass T?`,
+ o:[`Needle pointing up`,`Needle pointing right`,`Needle pointing down`,`Needle pointing left`],
+ r:[`The compass needle is a magnet, and the arrow head is its north pole. The other end is a south pole.`,`The north pole of a magnet attracts the south pole of the compass needle.`]}
+];
+
+const OPEN = [
+{n:29,t:`Needs of living things`,intro:`Jenson prepared four identical containers with living things W, X, Y and Z. A table shows whether each is exposed to light and given food, air and water.`,p:[
+ {k:`a`,m:1,q:`In which order will the living things survive, from the shortest time to the longest time?`,
+  o:[`W, X, Y, Z`,`X, W, Y, Z`,`Y, W, X, Z`,`X, Y, W, Z`],a:2,
+  r:[`X, W, Y, Z.`,`Note: Without air, all living things die the most quickly. Without water, they die next. Without food, living things can stay alive longer.`]},
+ {k:`b`,m:2,q:`After four weeks, living thing Z was still alive even though the food given was not eaten by it. Why?`,
+  o:[`Z is a plant, so it can trap light to make its own food.`,`Z is a fungus, so it absorbs food from the air.`,`Z is an animal, so it can store food for four weeks.`,`Z does not need water, so it can survive without food.`],a:1,
+  r:[`Living thing Z is a plant, so it can trap light to make its own food.`],
+  flag:`The printed key says “Living thing X is a plant”, but the question is about Z. X had no air, food or water, so it could not be the survivor. Z is used here.`}]},
+{n:30,t:`Classification chart`,intro:`A chart classifies bat, eagle and pigeon as birds, and whale, dolphin, dog, lion and sheep as mammals in groups X and Y.`,p:[
+ {k:`a`,m:1,q:`Which one of the animals is classified wrongly?`,
+  o:[`Eagle`,`Bat`,`Dolphin`,`Sheep`],a:2,
+  r:[`Bat. A bat is a mammal, not a bird.`]},
+ {k:`b`,m:1,q:`What are suitable headings for group X (whale, dolphin) and group Y (dog, lion, sheep)?`,
+  o:[`X: Live on land, Y: Live in water`,`X: Live in water, Y: Live on land`,`X: Lay eggs, Y: Give birth`,`X: Have fur, Y: Have feathers`],a:2,
+  r:[`Group X: live in water. Group Y: live on land.`]},
+ {k:`c`,m:1,q:`What is one similar characteristic of animals in group X and group Y?`,
+  o:[`They lay eggs.`,`They give birth to their young alive.`,`They have scales.`,`They have feathers.`],a:2,
+  r:[`They give birth to their young alive. (The key also accepts: their young feed on their mother's milk.)`]}]},
+{n:31,t:`A climbing plant`,intro:`Farah saw plant G in a plantation. It was drooping downwards and had fruits.`,p:[
+ {k:`a`,m:2,q:`The farmer wants to build poles for plant G. How will the poles help it?`,
+  o:[`The plant has a weak stem, so it can climb the poles to get maximum sunlight and make more food.`,`The plant has a strong stem, so the poles protect it from the wind.`,`The poles give the plant more water from the soil.`,`The poles stop animals from eating the fruits.`],a:1,
+  r:[`Plant G has a weak stem, so it needs to climb up the poles so it can get maximum sunlight to make more food.`]},
+ {k:`b`,m:1,q:`Farah says plant G is a non-flowering plant as she did not see flowers on it. Is she correct?`,
+  o:[`Yes, because it has no flowers.`,`Yes, because it has leaves.`,`No, because it has fruits, which develop from flowers.`,`No, because it has a weak stem.`],a:3,
+  r:[`No. There are fruits on plant G, which developed from flowers, so plant G is a flowering plant.`]}]},
+{n:32,t:`Bread mould`,intro:`Jeremy put bread A (not toasted) and bread B (toasted in the oven) in a cupboard for a week. Black patches grew on bread A but not on bread B.`,p:[
+ {k:`a`,m:1,q:`What are the black patches on bread A?`,
+  o:[`Bacteria`,`Bread mould`,`Dust`,`Seeds`],a:2,
+  r:[`Bread mould.`]},
+ {k:`b`,m:1,q:`What can Jeremy conclude from his experiment?`,
+  o:[`Mould needs light to grow.`,`Mould needs air to grow.`,`Mould needs water to grow.`,`Mould needs warmth to grow.`],a:3,
+  r:[`Mould needs water to grow.`,`Note: The toasted bread has very little to no water, so mould cannot grow well on it.`]},
+ {k:`c`,m:1,q:`How do the black patches reproduce?`,
+  o:[`By laying eggs`,`By seeds`,`By spores`,`By fruits`],a:3,
+  r:[`By spores.`]}]},
+{n:33,t:`Parts of a mushroom`,intro:`The diagram shows living thing X, a mushroom, with parts A, B and C labelled.`,p:[
+ {k:`a`,m:1,q:`Identify parts B and C.`,
+  o:[`B: Stalk, C: Cap`,`B: Cap, C: Stalk`,`B: Root, C: Cap`,`B: Cap, C: Root`],a:2,
+  r:[`Part B: cap. Part C: stalk.`]},
+ {k:`b`,m:1,q:`Why is part A important to living thing X?`,
+  o:[`It contains spores, which are needed for reproduction.`,`It makes food using sunlight.`,`It absorbs water from the soil.`,`It holds the mushroom in the soil.`],a:1,
+  r:[`Part A contains spores, which are needed for reproduction.`]}]},
+{n:34,t:`Temperature and germination`,intro:`Christina placed four pots of 20 seeds each at different temperatures, watered them daily, and counted how many seeds germinated after a week.`,p:[
+ {k:`a`,m:1,q:`Which temperature is least suitable for seeds to grow into a young plant?`,
+  o:[`10°C`,`30°C`,`40°C`,`50°C`],a:1,
+  r:[`10°C.`]},
+ {k:`b`,m:1,q:`Which explanation supports your answer in part (a)?`,
+  o:[`The least number of seeds germinated at 10°C.`,`The most seeds germinated at 10°C.`,`All the seeds germinated at 10°C.`,`The seeds needed more water at 10°C.`],a:1,
+  r:[`The least number of seeds germinated at 10°C.`]},
+ {k:`c`,m:1,q:`What did Christina observe about the seed to know that it had germinated?`,
+  o:[`The leaves turned green.`,`The roots emerged from the seed.`,`Flowers appeared.`,`The seed leaves dropped off.`],a:2,
+  r:[`The roots emerged from the seed.`,`Note: When a seed germinates, its roots emerge before the shoot.`]},
+ {k:`d`,m:1,q:`When will the young plant start making its own food?`,
+  o:[`When the seed absorbs water`,`When the roots emerge`,`When the seed grows its true / green leaves`,`When the seed leaves drop off`],a:3,
+  r:[`When the seed grows its true / green leaves.`,`Note: Once the plant has leaves, it can trap light and make food for the plant.`]}]},
+{n:35,t:`Life cycle of a plant`,intro:`A diagram shows the stages seed, young plant and adult plant. Tony also saw a tomato plant with flowers and fruits.`,p:[
+ {k:`a`,m:1,q:`Which arrows correctly show the stages of growth in the life cycle of the plant?`,
+  o:[`Seed → Young plant → Adult plant → Seed`,`Seed → Adult plant → Young plant → Seed`,`Young plant → Seed → Adult plant → Young plant`,`Adult plant → Young plant → Seed → Adult plant`],a:1,
+  r:[`Seed → Young plant → Adult plant → back to Seed.`]},
+ {k:`b`,m:2,q:`At which stage in the life cycle is the plant in the picture, and what is the reason?`,
+  o:[`Young plant, because it has flowers.`,`Seed, because it has fruits.`,`Adult stage, because it has fruits which contain seeds, and the seeds help the plant reproduce.`,`Adult stage, because it has seed leaves.`],a:3,
+  r:[`Adult stage. The plant has fruits which contain seeds, and the seeds help the plant reproduce.`]}]},
+{n:36,t:`Life-cycle flowchart`,intro:`A flowchart sorts animals A, B, C and D using the questions “Lay eggs?”, “Has a 4-stage life cycle?” and “Lives on land throughout its life cycle?”.`,p:[
+ {k:`a(i)`,m:1,q:`Which letter is most likely to be the frog?`,
+  o:[`A`,`B`,`C`,`D`],a:4,
+  r:[`D. A frog lays eggs, has a 3-stage life cycle, and does not live on land throughout its life cycle.`]},
+ {k:`a(ii)`,m:1,q:`Which letter is most likely to be the cockroach?`,
+  o:[`A`,`B`,`C`,`D`],a:3,
+  r:[`C. A cockroach lays eggs, has a 3-stage life cycle, and lives on land throughout its life cycle.`],
+  flag:`The printed key says “B and C”. A cockroach has a 3-stage life cycle (as the Revision 1 key also says), so B, the 4-stage animal, does not fit. C is used here.`},
+ {k:`b`,m:1,q:`Based on the chart, what is one similarity between animal C and animal D?`,
+  o:[`Both have a 4-stage life cycle.`,`Both lay eggs and do not have a 4-stage life cycle.`,`Both live on land throughout their life cycle.`,`Both do not lay eggs.`],a:2,
+  r:[`Both do not have a 4-stage life cycle / both lay eggs.`]},
+ {k:`c`,m:1,q:`Based on the chart, what is one difference between animal B and animal C?`,
+  o:[`B has a 4-stage life cycle but C does not.`,`C has a 4-stage life cycle but B does not.`,`B lays eggs but C does not.`,`B does not lay eggs but C does.`],a:1,
+  r:[`B has a 4-stage life cycle but C does not.`],
+  flag:`The printed key says “D” where the question asks about C. The idea is the same.`}]},
+{n:37,t:`Insect life-cycle graph`,intro:`Laura recorded the number of days for each stage of the life cycle of insect P in a bar graph.`,p:[
+ {k:`a`,m:1,q:`How many days does it take for insect P to become an adult after the egg has hatched?`,
+  o:[`6 days`,`10 days`,`12 days`,`18 days`],a:2,
+  r:[`10 days.`,`Note: Add the number of days as a larva and a pupa: 4 + 6 = 10.`]},
+ {k:`b`,m:1,q:`At which stage would insect P be at Day 7 after the eggs are laid?`,
+  o:[`Egg`,`Larva`,`Pupa`,`Adult`],a:3,
+  r:[`Pupa.`,`Note: The first 2 days, insect P is an egg. From the 3rd to the 6th day, it is a larva. On the 7th day, it is a pupa.`]},
+ {k:`c`,m:1,q:`Insect P moulted in the larval stage. Why?`,
+  o:[`The larva is eating a lot and growing a lot, so it sheds its old skin to grow a bigger skin.`,`The larva is changing into an adult.`,`The larva is laying eggs.`,`The larva is not eating, so it sheds its skin.`],a:1,
+  r:[`In the larva stage, the larva is eating a lot and growing a lot, so it has to shed its old skin to grow a bigger skin over its bigger body.`]}]},
+{n:38,t:`Teething toy and toy slide`,intro:`Diana tested materials A, B and C to find one suitable for a baby's teething toy, then thought about an outdoor toy slide.`,p:[
+ {k:`a`,m:1,q:`She decided to use material B for the toy. Why is B better than C?`,
+  o:[`B does not break easily, but C does, so a toy made of B is safer for the baby.`,`B sinks in water, but C does not.`,`B is waterproof, but C is not.`,`B breaks easily, but C does not.`],a:1,
+  r:[`Material B does not break easily but material C does, so the toy made of material B is safer for the baby to use.`]},
+ {k:`b`,m:2,q:`What are two main reasons why material A is not suitable for the teething toy?`,
+  o:[`It is not waterproof and it breaks easily.`,`It sinks in water and it is waterproof.`,`It is waterproof and does not break easily.`,`It floats and it is not waterproof.`],a:1,
+  r:[`It is not waterproof, and it breaks easily.`,`Note: The teething toy has to be waterproof so it does not get soaked with the baby's saliva, and it should not break easily as the baby will drop it many times.`,`Note: Whether it floats or sinks is not an important property for a teething toy.`]},
+ {k:`c`,m:2,q:`Which material, A, B or C, is most suitable for an outdoor toy slide?`,
+  o:[`A, because it sinks in water.`,`B, because it is waterproof for the rain and does not break easily.`,`C, because it is waterproof and floats.`,`A, because it is not waterproof.`],a:2,
+  r:[`B. Since the slide is placed outdoors, it has to be waterproof in the rain, and it should not break easily so children cannot easily damage the slide.`]}]},
+{n:39,t:`Raincoat material`,intro:`Gabrielle poured 50 ml of water on materials A, B and C placed over a measuring cylinder, and recorded the water collected after five minutes.`,p:[
+ {k:`a`,m:2,q:`Which material is most suitable to be made into a raincoat?`,
+  o:[`A, because no water was collected, so it is waterproof and keeps the person dry.`,`B, because it let some water through.`,`C, because it let the most water through.`,`C, because it absorbed the most water.`],a:1,
+  r:[`A. No water was collected in the measuring cylinder, so it is the only waterproof material and would keep the person dry in the rain.`]},
+ {k:`b`,m:1,q:`Other than the property tested, what is one other important property of a raincoat material?`,
+  o:[`Flexible`,`Magnetic`,`Hard and rigid`,`Sinks in water`],a:1,
+  r:[`Flexible.`,`Note: A raincoat has to be flexible so that it can be folded and worn comfortably.`]}]},
+{n:40,t:`Strength of magnets`,intro:`Thomas tested magnets P, Q and R, of different sizes, by placing a paper clip 1 to 4 cm away and checking whether each could attract it.`,p:[
+ {k:`a`,m:1,q:`Magnet R is the weakest. Arrange the magnets from weakest to strongest.`,
+  o:[`R, P, Q`,`R, Q, P`,`P, R, Q`,`Q, R, P`],a:1,
+  r:[`R, P, Q.`,`Note: Q can attract the paper clip from a further distance than P.`]},
+ {k:`b`,m:1,q:`Thomas says the strongest magnet has to be the largest. Do you agree?`,
+  o:[`Yes, because magnet P is the largest and the strongest.`,`Yes, because bigger magnets are always stronger.`,`No, because magnet P is the largest magnet but it is not the strongest magnet.`,`No, because magnet R is the largest.`],a:3,
+  r:[`No. Magnet P is the largest magnet but it is not the strongest magnet.`]},
+ {k:`c`,m:1,q:`Thomas used a bar magnet to attract iron filings, which collected at the ends. What characteristic of a magnet does this show?`,
+  o:[`Magnets are strongest at the poles.`,`Magnets are strongest in the middle.`,`Magnets attract all materials.`,`Magnets have only one pole.`],a:1,
+  r:[`Magnets are strongest at the poles.`]}]},
+{n:41,t:`Magnet or magnetic material?`,intro:`Object P hangs from a rod. When magnets A and B are placed at equal distances on each side, P swings towards magnet A and stays there. Alana says P is a magnet, but her friend says P is a magnetic material.`,p:[
+ {k:`a`,m:2,q:`Why can Alana be correct?`,
+  o:[`P's north pole faces a south pole of magnet A and they attract, and P's south pole faces a south pole of magnet B and they repel.`,`P's north pole faces the north pole of magnet A and they attract.`,`P is attracted to both magnets equally.`,`P does not move when the magnets are placed near it.`],a:1,
+  r:[`The north pole of object P is facing the south pole of magnet A, and they attract. The south pole of object P is facing the south pole of magnet B, and they repel.`]},
+ {k:`b`,m:2,q:`Why can Alana's friend also be correct?`,
+  o:[`Magnet A could be stronger, so it attracts object P with a stronger force than magnet B does.`,`Magnetic materials repel both magnets.`,`Magnet B is stronger, so it attracts P more.`,`Magnetic materials are never attracted to magnets.`],a:1,
+  r:[`Magnet A could be stronger, so it is attracting object P with a stronger force.`]},
+ {k:`c`,m:1,q:`What would happen if Alana replaced object P with an eraser and let it swing freely between magnets A and B?`,
+  o:[`The eraser would swing towards magnet A.`,`The eraser would not move.`,`The eraser would swing towards magnet B.`,`The eraser would be repelled by both magnets.`],a:2,
+  r:[`The eraser would not move.`,`Note: An eraser is a non-magnetic material, so it cannot be attracted to magnets A and B.`]}]}
+];
+
+/* ---------- DIAGRAMS (cropped from the worksheet) ---------- */
+const FIGS = {"1": ["r2-q1-1.png"], "2": ["r2-q2-1.png"], "4": ["r2-q4-1.png", "r2-q4-2.png"], "5": ["r2-q5-1.png"], "6": ["r2-q6-1.png", "r2-q6-2.png"], "8": ["r2-q8-1.png"], "9": ["r2-q9-1.png", "r2-q9-2.png"], "10": ["r2-q10-1.png"], "11": ["r2-q11-1.png"], "12": ["r2-q12-1.png"], "13": ["r2-q13-1.png"], "14": ["r2-q14-1.png"], "15": ["r2-q15-1.png"], "17": ["r2-q17-1.png"], "18": ["r2-q18-1.png", "r2-q18-2.png"], "19": ["r2-q19-1.png", "r2-q19-2.png"], "20": ["r2-q20-1.png"], "21": ["r2-q21-1.png"], "22": ["r2-q22-1.png", "r2-q22-2.png"], "23": ["r2-q23-1.png", "r2-q23-2.png"], "24": ["r2-q24-1.png", "r2-q24-2.png"], "25": ["r2-q25-1.png"], "26": ["r2-q26-1.png", "r2-q26-2.png"], "27": ["r2-q27-1.png"], "28": ["r2-q28-1.png", "r2-q28-2.png"], "29": ["r2-q29-1.png"], "30": ["r2-q30-1.png"], "31": ["r2-q31-1.png"], "32": ["r2-q32-1.png", "r2-q32-2.png"], "33": ["r2-q33-1.png"], "34": ["r2-q34-1.png"], "35": ["r2-q35-1.png", "r2-q35-2.png"], "36": ["r2-q36-1.png"], "37": ["r2-q37-1.png"], "38": ["r2-q38-1.png", "r2-q38-2.png", "r2-q38-3.png"], "39": ["r2-q39-1.png", "r2-q39-2.png"], "40": ["r2-q40-1.png", "r2-q40-2.png", "r2-q40-3.png"], "41": ["r2-q41-1.png", "r2-q41-2.png"]};
+function figHTML(n){
+  const f=FIGS[n]; if(!f) return '';
+  return `<div class="figs">${f.map((u,i)=>`<img src="${u}" alt="Diagram ${i+1} for question ${n}" data-zoom="1" loading="lazy">`).join('')}</div>`;
+}
+
+/* ---------- STATE ---------- */
+const st = { mcq:{}, open:{}, showAll:false, todo:false, tab:'M' };
+const $ = s => document.querySelector(s);
+const pid = (n,k) => `${n}${k}`;
+const OPEN_MAX = OPEN.reduce((s,q)=>s+q.p.reduce((x,p)=>x+p.m,0),0); // 44
+
+/* ---------- RENDER MCQ ---------- */
+function mark(line){
+  const m = line.match(/^([✓✗])\s*(.*)$/);
+  if(m) return `<p><span class="mk ${m[1]==='✓'?'y':'n'}" aria-label="${m[1]==='✓'?'correct':'wrong'}">${m[1]}</span>${m[2]}</p>`;
+  if(/^Note:/.test(line)) return `<div class="note">${line}</div>`;
+  return `<p>${line}</p>`;
+}
+function mcqCard(q){
+  const s = st.mcq[q.n] || {};
+  const done = s.pick != null || s.peek;
+  const reveal = done || st.showAll;
+  const correct = s.pick === q.a;
+  const cls = s.pick!=null ? (correct?'ok':'bad') : '';
+  const opts = [1,2,3,4].map(i=>{
+    let c='opt';
+    if(reveal && i===q.a) c+=' right';
+    else if(s.pick===i) c+=' wrong';
+    const label = q.o ? q.o[i-1] : `Option (${i})`;
+    return `<button class="${c}" data-mcq="${q.n}" data-i="${i}" ${reveal?'disabled':''}><i>${i}</i><span>${label}</span></button>`;
+  }).join('');
+  let verdict='';
+  if(reveal){
+    verdict = s.pick!=null
+      ? (correct?`Correct! The answer is (${q.a}). +2 marks`:`Not quite. The answer is (${q.a}).`)
+      : `The answer is (${q.a}).`;
+  }
+  return `<article class="card ${cls}" id="m${q.n}" data-n="${q.n}">
+    <div class="card-h"><div class="num">${q.n}</div><div class="topic">${q.t}</div></div>
+    <p class="q">${q.q}</p>
+    ${figHTML(q.n)}
+    ${q.o?``:`<p class="hint">The option wording is in the worksheet. Pick the number you chose.</p>`}
+    <div class="opts">${opts}</div>
+    ${reveal?`<div class="why"><div class="verdict">${verdict}</div>${q.r.map(mark).join('')}${q.flag?`<div class="flag"><b>Check:</b> ${q.flag}</div>`:''}</div>`:
+      `<div class="actions"><button class="link" data-peek="${q.n}">Show the answer without picking</button></div>`}
+  </article>`;
+}
+function renderMcq(){
+  const list = MCQ.filter(q=>{
+    if(!st.todo) return true;
+    const s=st.mcq[q.n]||{}; return s.pick==null && !s.peek;
+  });
+  $('#listM').innerHTML = list.length ? list.map(mcqCard).join('') :
+    `<div class="empty">Every question has been answered. Use “Start over” to try again.</div>`;
+  $('#tilesM').innerHTML = MCQ.map(q=>{
+    const s=st.mcq[q.n]||{};
+    let c='tile', txt='';
+    if(s.pick!=null){ c+= s.pick===q.a?' ok':' bad'; txt=q.a; }
+    else if(s.peek){ c+=' peek'; txt=q.a; }
+    else if(st.showAll){ txt=q.a; }
+    return `<a class="${c}" href="#m${q.n}" data-jump="m${q.n}"><b>${q.n}</b><span>${txt||'·'}</span></a>`;
+  }).join('');
+}
+
+/* ---------- RENDER OPEN (as multiple choice) ---------- */
+function partKey(n,k){return n+':'+k}
+function pOf(q,p){return st.open[partKey(q.n,p.k)]||{}}
+function partScore(q,p){const s=pOf(q,p); return s.pick==null?null:(s.pick===p.a?p.m:0)}
+function fmt(v){return Number.isInteger(v)?v:v.toFixed(1)}
+function partHTML(q,p){
+  const key = partKey(q.n,p.k);
+  const s = pOf(q,p);
+  const reveal = s.pick!=null || s.peek || st.showAll;
+  const correct = s.pick===p.a;
+  const label = p.k ? `(${p.k})` : '';
+  const pts = `${fmt(p.m)} ${p.m===1?'mark':'marks'}`;
+  const opts = p.o.map((t,i)=>{
+    const n=i+1; let c='opt';
+    if(reveal && n===p.a) c+=' right'; else if(s.pick===n) c+=' wrong';
+    return `<button class="${c}" data-open="${key}" data-i="${n}" ${reveal?'disabled':''}><i>${n}</i><span>${t}</span></button>`;
+  }).join('');
+  let verdict='';
+  if(reveal) verdict = s.pick!=null ? (correct?`Correct! The answer is (${p.a}). +${fmt(p.m)} ${p.m===1?'mark':'marks'}`:`Not quite. The answer is (${p.a}).`) : `The answer is (${p.a}).`;
+  return `<div class="part"><div class="part-h"><span class="lab">${label}</span><span class="pt">${pts}</span></div>
+    <p class="ask">${p.q}</p>
+    <div class="opts">${opts}</div>
+    ${reveal?`<div class="why"><div class="verdict">${verdict}</div>${p.r.map(mark).join('')}${p.flag?`<div class="flag"><b>Check:</b> ${p.flag}</div>`:''}</div>`
+      :`<div class="actions"><button class="link" data-opeek="${key}">Show the answer without picking</button></div>`}
+  </div>`;
+}
+function qScore(q){
+  let got=0,max=0,answered=0,total=q.p.length;
+  q.p.forEach(p=>{ max+=p.m; const v=partScore(q,p); if(v!=null){got+=v;answered++;} });
+  return {got,max,answered,total};
+}
+function renderOpen(){
+  const list = OPEN.filter(q=>{
+    if(!st.todo) return true;
+    const r=qScore(q); return r.answered<r.total;
+  });
+  $('#listO').innerHTML = list.length ? list.map(q=>{
+    const r=qScore(q);
+    return `<article class="card" id="o${q.n}">
+      <div class="card-h"><div class="num">${q.n}</div><div class="topic">${q.t}<small>${fmt(r.max)} marks${r.answered?` · you scored ${fmt(r.got)}`:''}</small></div></div>
+      <p class="intro">${q.intro}</p>
+      ${figHTML(q.n)}
+      ${q.p.map(p=>partHTML(q,p)).join('')}
+      ${q.extra?`<div class="flag">${q.extra}</div>`:''}
+    </article>`;
+  }).join('') : `<div class="empty">Every part has been answered. Use “Start over” to try again.</div>`;
+  $('#tilesO').innerHTML = OPEN.map(q=>{
+    const r=qScore(q);
+    let c='tile', txt='·';
+    if(r.answered>0){
+      c+= r.answered===r.total ? (r.got===r.max?' ok':(r.got===0?' bad':' partial')) : ' partial';
+      txt=`${fmt(r.got)}/${fmt(r.max)}`;
+    }
+    return `<a class="${c}" href="#o${q.n}" data-jump="o${q.n}"><b>${q.n}</b><span>${txt}</span></a>`;
+  }).join('');
+}
+
+/* ---------- SCORES ---------- */
+function updateScores(){
+  let mcqMarks=0, mcqDone=0;
+  MCQ.forEach(q=>{const s=st.mcq[q.n]; if(s&&s.pick!=null){mcqDone++; if(s.pick===q.a) mcqMarks+=2;}});
+  let openMarks=0, openDone=0, openTotal=0;
+  OPEN.forEach(q=>q.p.forEach(p=>{ openTotal++; const v=partScore(q,p); if(v!=null){openMarks+=v;openDone++;} }));
+  $('#sMcq').textContent = mcqMarks;
+  $('#sOpen').textContent = fmt(openMarks);
+  $('#sAll').textContent = fmt(mcqMarks+openMarks);
+  const pct = (mcqDone+openDone)/(MCQ.length+openTotal)*100;
+  $('#prog').style.width = pct+'%';
+}
+function render(){
+  renderMcq(); renderOpen(); updateScores();
+  $('#showAll').setAttribute('aria-pressed', st.showAll);
+  $('#onlyTodo').setAttribute('aria-pressed', st.todo);
+}
+
+/* ---------- EVENTS ---------- */
+document.addEventListener('click', e=>{
+  const im = e.target.closest('img[data-zoom]');
+  if(im){ const z=document.createElement('div'); z.className='zoom'; z.innerHTML='<img alt="">'; z.firstChild.src=im.src; z.onclick=()=>z.remove(); document.body.appendChild(z); return; }
+  const t = e.target.closest('button, a[data-jump]');
+  if(!t) return;
+  const y = window.scrollY;
+  if(t.dataset.mcq){
+    const n=+t.dataset.mcq; st.mcq[n]={...(st.mcq[n]||{}),pick:+t.dataset.i};
+    render(); keepCard('m'+n);
+  } else if(t.dataset.peek){
+    const n=+t.dataset.peek; st.mcq[n]={...(st.mcq[n]||{}),peek:true};
+    render(); keepCard('m'+n);
+  } else if(t.dataset.open){
+    const k=t.dataset.open; st.open[k]={...(st.open[k]||{}),pick:+t.dataset.i};
+    render(); window.scrollTo(0,y);
+  } else if(t.dataset.opeek){
+    const k=t.dataset.opeek; st.open[k]={...(st.open[k]||{}),peek:true};
+    render(); window.scrollTo(0,y);
+  } else if(t.dataset.jump){
+    e.preventDefault();
+    if(st.todo){ st.todo=false; render(); }
+    const el=document.getElementById(t.dataset.jump);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+});
+function keepCard(id){ const el=document.getElementById(id); if(el){ const r=el.getBoundingClientRect(); if(r.top<130||r.bottom>innerHeight) el.scrollIntoView({block:'start'}); } }
+
+function setTab(x){
+  st.tab=x;
+  $('#paneM').hidden = x!=='M'; $('#paneO').hidden = x!=='O';
+  $('#tabM').setAttribute('aria-selected', x==='M'); $('#tabO').setAttribute('aria-selected', x==='O');
+  window.scrollTo({top:0});
+}
+$('#tabM').onclick=()=>setTab('M');
+$('#tabO').onclick=()=>setTab('O');
+$('#showAll').onclick=()=>{st.showAll=!st.showAll; render();};
+$('#onlyTodo').onclick=()=>{st.todo=!st.todo; render();};
+$('#reset').onclick=()=>{
+  if(Object.keys(st.mcq).length+Object.keys(st.open).length===0 || confirm('Clear all your answers and marks?')){
+    st.mcq={}; st.open={}; st.showAll=false; st.todo=false; render();
+  }
+};
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const z=document.querySelector('.zoom'); if(z) z.remove(); } });
+render();
+</script>
+</body>
+</html>
