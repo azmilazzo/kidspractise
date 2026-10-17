@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pri 3 Maths – End-of-year Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d2b53; --ink2:#4b5a85; --bg:#eaf2ff; --paper:#ffffff;
+  --blue:#3a6df0; --blue-d:#2a52c0; --sun:#ffcb2f; --sun-d:#d9a400;
+  --mint:#1fb58f; --mint-d:#118267; --coral:#f0566a; --coral-d:#b83446;
+  --grape:#7a5af8; --line:#d3dff5;
+  --r-lg:22px; --r-md:14px; --r-sm:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:150px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito','Trebuchet MS',system-ui,sans-serif;font-size:16px;line-height:1.5}
+h1,h2,h3,.fred{font-family:'Fredoka','Trebuchet MS',system-ui,sans-serif;font-weight:600;letter-spacing:.2px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--grape);outline-offset:2px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:var(--ink);color:#fff;padding:10px 16px 12px;box-shadow:0 4px 0 rgba(29,43,83,.18)}
+.top-in{max-width:980px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.brand{display:flex;flex-direction:column;line-height:1.1;margin-right:auto}
+.brand b{font-family:'Fredoka',sans-serif;font-size:20px}
+.brand span{font-size:13px;opacity:.75}
+.pods{display:flex;gap:8px}
+.pod{background:rgba(255,255,255,.12);border-radius:12px;padding:5px 12px;text-align:center;min-width:84px}
+.pod strong{display:block;font-family:'Fredoka',sans-serif;font-size:19px;line-height:1.1}
+.pod small{font-size:11.5px;opacity:.8}
+.pod.total{background:var(--sun);color:var(--ink)}
+.bar{max-width:980px;margin:8px auto 0;height:8px;border-radius:99px;background:rgba(255,255,255,.18);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--mint);transition:width .35s}
+
+/* layout */
+main{max-width:980px;margin:0 auto;padding:18px 16px 80px}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:4px 0 16px}
+.tabs{display:flex;gap:8px;margin-right:auto}
+.tab{border:0;background:var(--paper);padding:10px 18px;border-radius:var(--r-md);font-family:'Fredoka',sans-serif;font-size:17px;box-shadow:0 4px 0 var(--line);color:var(--ink2)}
+.tab[aria-selected="true"]{background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-d)}
+.tab:active{transform:translateY(2px);box-shadow:0 2px 0 var(--line)}
+.chip{border:2px solid var(--line);background:var(--paper);padding:7px 14px;border-radius:99px;font-weight:700;font-size:14px;color:var(--ink2)}
+.chip[aria-pressed="true"]{background:var(--sun);border-color:var(--sun-d);color:var(--ink)}
+.chip.reset{border-color:transparent;background:transparent;text-decoration:underline}
+
+/* answer strip */
+.strip{background:var(--paper);border-radius:var(--r-lg);padding:14px;margin-bottom:20px;box-shadow:0 5px 0 var(--line)}
+.strip h2{margin:0 0 4px;font-size:18px}
+.strip p{margin:0 0 10px;font-size:14px;color:var(--ink2)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px}
+.tile{border:2px solid var(--line);background:#f6f9ff;border-radius:var(--r-sm);padding:4px 0 5px;text-align:center;line-height:1.15;text-decoration:none;color:var(--ink)}
+.tile b{display:block;font-family:'Fredoka',sans-serif;font-size:15px}
+.tile span{display:block;font-size:13px;font-weight:800;min-height:1.2em;color:var(--ink2)}
+.tile.ok{background:#d9f6ec;border-color:var(--mint)}
+.tile.ok span{color:var(--mint-d)}
+.tile.bad{background:#ffe3e7;border-color:var(--coral)}
+.tile.bad span{color:var(--coral-d)}
+.tile.peek{background:#fff2c2;border-color:var(--sun-d)}
+.tile.peek span{color:#8a6700}
+.tile.partial{background:#fff2c2;border-color:var(--sun-d)}
+
+/* cards */
+.card{background:var(--paper);border-radius:var(--r-lg);padding:16px 18px 18px;margin-bottom:16px;box-shadow:0 5px 0 var(--line);border:2px solid transparent}
+.card.ok{border-color:var(--mint)}
+.card.bad{border-color:var(--coral)}
+.card-h{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.num{flex:none;width:44px;height:44px;border-radius:14px;background:var(--blue);color:#fff;display:grid;place-items:center;font-family:'Fredoka',sans-serif;font-size:20px;box-shadow:0 3px 0 var(--blue-d)}
+.card.ok .num{background:var(--mint);box-shadow:0 3px 0 var(--mint-d)}
+.card.bad .num{background:var(--coral);box-shadow:0 3px 0 var(--coral-d)}
+.topic{font-family:'Fredoka',sans-serif;font-size:17px;line-height:1.2}
+.topic small{display:block;font-family:'Nunito',sans-serif;font-size:13px;color:var(--ink2);font-weight:600}
+.q{margin:6px 0 12px;max-width:68ch}
+.hint{font-size:13px;color:var(--ink2);margin:-4px 0 12px}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:9px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;border:2px solid var(--line);background:#f6f9ff;border-radius:var(--r-md);padding:9px 12px;box-shadow:0 4px 0 var(--line);font-weight:700}
+.opt i{flex:none;font-style:normal;font-family:'Fredoka',sans-serif;width:26px;height:26px;border-radius:50%;background:#fff;border:2px solid var(--line);display:grid;place-items:center;font-size:14px}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 var(--line)}
+.opt:disabled{cursor:default}
+.opt.right{background:#d9f6ec;border-color:var(--mint);box-shadow:0 4px 0 var(--mint)}
+.opt.right i{background:var(--mint);border-color:var(--mint);color:#fff}
+.opt.wrong{background:#ffe3e7;border-color:var(--coral);box-shadow:0 4px 0 var(--coral)}
+.opt.wrong i{background:var(--coral);border-color:var(--coral);color:#fff}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center}
+.link{border:0;background:none;color:var(--blue-d);font-weight:800;text-decoration:underline;padding:4px 0}
+.btn{border:0;border-radius:var(--r-md);padding:9px 16px;font-family:'Fredoka',sans-serif;font-size:16px;background:var(--blue);color:#fff;box-shadow:0 4px 0 var(--blue-d)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--blue-d)}
+.btn.ghost{background:var(--paper);color:var(--ink);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
+
+/* diagrams */
+.figs{display:flex;flex-direction:column;align-items:center;gap:10px;margin:4px 0 14px;padding:12px;background:#fff;border:2px solid var(--line);border-radius:var(--r-md)}
+.figs img{max-width:100%;max-height:460px;width:auto;height:auto;display:block;cursor:zoom-in}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(29,43,83,.88);display:grid;place-items:center;padding:16px;cursor:zoom-out}
+.zoom img{max-width:100%;max-height:100%;background:#fff;border-radius:12px;padding:10px}
+
+/* explanation */
+.why{margin-top:14px;background:#f3f0ff;border-radius:var(--r-md);padding:12px 14px;border-left:6px solid var(--grape);animation:open .22s ease-out}
+@keyframes open{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.why .verdict{font-family:'Fredoka',sans-serif;font-size:17px;margin-bottom:4px}
+.why p{margin:4px 0}
+.mk{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;font-size:12px;font-weight:800;color:#fff;margin-right:6px;vertical-align:1px}
+.mk.y{background:var(--mint)} .mk.n{background:var(--coral)}
+.note{font-size:14.5px;color:var(--ink2);background:#fff;border-radius:8px;padding:6px 10px;margin-top:6px}
+.flag{font-size:14px;background:#fff2c2;border-left:5px solid var(--sun-d);border-radius:8px;padding:6px 10px;margin-top:8px}
+
+/* open-ended parts */
+.intro{margin:2px 0 10px;color:var(--ink2);font-size:15px;max-width:68ch}
+.part{border-top:2px dashed var(--line);padding:12px 0 6px}
+.part:first-of-type{border-top:0}
+.part-h{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.lab{font-family:'Fredoka',sans-serif;font-size:17px;color:var(--blue-d)}
+.pt{margin-left:auto;font-size:13px;font-weight:800;color:var(--ink2);background:#eef3ff;border-radius:99px;padding:2px 10px}
+.ask{margin:2px 0 6px;max-width:68ch}
+.ans{background:#e9fbf4;border-left:6px solid var(--mint);border-radius:var(--r-md);padding:10px 14px;margin:8px 0;animation:open .22s ease-out}
+.ans p{margin:2px 0}
+.mark-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 2px}
+.mark-row span{font-size:14px;font-weight:700;color:var(--ink2)}
+.mb{border:2px solid var(--line);background:#fff;border-radius:99px;padding:5px 14px;font-weight:800;font-size:14px}
+.mb[aria-pressed="true"].full{background:var(--mint);border-color:var(--mint-d);color:#fff}
+.mb[aria-pressed="true"].half{background:var(--sun);border-color:var(--sun-d)}
+.mb[aria-pressed="true"].none{background:var(--coral);border-color:var(--coral-d);color:#fff}
+.sc{margin-left:auto;font-family:'Fredoka',sans-serif;font-size:16px}
+
+.empty{text-align:center;padding:30px;color:var(--ink2);font-weight:700}
+footer{max-width:980px;margin:0 auto;padding:0 16px 40px;font-size:13px;color:var(--ink2)}
+[hidden]{display:none!important}
+@media (max-width:560px){
+  .pod{min-width:70px;padding:4px 8px}
+  .opts{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><b>Pri 3 Maths</b><span>End-of-year practice · worked answers</span></div>
+    <div class="pods" aria-live="polite">
+      <div class="pod"><strong id="sMcq">0</strong><small>Sec. A / 50</small></div>
+      <div class="pod"><strong id="sOpen">0</strong><small>Sec. B / 50</small></div>
+      <div class="pod total"><strong id="sAll">0</strong><small>Total / 100</small></div>
+    </div>
+  </div>
+  <div class="bar" aria-hidden="true"><i id="prog"></i></div>
+</header>
+
+<main>
+  <div class="controls">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabM" aria-selected="true">Section A</button>
+      <button class="tab" role="tab" id="tabO" aria-selected="false">Section B</button>
+    </div>
+    <button class="chip" id="showAll" aria-pressed="false">Show all answers</button>
+    <button class="chip" id="onlyTodo" aria-pressed="false">Only unanswered</button>
+    <button class="chip reset" id="reset">Start over</button>
+  </div>
+
+  <noscript><p class="empty">This page needs JavaScript to show the questions.</p></noscript>
+  <section id="paneM">
+    <div class="strip">
+      <h2>Answer grid</h2>
+      <p>Tap a number to jump to it. Green is correct, red is a miss, yellow means you looked at the answer first.</p>
+      <div class="tiles" id="tilesM"></div>
+    </div>
+    <div id="listM"></div>
+  </section>
+
+  <section id="paneO" hidden>
+    <div class="strip">
+      <h2>Section B grid</h2>
+      <p>Problem-solving questions with parts. Each part is multiple choice and keeps its own marks.</p>
+      <div class="tiles" id="tilesO"></div>
+    </div>
+    <div id="listO"></div>
+  </section>
+</main>
+
+<footer>
+  Original practice questions written for Primary 3 Mathematics (Singapore MOE syllabus): whole numbers to 10 000, money, multiplication and division, fractions, length, mass and volume, bar graphs, angles and lines, area and perimeter, and time. They are not copied from any school or publisher's paper. Tap a diagram to enlarge it. Scores live only on this page and reset when you reload it.
+</footer>
+
+<script>
+/* ---------- DATA ---------- */
+const MCQ = [{"n": 1, "t": "Place value", "q": "What is the value of the digit 6 in 7 460?", "o": ["6", "60", "600", "6 000"], "a": 2, "r": ["7 460 = 7 000 + 400 + 60.", "The digit 6 is in the tens place, so its value is 60."]}, {"n": 2, "t": "Place value", "q": "Which number is the same as 5 000 + 300 + 7?", "o": ["5 037", "5 307", "5 370", "5 703"], "a": 2, "r": ["5 000 is the thousands, 300 the hundreds, 0 tens and 7 ones.", "So the number is 5 307."]}, {"n": 3, "t": "Ordering numbers", "q": "Which list shows the numbers 3 482, 3 284, 3 428 and 3 824 from the smallest to the greatest?", "o": ["3 284, 3 428, 3 482, 3 824", "3 284, 3 482, 3 428, 3 824", "3 428, 3 284, 3 482, 3 824", "3 824, 3 482, 3 428, 3 284"], "a": 1, "r": ["All the numbers have 3 thousands, so compare the hundreds: 2 < 4 < 4 < 8.", "For the two numbers with 4 hundreds, compare the tens: 3 428 < 3 482.", "Smallest to greatest: 3 284, 3 428, 3 482, 3 824."]}, {"n": 4, "t": "Number patterns", "q": "Look at the pattern: 2 450, 2 550, 2 650, 2 750, … What is the 6th number in the pattern?", "o": ["2 850", "2 950", "3 050", "2 960"], "a": 2, "r": ["The pattern goes up by 100 each time.", "5th number: 2 750 + 100 = 2 850. 6th number: 2 850 + 100 = 2 950."]}, {"n": 5, "t": "Addition", "q": "4 358 + 2 764 = ?", "o": ["6 122", "7 012", "7 112", "7 122"], "a": 4, "r": ["Ones: 8 + 4 = 12 (write 2, carry 1). Tens: 5 + 6 + 1 = 12 (write 2, carry 1).", "Hundreds: 3 + 7 + 1 = 11 (write 1, carry 1). Thousands: 4 + 2 + 1 = 7.", "Answer: 7 122."]}, {"n": 6, "t": "Subtraction", "q": "6 000 − 2 497 = ?", "o": ["3 497", "3 503", "3 603", "4 503"], "a": 2, "r": ["2 497 is 3 less than 2 500. 6 000 − 2 500 = 3 500.", "Add back the 3: 3 500 + 3 = 3 503."]}, {"n": 7, "t": "Mental calculation", "q": "76 + 48 = ?", "o": ["114", "122", "124", "134"], "a": 3, "r": ["Add 50 first: 76 + 50 = 126.", "Then take away 2, because 48 is 2 less than 50: 126 − 2 = 124."]}, {"n": 8, "t": "Money", "q": "Mrs Lim bought a bag for $24.80 and a hat for $9.95. How much did she spend altogether?", "o": ["$33.75", "$34.65", "$34.75", "$35.75"], "a": 3, "r": ["$24.80 + $9.95 = $34.75.", "Tip: $9.95 is 5 cents less than $10. $24.80 + $10 = $34.80, then − $0.05 = $34.75."]}, {"n": 9, "t": "Money", "q": "Ali paid $50 for a toy that cost $37.65. How much change should he get?", "o": ["$12.35", "$12.45", "$13.35", "$13.45"], "a": 1, "r": ["$50.00 − $37.65 = $12.35.", "Check: $37.65 + $12.35 = $50.00."]}, {"n": 10, "t": "Multiplication tables", "q": "A box holds 8 pens. How many pens are there in 7 boxes?", "o": ["48", "54", "56", "63"], "a": 3, "r": ["7 × 8 = 56."]}, {"n": 11, "t": "Multiplication", "q": "425 × 6 = ?", "o": ["2 150", "2 450", "2 550", "2 650"], "a": 3, "r": ["400 × 6 = 2 400.", "25 × 6 = 150.", "2 400 + 150 = 2 550."]}, {"n": 12, "t": "Division with remainder", "q": "59 stickers are shared equally among 8 children. How many stickers are left over?", "o": ["1", "3", "4", "7"], "a": 2, "r": ["8 × 7 = 56 and 59 − 56 = 3.", "Each child gets 7 stickers and 3 are left over."]}, {"n": 13, "t": "Division", "q": "756 ÷ 6 = ?", "o": ["116", "124", "126", "136"], "a": 3, "r": ["75 ÷ 6 = 12 remainder 3. Then 36 ÷ 6 = 6.", "So 756 ÷ 6 = 126.", "Check: 126 × 6 = 756."]}, {"n": 14, "t": "Equivalent fractions", "q": "Which fraction is equal to 3/4?", "o": ["3/8", "4/6", "6/8", "9/16"], "a": 3, "r": ["Multiply the top and bottom of 3/4 by 2: 3 × 2 = 6 and 4 × 2 = 8.", "So 3/4 = 6/8."]}, {"n": 15, "t": "Comparing fractions", "q": "Which is the smallest fraction?", "o": ["1/2", "5/12", "2/3", "3/4"], "a": 2, "r": ["Change all of them to twelfths: 1/2 = 6/12, 2/3 = 8/12, 3/4 = 9/12, and 5/12 stays the same.", "5/12 has the smallest numerator, so it is the smallest."]}, {"n": 16, "t": "Adding fractions", "q": "3/8 + 1/4 = ?", "o": ["4/12", "1/2", "5/8", "3/4"], "a": 3, "r": ["1/4 = 2/8.", "3/8 + 2/8 = 5/8."]}, {"n": 17, "t": "Subtracting fractions", "q": "7/10 − 2/5 = ?", "o": ["1/5", "3/10", "5/5", "5/10"], "a": 2, "r": ["2/5 = 4/10.", "7/10 − 4/10 = 3/10."]}, {"n": 18, "t": "Length", "q": "Express 3 km 40 m in metres.", "o": ["340 m", "3 040 m", "3 400 m", "30 040 m"], "a": 2, "r": ["1 km = 1 000 m, so 3 km = 3 000 m.", "3 000 m + 40 m = 3 040 m."]}, {"n": 19, "t": "Mass", "q": "Express 4 kg 250 g in grams.", "o": ["425 g", "4 025 g", "4 250 g", "42 500 g"], "a": 3, "r": ["1 kg = 1 000 g, so 4 kg = 4 000 g.", "4 000 g + 250 g = 4 250 g."]}, {"n": 20, "t": "Volume", "q": "A jug had 2 ℓ 300 ml of water. 800 ml was poured out. How much water was left?", "o": ["1 ℓ 100 ml", "1 ℓ 500 ml", "1 ℓ 700 ml", "2 ℓ 100 ml"], "a": 2, "r": ["2 ℓ 300 ml = 2 300 ml.", "2 300 ml − 800 ml = 1 500 ml = 1 ℓ 500 ml."]}, {"n": 21, "t": "Bar graphs", "q": "The bar graph shows the number of books four children read in a month. How many more books did Ben read than Cara?", "o": ["3", "4", "5", "13"], "a": 3, "r": ["Ben read 9 books and Cara read 4 books.", "9 − 4 = 5."]}, {"n": 22, "t": "Angles", "q": "Which angle is greater than a right angle?", "o": ["A", "B", "C", "A and B"], "a": 3, "r": ["A right angle is a square corner, like angle B.", "Angle A is smaller than a right angle, and angle C is wider than a right angle."]}, {"n": 23, "t": "Parallel lines", "q": "In rectangle ABCD, which line is parallel to AB?", "o": ["BC", "CD", "AD", "AC"], "a": 2, "r": ["Parallel lines stay the same distance apart and never meet. AB and CD are the top and bottom sides.", "BC and AD are perpendicular to AB, and AC is a diagonal."]}, {"n": 24, "t": "Perimeter", "q": "What is the perimeter of the rectangle?", "o": ["13 cm", "26 cm", "36 cm", "52 cm"], "a": 2, "r": ["Perimeter = 9 + 4 + 9 + 4 = 26 cm.", "Note: 36 is the area (9 × 4), in cm², not the perimeter."]}, {"n": 25, "t": "Time", "q": "A film starts at 2:45 pm and ends at 4:20 pm. How long is the film?", "o": ["1 h 25 min", "1 h 35 min", "1 h 45 min", "2 h 35 min"], "a": 2, "r": ["2:45 pm to 3:45 pm is 1 h.", "3:45 pm to 4:20 pm is 35 min.", "Total: 1 h 35 min."]}];
+
+const OPEN = [{"n": 26, "t": "Whole-number word problem", "intro": "A school collected 3 465 tins in March. In April, it collected 1 289 fewer tins than in March.", "p": [{"q": "How many tins did the school collect in April?", "o": ["2 176", "2 276", "2 286", "4 754"], "a": 1, "r": ["3 465 − 1 289 = 2 176.", "Check: 2 176 + 1 289 = 3 465."], "k": "a", "m": 2}, {"q": "How many tins did the school collect in the two months altogether?", "o": ["5 541", "5 641", "5 651", "6 641"], "a": 2, "r": ["March + April = 3 465 + 2 176 = 5 641."], "k": "b", "m": 2}]}, {"n": 27, "t": "Money", "intro": "Sam had $60. He bought 3 notebooks at $4.75 each and a bag for $23.50.", "p": [{"q": "How much did the 3 notebooks cost?", "o": ["$12.25", "$13.25", "$14.25", "$14.75"], "a": 3, "r": ["3 × $4.75 = $14.25.", "(3 × $4 = $12 and 3 × $0.75 = $2.25, so $12 + $2.25 = $14.25.)"], "k": "a", "m": 2}, {"q": "How much money did Sam have left?", "o": ["$21.75", "$22.25", "$23.25", "$37.75"], "a": 2, "r": ["Spent altogether: $14.25 + $23.50 = $37.75.", "Money left: $60 − $37.75 = $22.25.", "Note: $37.75 is the amount he spent, not the amount left."], "k": "b", "m": 3}]}, {"n": 28, "t": "Division with remainder", "intro": "A baker packs 8 cupcakes into each box. He has 475 cupcakes.", "p": [{"q": "How many boxes can he fill completely?", "o": ["58", "59", "60", "61"], "a": 2, "r": ["475 ÷ 8 = 59 remainder 3.", "8 × 59 = 472, so 59 full boxes."], "k": "a", "m": 2}, {"q": "How many cupcakes are left over?", "o": ["1", "2", "3", "5"], "a": 3, "r": ["475 − 472 = 3 cupcakes are left over."], "k": "b", "m": 1}]}, {"n": 29, "t": "Fractions", "intro": "A pie is cut into 12 equal slices. Amy ate 1/4 of the pie and Ben ate 5/12 of the pie.", "p": [{"q": "How many slices did Amy eat?", "o": ["2", "3", "4", "6"], "a": 2, "r": ["1/4 of 12 slices = 12 ÷ 4 = 3 slices."], "k": "a", "m": 1}, {"q": "What fraction of the pie did they eat altogether? Give your answer in the simplest form.", "o": ["6/16", "2/3", "3/4", "5/6"], "a": 2, "r": ["1/4 = 3/12.", "3/12 + 5/12 = 8/12.", "8/12 in the simplest form is 2/3 (divide the top and bottom by 4).", "Note: you cannot add the tops and the bottoms (1 + 5)/(4 + 12). Change to the same denominator first."], "k": "b", "m": 2}, {"q": "What fraction of the pie was left?", "o": ["1/4", "1/3", "5/12", "2/3"], "a": 2, "r": ["1 − 2/3 = 1/3.", "(Or 12 − 8 = 4 slices left, and 4/12 = 1/3.)"], "k": "c", "m": 1}]}, {"n": 30, "t": "Bar graph", "intro": "The bar graph shows the favourite fruit of the pupils in a class. Each pupil chose one fruit.", "p": [{"q": "Which fruit was chosen by the most pupils?", "o": ["Apple", "Banana", "Orange", "Grape"], "a": 3, "r": ["The tallest bar is Orange, at 15 pupils."], "k": "a", "m": 1}, {"q": "How many more pupils chose Orange than Banana?", "o": ["5", "7", "8", "23"], "a": 2, "r": ["Orange 15 and Banana 8: 15 − 8 = 7."], "k": "b", "m": 1}, {"q": "How many pupils are there in the class altogether?", "o": ["35", "38", "40", "45"], "a": 3, "r": ["12 + 8 + 15 + 5 = 40."], "k": "c", "m": 2}]}, {"n": 31, "t": "Length, mass and volume", "intro": "Three short problems about measuring.", "p": [{"q": "A rope is 3 m 20 cm long. 85 cm is cut off. How long is the rope that is left?", "o": ["2 m 35 cm", "2 m 45 cm", "2 m 65 cm", "3 m 35 cm"], "a": 1, "r": ["3 m 20 cm = 320 cm.", "320 cm − 85 cm = 235 cm = 2 m 35 cm."], "k": "a", "m": 2}, {"q": "A bag of rice has a mass of 2 kg 500 g and a bag of flour has a mass of 1 kg 750 g. What is their total mass?", "o": ["3 kg 250 g", "4 kg 150 g", "4 kg 250 g", "4 kg 350 g"], "a": 3, "r": ["2 kg 500 g + 1 kg 750 g: 500 g + 750 g = 1 250 g = 1 kg 250 g.", "2 kg + 1 kg + 1 kg 250 g = 4 kg 250 g."], "k": "b", "m": 2}, {"q": "A tank has 5 ℓ of water. It is poured into bottles that each hold 250 ml. How many bottles can be filled completely?", "o": ["2", "20", "25", "200"], "a": 2, "r": ["5 ℓ = 5 000 ml.", "5 000 ml ÷ 250 ml = 20 bottles."], "k": "c", "m": 2}]}, {"n": 32, "t": "Lines and perimeter", "intro": "The figure is made of straight lines that meet at right angles. Some lengths are shown.", "p": [{"q": "Which line is parallel to AB?", "o": ["BC", "CD", "DE", "FA"], "a": 2, "r": ["AB runs across the bottom. CD (and EF) run across in the same direction, so they are parallel to AB.", "BC, DE and FA all go up and down."], "k": "a", "m": 1}, {"q": "Which line is perpendicular to EF?", "o": ["AB", "CD", "DE", "AD"], "a": 3, "r": ["Perpendicular lines meet at a right angle.", "DE meets EF at a right angle. AB and CD are parallel to EF."], "k": "b", "m": 1}, {"q": "What is the perimeter of the figure?", "o": ["15 cm", "20 cm", "22 cm", "28 cm"], "a": 3, "r": ["CD = AB − EF = 6 − 2 = 4 cm.", "DE = FA − BC = 5 − 2 = 3 cm.", "Perimeter = 6 + 2 + 4 + 3 + 2 + 5 = 22 cm.", "Note: 15 cm is only the four labelled sides added up."], "k": "c", "m": 2}]}, {"n": 33, "t": "Area and perimeter", "intro": "A rectangular garden is 14 m long and 9 m wide.", "p": [{"q": "What is the perimeter of the garden?", "o": ["23 m", "46 m", "92 m", "126 m"], "a": 2, "r": ["Perimeter = 14 + 9 + 14 + 9 = 46 m.", "Or 2 × (14 + 9) = 2 × 23 = 46 m."], "k": "a", "m": 2}, {"q": "What is the area of the garden?", "o": ["46 m²", "63 m²", "126 m²", "252 m²"], "a": 3, "r": ["Area = length × width = 14 × 9 = 126 m²."], "k": "b", "m": 2}, {"q": "A square has a perimeter of 36 cm. What is the length of one side?", "o": ["4 cm", "9 cm", "18 cm", "72 cm"], "a": 2, "r": ["A square has 4 equal sides.", "36 ÷ 4 = 9 cm."], "k": "c", "m": 2}]}, {"n": 34, "t": "Time", "intro": "The clock shows the time when Mia arrived at school.", "p": [{"q": "What time does the clock show?", "o": ["7:40", "8:07", "8:35", "9:35"], "a": 3, "r": ["The short hour hand is between 8 and 9.", "The long minute hand points at 7, which is 35 minutes past.", "The time is 8:35."], "k": "a", "m": 1}, {"q": "Lessons began at 7:30 am and ended at 1:10 pm. How long were the lessons?", "o": ["5 h 20 min", "5 h 40 min", "6 h 20 min", "6 h 40 min"], "a": 2, "r": ["7:30 am to 12:30 pm is 5 h.", "12:30 pm to 1:10 pm is 40 min.", "Total: 5 h 40 min."], "k": "b", "m": 2}, {"q": "A bus leaves at 2:50 pm. The journey takes 1 h 45 min. At what time does it arrive?", "o": ["3:35 pm", "4:05 pm", "4:35 pm", "4:45 pm"], "a": 3, "r": ["2:50 pm + 1 h = 3:50 pm.", "3:50 pm + 45 min = 4:35 pm."], "k": "c", "m": 2}]}, {"n": 35, "t": "Making numbers", "intro": "Using the digits 3, 8, 0 and 5 once each, make 4-digit numbers.", "p": [{"q": "What is the greatest number you can make?", "o": ["5 038", "8 350", "8 503", "8 530"], "a": 4, "r": ["Put the biggest digit first: 8, then 5, then 3, then 0."], "k": "a", "m": 1}, {"q": "What is the smallest 4-digit number you can make?", "o": ["0 358", "3 058", "3 085", "3 508"], "a": 2, "r": ["A 4-digit number cannot start with 0, so start with the smallest other digit, 3.", "Then use 0, 5, 8 in order: 3 058.", "Note: 0 358 is not a 4-digit number."], "k": "b", "m": 2}, {"q": "What is the difference between the greatest and the smallest numbers?", "o": ["5 172", "5 472", "5 482", "8 172"], "a": 2, "r": ["8 530 − 3 058 = 5 472.", "Note: 8 172 comes from using 0 358, which is not allowed."], "k": "c", "m": 2}]}, {"n": 36, "t": "Multiplication problem", "intro": "A cinema ticket costs $8. A family bought 7 tickets and paid with a $100 note.", "p": [{"q": "How much did the 7 tickets cost?", "o": ["$15", "$48", "$56", "$63"], "a": 3, "r": ["7 × $8 = $56."], "k": "a", "m": 2}, {"q": "How much change did they receive?", "o": ["$34", "$44", "$46", "$54"], "a": 2, "r": ["$100 − $56 = $44."], "k": "b", "m": 2}]}];
+
+/* ---------- DIAGRAMS (cropped from the worksheet) ---------- */
+const FIGS = {"21": ["data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20460%20290%27%20width%3D%27460%27%20height%3D%27290%27%20font-family%3D%27Arial%2CHelvetica%2Csans-serif%27%3E%3Crect%20width%3D%27460%27%20height%3D%27290%27%20fill%3D%27white%27/%3E%3Ctext%20x%3D%27230.0%27%20y%3D%2720%27%20text-anchor%3D%27middle%27%20font-size%3D%2714%27%20font-weight%3D%27bold%27%3EBooks%20read%20by%20four%20children%20in%20a%20month%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27238.0%27%20x2%3D%27444%27%20y2%3D%27238.0%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27242.0%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E0%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27218.2%27%20x2%3D%27444%27%20y2%3D%27218.2%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27198.4%27%20x2%3D%27444%27%20y2%3D%27198.4%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27202.4%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E2%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27178.6%27%20x2%3D%27444%27%20y2%3D%27178.6%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27158.8%27%20x2%3D%27444%27%20y2%3D%27158.8%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27162.8%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E4%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27139.0%27%20x2%3D%27444%27%20y2%3D%27139.0%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27119.19999999999999%27%20x2%3D%27444%27%20y2%3D%27119.19999999999999%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27123.19999999999999%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E6%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%2799.4%27%20x2%3D%27444%27%20y2%3D%2799.4%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%2779.6%27%20x2%3D%27444%27%20y2%3D%2779.6%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%2783.6%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E8%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%2759.79999999999998%27%20x2%3D%27444%27%20y2%3D%2759.79999999999998%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%2740.0%27%20x2%3D%27444%27%20y2%3D%2740.0%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%2744.0%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E10%3C/text%3E%3Crect%20x%3D%2776.5%27%20y%3D%27119.19999999999999%27%20width%3D%2749.0%27%20height%3D%27118.80000000000001%27%20fill%3D%27%233a6df0%27%20stroke%3D%27%23333%27/%3E%3Ctext%20x%3D%27101.0%27%20y%3D%27254%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3EAnn%3C/text%3E%3Crect%20x%3D%27174.5%27%20y%3D%2759.79999999999998%27%20width%3D%2749.0%27%20height%3D%27178.20000000000002%27%20fill%3D%27%231fb58f%27%20stroke%3D%27%23333%27/%3E%3Ctext%20x%3D%27199.0%27%20y%3D%27254%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3EBen%3C/text%3E%3Crect%20x%3D%27272.5%27%20y%3D%27158.8%27%20width%3D%2749.0%27%20height%3D%2779.2%27%20fill%3D%27%23ffcb2f%27%20stroke%3D%27%23333%27/%3E%3Ctext%20x%3D%27297.0%27%20y%3D%27254%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3ECara%3C/text%3E%3Crect%20x%3D%27370.5%27%20y%3D%2799.4%27%20width%3D%2749.0%27%20height%3D%27138.6%27%20fill%3D%27%23f0566a%27%20stroke%3D%27%23333%27/%3E%3Ctext%20x%3D%27395.0%27%20y%3D%27254%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3EDan%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%2740%27%20x2%3D%2752%27%20y2%3D%27238%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27238%27%20x2%3D%27444%27%20y2%3D%27238%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Ctext%20x%3D%2714%27%20y%3D%27139.0%27%20transform%3D%27rotate%28-90%2014%20139.0%29%27%20text-anchor%3D%27middle%27%20font-size%3D%2711%27%3ENumber%20of%20books%3C/text%3E%3Ctext%20x%3D%27248.0%27%20y%3D%27282%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3EChild%3C/text%3E%3C/svg%3E"], "22": ["data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20450%20160%27%20width%3D%27450%27%20height%3D%27160%27%20font-family%3D%27Arial%2CHelvetica%2Csans-serif%27%3E%3Crect%20width%3D%27450%27%20height%3D%27160%27%20fill%3D%27white%27/%3E%3Cline%20x1%3D%2730%27%20y1%3D%27120%27%20x2%3D%27110%27%20y2%3D%27120%27%20stroke%3D%27%23222%27%20stroke-width%3D%273%27/%3E%3Cline%20x1%3D%2730%27%20y1%3D%27120%27%20x2%3D%2786.5685424949238%27%20y2%3D%2763.4314575050762%27%20stroke%3D%27%23222%27%20stroke-width%3D%273%27/%3E%3Cpath%20d%3D%27M%2056%20120%20A%2026%2026%200%200%200%2048.38477631085024%20101.61522368914976%27%20fill%3D%27none%27%20stroke%3D%27%23c33%27%20stroke-width%3D%272%27/%3E%3Ctext%20x%3D%2760%27%20y%3D%27150%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EA%3C/text%3E%3Cline%20x1%3D%27180%27%20y1%3D%27120%27%20x2%3D%27260%27%20y2%3D%27120%27%20stroke%3D%27%23222%27%20stroke-width%3D%273%27/%3E%3Cline%20x1%3D%27180%27%20y1%3D%27120%27%20x2%3D%27180.0%27%20y2%3D%2740.0%27%20stroke%3D%27%23222%27%20stroke-width%3D%273%27/%3E%3Crect%20x%3D%27180%27%20y%3D%27106%27%20width%3D%2714%27%20height%3D%2714%27%20fill%3D%27none%27%20stroke%3D%27%23c33%27%20stroke-width%3D%272%27/%3E%3Ctext%20x%3D%27210%27%20y%3D%27150%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EB%3C/text%3E%3Cline%20x1%3D%27330%27%20y1%3D%27120%27%20x2%3D%27410%27%20y2%3D%27120%27%20stroke%3D%27%23222%27%20stroke-width%3D%273%27/%3E%3Cline%20x1%3D%27330%27%20y1%3D%27120%27%20x2%3D%27290.0%27%20y2%3D%2750.7179676972449%27%20stroke%3D%27%23222%27%20stroke-width%3D%273%27/%3E%3Cpath%20d%3D%27M%20356%20120%20A%2026%2026%200%200%200%20317.0%2097.48333950160459%27%20fill%3D%27none%27%20stroke%3D%27%23c33%27%20stroke-width%3D%272%27/%3E%3Ctext%20x%3D%27360%27%20y%3D%27150%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EC%3C/text%3E%3C/svg%3E"], "23": ["data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20350%20180%27%20width%3D%27350%27%20height%3D%27180%27%20font-family%3D%27Arial%2CHelvetica%2Csans-serif%27%3E%3Crect%20width%3D%27350%27%20height%3D%27180%27%20fill%3D%27white%27/%3E%3Crect%20x%3D%2760%27%20y%3D%2730%27%20width%3D%27240%27%20height%3D%27110%27%20fill%3D%27%23eaf2ff%27%20stroke%3D%27%23222%27%20stroke-width%3D%273%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%2726%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EA%3C/text%3E%3Ctext%20x%3D%27308%27%20y%3D%2726%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EB%3C/text%3E%3Ctext%20x%3D%27308%27%20y%3D%27158%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EC%3C/text%3E%3Ctext%20x%3D%2744%27%20y%3D%27158%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3ED%3C/text%3E%3C/svg%3E"], "24": ["data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20390%20170%27%20width%3D%27390%27%20height%3D%27170%27%20font-family%3D%27Arial%2CHelvetica%2Csans-serif%27%3E%3Crect%20width%3D%27390%27%20height%3D%27170%27%20fill%3D%27white%27/%3E%3Crect%20x%3D%2750%27%20y%3D%2730%27%20width%3D%27270%27%20height%3D%27120%27%20fill%3D%27%23eaf2ff%27%20stroke%3D%27%23222%27%20stroke-width%3D%273%27/%3E%3Ctext%20x%3D%27185%27%20y%3D%2722%27%20text-anchor%3D%27middle%27%20font-size%3D%2716%27%3E9%20cm%3C/text%3E%3Ctext%20x%3D%27332%27%20y%3D%2796%27%20font-size%3D%2716%27%3E4%20cm%3C/text%3E%3C/svg%3E"], "29": ["data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20400%20100%27%20width%3D%27400%27%20height%3D%27100%27%20font-family%3D%27Arial%2CHelvetica%2Csans-serif%27%3E%3Crect%20width%3D%27400%27%20height%3D%27100%27%20fill%3D%27white%27/%3E%3Crect%20x%3D%2720%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%2750%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%2780%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%27110%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%27140%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%27170%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%27200%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%27230%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%27260%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%27290%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%27320%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Crect%20x%3D%27350%27%20y%3D%2720%27%20width%3D%2730%27%20height%3D%2744%27%20fill%3D%27%23fff7d6%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Ctext%20x%3D%27200%27%20y%3D%2788%27%20text-anchor%3D%27middle%27%20font-size%3D%2713%27%3EThe%20whole%20pie%2C%20cut%20into%2012%20equal%20slices%3C/text%3E%3C/svg%3E"], "30": ["data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20460%20290%27%20width%3D%27460%27%20height%3D%27290%27%20font-family%3D%27Arial%2CHelvetica%2Csans-serif%27%3E%3Crect%20width%3D%27460%27%20height%3D%27290%27%20fill%3D%27white%27/%3E%3Ctext%20x%3D%27230.0%27%20y%3D%2720%27%20text-anchor%3D%27middle%27%20font-size%3D%2714%27%20font-weight%3D%27bold%27%3EFavourite%20fruit%20of%20the%20pupils%20in%20a%20class%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27238.0%27%20x2%3D%27444%27%20y2%3D%27238.0%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27242.0%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E0%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27225.625%27%20x2%3D%27444%27%20y2%3D%27225.625%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27213.25%27%20x2%3D%27444%27%20y2%3D%27213.25%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27217.25%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E2%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27200.875%27%20x2%3D%27444%27%20y2%3D%27200.875%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27188.5%27%20x2%3D%27444%27%20y2%3D%27188.5%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27192.5%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E4%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27176.125%27%20x2%3D%27444%27%20y2%3D%27176.125%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27163.75%27%20x2%3D%27444%27%20y2%3D%27163.75%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27167.75%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E6%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27151.375%27%20x2%3D%27444%27%20y2%3D%27151.375%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27139.0%27%20x2%3D%27444%27%20y2%3D%27139.0%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27143.0%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E8%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27126.625%27%20x2%3D%27444%27%20y2%3D%27126.625%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27114.25%27%20x2%3D%27444%27%20y2%3D%27114.25%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%27118.25%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E10%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%27101.875%27%20x2%3D%27444%27%20y2%3D%27101.875%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%2789.5%27%20x2%3D%27444%27%20y2%3D%2789.5%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%2793.5%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E12%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%2777.125%27%20x2%3D%27444%27%20y2%3D%2777.125%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%2764.75%27%20x2%3D%27444%27%20y2%3D%2764.75%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%2768.75%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E14%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%2752.375%27%20x2%3D%27444%27%20y2%3D%2752.375%27%20stroke%3D%27%23ddd%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%2740.0%27%20x2%3D%27444%27%20y2%3D%2740.0%27%20stroke%3D%27%23888%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%2744%27%20y%3D%2744.0%27%20text-anchor%3D%27end%27%20font-size%3D%2711%27%3E16%3C/text%3E%3Crect%20x%3D%2776.5%27%20y%3D%2789.5%27%20width%3D%2749.0%27%20height%3D%27148.5%27%20fill%3D%27%23f0566a%27%20stroke%3D%27%23333%27/%3E%3Ctext%20x%3D%27101.0%27%20y%3D%27254%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3EApple%3C/text%3E%3Crect%20x%3D%27174.5%27%20y%3D%27139.0%27%20width%3D%2749.0%27%20height%3D%2799.0%27%20fill%3D%27%23ffcb2f%27%20stroke%3D%27%23333%27/%3E%3Ctext%20x%3D%27199.0%27%20y%3D%27254%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3EBanana%3C/text%3E%3Crect%20x%3D%27272.5%27%20y%3D%2752.375%27%20width%3D%2749.0%27%20height%3D%27185.625%27%20fill%3D%27%23ff9a3c%27%20stroke%3D%27%23333%27/%3E%3Ctext%20x%3D%27297.0%27%20y%3D%27254%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3EOrange%3C/text%3E%3Crect%20x%3D%27370.5%27%20y%3D%27176.125%27%20width%3D%2749.0%27%20height%3D%2761.875%27%20fill%3D%27%237a5af8%27%20stroke%3D%27%23333%27/%3E%3Ctext%20x%3D%27395.0%27%20y%3D%27254%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3EGrape%3C/text%3E%3Cline%20x1%3D%2752%27%20y1%3D%2740%27%20x2%3D%2752%27%20y2%3D%27238%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%2752%27%20y1%3D%27238%27%20x2%3D%27444%27%20y2%3D%27238%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Ctext%20x%3D%2714%27%20y%3D%27139.0%27%20transform%3D%27rotate%28-90%2014%20139.0%29%27%20text-anchor%3D%27middle%27%20font-size%3D%2711%27%3ENumber%20of%20pupils%3C/text%3E%3Ctext%20x%3D%27248.0%27%20y%3D%27282%27%20text-anchor%3D%27middle%27%20font-size%3D%2712%27%3EFruit%3C/text%3E%3C/svg%3E"], "32": ["data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20360%20266%27%20width%3D%27360%27%20height%3D%27266%27%20font-family%3D%27Arial%2CHelvetica%2Csans-serif%27%3E%3Crect%20width%3D%27360%27%20height%3D%27266%27%20fill%3D%27white%27/%3E%3Cpolygon%20points%3D%2740%2C230%20280%2C230%20280%2C150%20120%2C150%20120%2C30%2040%2C30%27%20fill%3D%27%23eaf2ff%27%20stroke%3D%27%23222%27%20stroke-width%3D%273%27/%3E%3Ctext%20x%3D%2724%27%20y%3D%27248%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EA%3C/text%3E%3Ctext%20x%3D%27288%27%20y%3D%27248%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EB%3C/text%3E%3Ctext%20x%3D%27288%27%20y%3D%27146%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EC%3C/text%3E%3Ctext%20x%3D%27126%27%20y%3D%27144%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3ED%3C/text%3E%3Ctext%20x%3D%27126%27%20y%3D%2726%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EE%3C/text%3E%3Ctext%20x%3D%2722%27%20y%3D%2726%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3EF%3C/text%3E%3Ctext%20x%3D%27160%27%20y%3D%27252%27%20text-anchor%3D%27middle%27%20font-size%3D%2715%27%3E6%20cm%3C/text%3E%3Ctext%20x%3D%27312%27%20y%3D%27196%27%20font-size%3D%2715%27%3E2%20cm%3C/text%3E%3Ctext%20x%3D%2780%27%20y%3D%2722%27%20text-anchor%3D%27middle%27%20font-size%3D%2715%27%3E2%20cm%3C/text%3E%3Ctext%20x%3D%272%27%20y%3D%27135%27%20font-size%3D%2715%27%3E5%20cm%3C/text%3E%3C/svg%3E"], "34": ["data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%20220%20220%27%20width%3D%27220%27%20height%3D%27220%27%20font-family%3D%27Arial%2CHelvetica%2Csans-serif%27%3E%3Crect%20width%3D%27220%27%20height%3D%27220%27%20fill%3D%27white%27/%3E%3Ccircle%20cx%3D%27110%27%20cy%3D%27110%27%20r%3D%2795%27%20fill%3D%27white%27%20stroke%3D%27%23222%27%20stroke-width%3D%274%27/%3E%3Cline%20x1%3D%27110.0%27%20y1%3D%2725.0%27%20x2%3D%27110.0%27%20y2%3D%2716.0%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%27119.51209015735647%27%20y1%3D%2719.498507521487127%27%20x2%3D%27119.82567554715942%27%20y2%3D%2716.514941835382317%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27128.9199638644161%27%20y1%3D%2720.988568333223682%27%20x2%3D%27129.5436989368694%27%20y2%3D%2718.054125531022265%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27138.12054648812023%27%20y1%3D%2723.453857017141033%27%20x2%3D%27139.04759747124507%27%20y2%3D%2720.600687468255572%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27147.01303451989781%27%20y1%3D%2726.86736335452332%27%20x2%3D%27148.2332444491252%27%20y2%3D%2724.126726981595525%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27152.5%27%20y1%3D%2736.3878406783227%27%20x2%3D%27157.0%27%20y2%3D%2728.593612044262755%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%27163.48845795861507%27%20y1%3D%2736.37945351187979%27%20x2%3D%27165.25181371549246%27%20y2%3D%2733.952402528754945%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27170.8908851786561%27%20y1%3D%2742.37382088155712%27%20x2%3D%27172.89827699773267%27%20y2%3D%2740.14438640512495%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27177.62617911844288%27%20y1%3D%2749.1091148213439%27%20x2%3D%27179.85561359487505%27%20y2%3D%2747.10172300226733%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27183.62054648812023%27%20y1%3D%2756.51154204138494%27%20x2%3D%27186.04759747124507%27%20y2%3D%2754.748186284507526%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27183.61215932167727%27%20y1%3D%2767.5%27%20x2%3D%27191.40638795573722%27%20y2%3D%2762.99999999999999%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%27193.13263664547668%27%20y1%3D%2772.98696548010219%27%20x2%3D%27195.87327301840446%27%20y2%3D%2771.76675555087479%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27196.54614298285895%27%20y1%3D%2781.87945351187977%27%20x2%3D%27199.39931253174444%27%20y2%3D%2780.95240252875493%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27199.0114316667763%27%20y1%3D%2791.0800361355839%27%20x2%3D%27201.9458744689777%27%20y2%3D%2790.45630106313061%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27200.5014924785129%27%20y1%3D%27100.48790984264353%27%20x2%3D%27203.48505816461767%27%20y2%3D%27100.17432445284058%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27195.0%27%20y1%3D%27110.0%27%20x2%3D%27204.0%27%20y2%3D%27110.0%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%27200.5014924785129%27%20y1%3D%27119.51209015735647%27%20x2%3D%27203.48505816461767%27%20y2%3D%27119.82567554715943%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27199.01143166677633%27%20y1%3D%27128.9199638644161%27%20x2%3D%27201.94587446897773%27%20y2%3D%27129.5436989368694%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27196.54614298285898%27%20y1%3D%27138.1205464881202%27%20x2%3D%27199.39931253174444%27%20y2%3D%27139.04759747124504%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27193.13263664547668%27%20y1%3D%27147.01303451989781%27%20x2%3D%27195.87327301840446%27%20y2%3D%27148.2332444491252%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27183.6121593216773%27%20y1%3D%27152.49999999999997%27%20x2%3D%27191.40638795573724%27%20y2%3D%27156.99999999999997%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%27183.62054648812023%27%20y1%3D%27163.48845795861504%27%20x2%3D%27186.04759747124507%27%20y2%3D%27165.25181371549246%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27177.62617911844288%27%20y1%3D%27170.8908851786561%27%20x2%3D%27179.85561359487505%27%20y2%3D%27172.89827699773267%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27170.8908851786561%27%20y1%3D%27177.62617911844285%27%20x2%3D%27172.8982769977327%27%20y2%3D%27179.85561359487502%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27163.48845795861507%27%20y1%3D%27183.62054648812023%27%20x2%3D%27165.2518137154925%27%20y2%3D%27186.04759747124507%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27152.5%27%20y1%3D%27183.6121593216773%27%20x2%3D%27157.0%27%20y2%3D%27191.40638795573724%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%27147.01303451989784%27%20y1%3D%27193.13263664547668%27%20x2%3D%27148.23324444912524%27%20y2%3D%27195.87327301840446%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27138.12054648812023%27%20y1%3D%27196.54614298285895%27%20x2%3D%27139.04759747124507%27%20y2%3D%27199.39931253174444%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27128.9199638644161%27%20y1%3D%27199.01143166677633%27%20x2%3D%27129.54369893686936%27%20y2%3D%27201.94587446897773%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27119.51209015735648%27%20y1%3D%27200.5014924785129%27%20x2%3D%27119.82567554715945%27%20y2%3D%27203.48505816461767%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27110.00000000000001%27%20y1%3D%27195.0%27%20x2%3D%27110.00000000000001%27%20y2%3D%27204.0%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%27100.48790984264353%27%20y1%3D%27200.5014924785129%27%20x2%3D%27100.17432445284057%27%20y2%3D%27203.48505816461767%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2791.08003613558388%27%20y1%3D%27199.0114316667763%27%20x2%3D%2790.45630106313061%27%20y2%3D%27201.9458744689777%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2781.8794535118798%27%20y1%3D%27196.54614298285898%27%20x2%3D%2780.95240252875496%27%20y2%3D%27199.39931253174444%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2772.98696548010219%27%20y1%3D%27193.13263664547668%27%20x2%3D%2771.76675555087479%27%20y2%3D%27195.87327301840446%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2767.5%27%20y1%3D%27183.61215932167727%27%20x2%3D%2762.99999999999999%27%20y2%3D%27191.40638795573722%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%2756.511542041384956%27%20y1%3D%27183.62054648812023%27%20x2%3D%2754.74818628450753%27%20y2%3D%27186.04759747124507%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2749.1091148213439%27%20y1%3D%27177.62617911844288%27%20x2%3D%2747.10172300226733%27%20y2%3D%27179.85561359487505%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2742.37382088155711%27%20y1%3D%27170.8908851786561%27%20x2%3D%2740.14438640512493%27%20y2%3D%27172.89827699773267%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2736.37945351187979%27%20y1%3D%27163.48845795861507%27%20x2%3D%2733.952402528754945%27%20y2%3D%27165.2518137154925%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2736.38784067832273%27%20y1%3D%27152.50000000000003%27%20x2%3D%2728.593612044262798%27%20y2%3D%27157.00000000000006%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%2726.867363354523306%27%20y1%3D%27147.01303451989781%27%20x2%3D%2724.12672698159551%27%20y2%3D%27148.2332444491252%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2723.453857017141033%27%20y1%3D%27138.12054648812023%27%20x2%3D%2720.600687468255572%27%20y2%3D%27139.04759747124507%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2720.988568333223697%27%20y1%3D%27128.91996386441613%27%20x2%3D%2718.05412553102228%27%20y2%3D%27129.54369893686942%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2719.498507521487127%27%20y1%3D%27119.51209015735645%27%20x2%3D%2716.514941835382302%27%20y2%3D%27119.82567554715942%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2725.0%27%20y1%3D%27110.00000000000001%27%20x2%3D%2716.0%27%20y2%3D%27110.00000000000001%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%2719.498507521487127%27%20y1%3D%27100.48790984264357%27%20x2%3D%2716.514941835382302%27%20y2%3D%27100.17432445284062%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2720.988568333223697%27%20y1%3D%2791.0800361355839%27%20x2%3D%2718.05412553102228%27%20y2%3D%2790.45630106313061%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2723.45385701714102%27%20y1%3D%2781.8794535118798%27%20x2%3D%2720.600687468255558%27%20y2%3D%2780.95240252875496%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2726.867363354523306%27%20y1%3D%2772.98696548010221%27%20x2%3D%2724.126726981595496%27%20y2%3D%2771.76675555087482%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2736.38784067832272%27%20y1%3D%2767.5%27%20x2%3D%2728.59361204426277%27%20y2%3D%2762.99999999999999%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%2736.379453511879774%27%20y1%3D%2756.51154204138496%27%20x2%3D%2733.95240252875493%27%20y2%3D%2754.74818628450755%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2742.373820881557094%27%20y1%3D%2749.109114821343944%27%20x2%3D%2740.144386405124905%27%20y2%3D%2747.10172300226737%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2749.10911482134391%27%20y1%3D%2742.37382088155712%27%20x2%3D%2747.101723002267335%27%20y2%3D%2740.14438640512495%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2756.51154204138493%27%20y1%3D%2736.37945351187979%27%20x2%3D%2754.748186284507504%27%20y2%3D%2733.952402528754945%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2767.49999999999997%27%20y1%3D%2736.38784067832273%27%20x2%3D%2762.99999999999996%27%20y2%3D%2728.593612044262798%27%20stroke%3D%27%23222%27%20stroke-width%3D%272%27/%3E%3Cline%20x1%3D%2772.98696548010219%27%20y1%3D%2726.867363354523306%27%20x2%3D%2771.76675555087479%27%20y2%3D%2724.12672698159551%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2781.87945351187977%27%20y1%3D%2723.453857017141033%27%20x2%3D%2780.95240252875493%27%20y2%3D%2720.600687468255572%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%2791.08003613558385%27%20y1%3D%2720.988568333223697%27%20x2%3D%2790.45630106313057%27%20y2%3D%2718.05412553102228%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Cline%20x1%3D%27100.48790984264355%27%20y1%3D%2719.498507521487127%27%20x2%3D%27100.17432445284058%27%20y2%3D%2716.514941835382317%27%20stroke%3D%27%23222%27%20stroke-width%3D%271%27/%3E%3Ctext%20x%3D%27146.0%27%20y%3D%2753.646170927520416%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E1%3C/text%3E%3Ctext%20x%3D%27172.35382907247958%27%20y%3D%2780.0%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E2%3C/text%3E%3Ctext%20x%3D%27182.0%27%20y%3D%27116.0%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E3%3C/text%3E%3Ctext%20x%3D%27172.35382907247958%27%20y%3D%27152.0%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E4%3C/text%3E%3Ctext%20x%3D%27146.0%27%20y%3D%27178.35382907247958%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E5%3C/text%3E%3Ctext%20x%3D%27110.00000000000001%27%20y%3D%27188.0%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E6%3C/text%3E%3Ctext%20x%3D%2774.0%27%20y%3D%27178.35382907247958%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E7%3C/text%3E%3Ctext%20x%3D%2747.64617092752044%27%20y%3D%27152.00000000000003%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E8%3C/text%3E%3Ctext%20x%3D%2738.0%27%20y%3D%27116.00000000000001%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E9%3C/text%3E%3Ctext%20x%3D%2747.64617092752042%27%20y%3D%2780.0%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E10%3C/text%3E%3Ctext%20x%3D%2773.99999999999997%27%20y%3D%2753.64617092752044%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E11%3C/text%3E%3Ctext%20x%3D%27109.99999999999999%27%20y%3D%2744.0%27%20text-anchor%3D%27middle%27%20font-size%3D%2718%27%20font-weight%3D%27bold%27%3E12%3C/text%3E%3Cline%20x1%3D%27110%27%20y1%3D%27110%27%20x2%3D%2763.1377916582432%27%20y2%3D%27120.38910146902893%27%20stroke%3D%27%23222%27%20stroke-width%3D%277%27%20stroke-linecap%3D%27round%27/%3E%3Cline%20x1%3D%27110%27%20y1%3D%27110%27%20x2%3D%2773.0%27%20y2%3D%27174.08587988004845%27%20stroke%3D%27%23c33%27%20stroke-width%3D%274%27%20stroke-linecap%3D%27round%27/%3E%3Ccircle%20cx%3D%27110%27%20cy%3D%27110%27%20r%3D%276%27%20fill%3D%27%23222%27/%3E%3C/svg%3E"]};
+function figHTML(n){
+  const f=FIGS[n]; if(!f) return '';
+  return `<div class="figs">${f.map((u,i)=>`<img src="${u}" alt="Diagram ${i+1} for question ${n}" data-zoom="1" loading="lazy">`).join('')}</div>`;
+}
+
+/* ---------- STATE ---------- */
+const st = { mcq:{}, open:{}, showAll:false, todo:false, tab:'M' };
+const $ = s => document.querySelector(s);
+const pid = (n,k) => `${n}${k}`;
+const OPEN_MAX = OPEN.reduce((s,q)=>s+q.p.reduce((x,p)=>x+p.m,0),0); // 44
+
+/* ---------- RENDER MCQ ---------- */
+function mark(line){
+  const m = line.match(/^([✓✗])\s*(.*)$/);
+  if(m) return `<p><span class="mk ${m[1]==='✓'?'y':'n'}" aria-label="${m[1]==='✓'?'correct':'wrong'}">${m[1]}</span>${m[2]}</p>`;
+  if(/^Note:/.test(line)) return `<div class="note">${line}</div>`;
+  return `<p>${line}</p>`;
+}
+function mcqCard(q){
+  const s = st.mcq[q.n] || {};
+  const done = s.pick != null || s.peek;
+  const reveal = done || st.showAll;
+  const correct = s.pick === q.a;
+  const cls = s.pick!=null ? (correct?'ok':'bad') : '';
+  const opts = [1,2,3,4].map(i=>{
+    let c='opt';
+    if(reveal && i===q.a) c+=' right';
+    else if(s.pick===i) c+=' wrong';
+    const label = q.o ? q.o[i-1] : `Option (${i})`;
+    return `<button class="${c}" data-mcq="${q.n}" data-i="${i}" ${reveal?'disabled':''}><i>${i}</i><span>${label}</span></button>`;
+  }).join('');
+  let verdict='';
+  if(reveal){
+    verdict = s.pick!=null
+      ? (correct?`Correct! The answer is (${q.a}). +2 marks`:`Not quite. The answer is (${q.a}).`)
+      : `The answer is (${q.a}).`;
+  }
+  return `<article class="card ${cls}" id="m${q.n}" data-n="${q.n}">
+    <div class="card-h"><div class="num">${q.n}</div><div class="topic">${q.t}</div></div>
+    <p class="q">${q.q}</p>
+    ${figHTML(q.n)}
+    ${q.o?``:`<p class="hint">The option wording is in the worksheet. Pick the number you chose.</p>`}
+    <div class="opts">${opts}</div>
+    ${reveal?`<div class="why"><div class="verdict">${verdict}</div>${q.r.map(mark).join('')}${q.flag?`<div class="flag"><b>Check:</b> ${q.flag}</div>`:''}</div>`:
+      `<div class="actions"><button class="link" data-peek="${q.n}">Show the answer without picking</button></div>`}
+  </article>`;
+}
+function renderMcq(){
+  const list = MCQ.filter(q=>{
+    if(!st.todo) return true;
+    const s=st.mcq[q.n]||{}; return s.pick==null && !s.peek;
+  });
+  $('#listM').innerHTML = list.length ? list.map(mcqCard).join('') :
+    `<div class="empty">Every question has been answered. Use “Start over” to try again.</div>`;
+  $('#tilesM').innerHTML = MCQ.map(q=>{
+    const s=st.mcq[q.n]||{};
+    let c='tile', txt='';
+    if(s.pick!=null){ c+= s.pick===q.a?' ok':' bad'; txt=q.a; }
+    else if(s.peek){ c+=' peek'; txt=q.a; }
+    else if(st.showAll){ txt=q.a; }
+    return `<a class="${c}" href="#m${q.n}" data-jump="m${q.n}"><b>${q.n}</b><span>${txt||'·'}</span></a>`;
+  }).join('');
+}
+
+/* ---------- RENDER OPEN (as multiple choice) ---------- */
+function partKey(n,k){return n+':'+k}
+function pOf(q,p){return st.open[partKey(q.n,p.k)]||{}}
+function partScore(q,p){const s=pOf(q,p); return s.pick==null?null:(s.pick===p.a?p.m:0)}
+function fmt(v){return Number.isInteger(v)?v:v.toFixed(1)}
+function partHTML(q,p){
+  const key = partKey(q.n,p.k);
+  const s = pOf(q,p);
+  const reveal = s.pick!=null || s.peek || st.showAll;
+  const correct = s.pick===p.a;
+  const label = p.k ? `(${p.k})` : '';
+  const pts = `${fmt(p.m)} ${p.m===1?'mark':'marks'}`;
+  const opts = p.o.map((t,i)=>{
+    const n=i+1; let c='opt';
+    if(reveal && n===p.a) c+=' right'; else if(s.pick===n) c+=' wrong';
+    return `<button class="${c}" data-open="${key}" data-i="${n}" ${reveal?'disabled':''}><i>${n}</i><span>${t}</span></button>`;
+  }).join('');
+  let verdict='';
+  if(reveal) verdict = s.pick!=null ? (correct?`Correct! The answer is (${p.a}). +${fmt(p.m)} ${p.m===1?'mark':'marks'}`:`Not quite. The answer is (${p.a}).`) : `The answer is (${p.a}).`;
+  return `<div class="part"><div class="part-h"><span class="lab">${label}</span><span class="pt">${pts}</span></div>
+    <p class="ask">${p.q}</p>
+    <div class="opts">${opts}</div>
+    ${reveal?`<div class="why"><div class="verdict">${verdict}</div>${p.r.map(mark).join('')}${p.flag?`<div class="flag"><b>Check:</b> ${p.flag}</div>`:''}</div>`
+      :`<div class="actions"><button class="link" data-opeek="${key}">Show the answer without picking</button></div>`}
+  </div>`;
+}
+function qScore(q){
+  let got=0,max=0,answered=0,total=q.p.length;
+  q.p.forEach(p=>{ max+=p.m; const v=partScore(q,p); if(v!=null){got+=v;answered++;} });
+  return {got,max,answered,total};
+}
+function renderOpen(){
+  const list = OPEN.filter(q=>{
+    if(!st.todo) return true;
+    const r=qScore(q); return r.answered<r.total;
+  });
+  $('#listO').innerHTML = list.length ? list.map(q=>{
+    const r=qScore(q);
+    return `<article class="card" id="o${q.n}">
+      <div class="card-h"><div class="num">${q.n}</div><div class="topic">${q.t}<small>${fmt(r.max)} marks${r.answered?` · you scored ${fmt(r.got)}`:''}</small></div></div>
+      <p class="intro">${q.intro}</p>
+      ${figHTML(q.n)}
+      ${q.p.map(p=>partHTML(q,p)).join('')}
+      ${q.extra?`<div class="flag">${q.extra}</div>`:''}
+    </article>`;
+  }).join('') : `<div class="empty">Every part has been answered. Use “Start over” to try again.</div>`;
+  $('#tilesO').innerHTML = OPEN.map(q=>{
+    const r=qScore(q);
+    let c='tile', txt='·';
+    if(r.answered>0){
+      c+= r.answered===r.total ? (r.got===r.max?' ok':(r.got===0?' bad':' partial')) : ' partial';
+      txt=`${fmt(r.got)}/${fmt(r.max)}`;
+    }
+    return `<a class="${c}" href="#o${q.n}" data-jump="o${q.n}"><b>${q.n}</b><span>${txt}</span></a>`;
+  }).join('');
+}
+
+/* ---------- SCORES ---------- */
+function updateScores(){
+  let mcqMarks=0, mcqDone=0;
+  MCQ.forEach(q=>{const s=st.mcq[q.n]; if(s&&s.pick!=null){mcqDone++; if(s.pick===q.a) mcqMarks+=2;}});
+  let openMarks=0, openDone=0, openTotal=0;
+  OPEN.forEach(q=>q.p.forEach(p=>{ openTotal++; const v=partScore(q,p); if(v!=null){openMarks+=v;openDone++;} }));
+  $('#sMcq').textContent = mcqMarks;
+  $('#sOpen').textContent = fmt(openMarks);
+  $('#sAll').textContent = fmt(mcqMarks+openMarks);
+  const pct = (mcqDone+openDone)/(MCQ.length+openTotal)*100;
+  $('#prog').style.width = pct+'%';
+}
+function render(){
+  renderMcq(); renderOpen(); updateScores();
+  $('#showAll').setAttribute('aria-pressed', st.showAll);
+  $('#onlyTodo').setAttribute('aria-pressed', st.todo);
+}
+
+/* ---------- EVENTS ---------- */
+document.addEventListener('click', e=>{
+  const im = e.target.closest('img[data-zoom]');
+  if(im){ const z=document.createElement('div'); z.className='zoom'; z.innerHTML='<img alt="">'; z.firstChild.src=im.src; z.onclick=()=>z.remove(); document.body.appendChild(z); return; }
+  const t = e.target.closest('button, a[data-jump]');
+  if(!t) return;
+  const y = window.scrollY;
+  if(t.dataset.mcq){
+    const n=+t.dataset.mcq; st.mcq[n]={...(st.mcq[n]||{}),pick:+t.dataset.i};
+    render(); keepCard('m'+n);
+  } else if(t.dataset.peek){
+    const n=+t.dataset.peek; st.mcq[n]={...(st.mcq[n]||{}),peek:true};
+    render(); keepCard('m'+n);
+  } else if(t.dataset.open){
+    const k=t.dataset.open; st.open[k]={...(st.open[k]||{}),pick:+t.dataset.i};
+    render(); window.scrollTo(0,y);
+  } else if(t.dataset.opeek){
+    const k=t.dataset.opeek; st.open[k]={...(st.open[k]||{}),peek:true};
+    render(); window.scrollTo(0,y);
+  } else if(t.dataset.jump){
+    e.preventDefault();
+    if(st.todo){ st.todo=false; render(); }
+    const el=document.getElementById(t.dataset.jump);
+    if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+});
+function keepCard(id){ const el=document.getElementById(id); if(el){ const r=el.getBoundingClientRect(); if(r.top<130||r.bottom>innerHeight) el.scrollIntoView({block:'start'}); } }
+
+function setTab(x){
+  st.tab=x;
+  $('#paneM').hidden = x!=='M'; $('#paneO').hidden = x!=='O';
+  $('#tabM').setAttribute('aria-selected', x==='M'); $('#tabO').setAttribute('aria-selected', x==='O');
+  window.scrollTo({top:0});
+}
+$('#tabM').onclick=()=>setTab('M');
+$('#tabO').onclick=()=>setTab('O');
+$('#showAll').onclick=()=>{st.showAll=!st.showAll; render();};
+$('#onlyTodo').onclick=()=>{st.todo=!st.todo; render();};
+$('#reset').onclick=()=>{
+  if(Object.keys(st.mcq).length+Object.keys(st.open).length===0 || confirm('Clear all your answers and marks?')){
+    st.mcq={}; st.open={}; st.showAll=false; st.todo=false; render();
+  }
+};
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const z=document.querySelector('.zoom'); if(z) z.remove(); } });
+render();
+</script>
+</body>
+</html>
